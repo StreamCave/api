@@ -6,6 +6,7 @@ use ApiPlatform\Metadata\ApiResource;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -39,6 +40,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\ManyToMany(targetEntity: Overlay::class, mappedBy: 'userAccess')]
     private Collection $overlaysAccess;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $token = null;
 
     public function __construct()
     {
@@ -181,6 +185,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         if ($this->overlaysAccess->removeElement($overlaysAccess)) {
             $overlaysAccess->removeUserAccess($this);
         }
+
+        return $this;
+    }
+
+    public function getToken(): ?string
+    {
+        return $this->token;
+    }
+
+    public function setToken(?string $token): self
+    {
+        $this->token = $token;
 
         return $this;
     }

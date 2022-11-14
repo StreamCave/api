@@ -1,0 +1,49 @@
+api_platform:
+  defaults:
+    pagination_enabled: false
+  mapping:
+    paths: ['%kernel.project_dir%/src/Entity']
+  formats:
+    jsonld: ['application/ld+json']
+    jsonhal: ['application/hal+json']
+    jsonapi: ['application/vnd.api+json']
+    json: ['application/json']
+    html: ['text/html']
+  patch_formats:
+    json: ['application/merge-patch+json']
+  swagger:
+    api_keys:
+      JWT:
+        name: Authorization
+        type: header
+    versions: [3]
+  asset_package: 'api_platform'
+  enable_swagger_ui: true
+  enable_re_doc: false
+
+  # The title of the API.
+  title: 'API Streamcave'
+
+  # The description of the API.
+  description: 'Une API pour StreamCave et développée par StreamCave'
+
+  # The version of the API.
+  version: '1.1.0'
+
+  openapi:
+    # The contact information for the exposed API.
+    contact:
+      # The identifying name of the contact person/organization.
+      name:
+      # The URL pointing to the contact information. MUST be in the format of a URL.
+      url:
+      # The email address of the contact person/organization. MUST be in the format of an email address.
+      email:
+    # A URL to the Terms of Service for the API. MUST be in the format of a URL.
+    termsOfService:
+    # The license information for the exposed API.
+    license:
+      # The license name used for the API.
+      name:
+      # URL to the license used for the API. MUST be in the format of a URL.
+      url:

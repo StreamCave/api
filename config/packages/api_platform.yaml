@@ -17,7 +17,6 @@ api_platform:
         name: Authorization
         type: header
     versions: [3]
-  asset_package: 'api_platform'
   enable_swagger_ui: true
   enable_re_doc: false
 
@@ -28,17 +27,17 @@ api_platform:
   description: 'Une API pour StreamCave et développée par StreamCave'
 
   # The version of the API.
-  version: '1.1.0'
+  version: '1.1.1'
 
   openapi:
     # The contact information for the exposed API.
     contact:
       # The identifying name of the contact person/organization.
-      name:
+      name: 'Alexis "BRIETGAME" Briet'
       # The URL pointing to the contact information. MUST be in the format of a URL.
-      url:
+      url: 'https://streamcave.tv'
       # The email address of the contact person/organization. MUST be in the format of an email address.
-      email:
+      email: 'contact@streamcave.tv'
     # A URL to the Terms of Service for the API. MUST be in the format of a URL.
     termsOfService:
     # The license information for the exposed API.

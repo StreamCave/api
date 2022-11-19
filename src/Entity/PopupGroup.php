@@ -3,28 +3,78 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Repository\PopupGroupRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: PopupGroupRepository::class)]
-#[ApiResource]
+#[ApiResource(operations: [
+    new Get(
+        uriTemplate: '/popup-groups/{id}',
+        requirements: ['id' => '\d+'],
+        status: 200,
+        schemes: ['https'],
+        openapiContext: ['summary' => 'Récupérer les données d\'un groupe de popups'],
+        normalizationContext: ['groups' => ['popup_group:read']],
+    ),
+    new GetCollection(
+        uriTemplate: '/popup-groups',
+        status: 200,
+        schemes: ['https'],
+        openapiContext: ['summary' => 'Récupérer les données de tous les groupes de popups'],
+        normalizationContext: ['groups' => ['popup_group:read']],
+    ),
+    new Post(
+        uriTemplate: '/popup-groups/add',
+        status: 201,
+        schemes: ['https'],
+        openapiContext: ['summary' => 'Ajouter un groupe de popups'],
+        normalizationContext: ['groups' => ['popup_group:read']],
+        denormalizationContext: ['groups' => ['popup_group:write']],
+    ),
+    new Put(
+        uriTemplate: '/popup-groups/{id}',
+        requirements: ['id' => '\d+'],
+        status: 200,
+        schemes: ['https'],
+        openapiContext: ['summary' => 'Modifier un groupe de popups'],
+        normalizationContext: ['groups' => ['popup_group:read']],
+        denormalizationContext: ['groups' => ['popup_group:write']],
+    ),
+    new Delete(
+        uriTemplate: '/popup-groups/{id}',
+        requirements: ['id' => '\d+'],
+        status: 204,
+        schemes: ['https'],
+        openapiContext: ['summary' => 'Supprimer un groupe de popups'],
+    )
+], schemes: ['https'], normalizationContext: ['groups' => ['popup_group:read']], denormalizationContext: ['groups' => ['popup_group:write']], openapiContext: ['summary' => 'PopupGroup'])]
 class PopupGroup
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['popup_group:read'])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::GUID, unique: true)]
+    #[Groups(['popup_group:read', 'popup_group:write'])]
     private ?string $uuid = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['popup_group:read', 'popup_group:write'])]
     private ?string $content = null;
 
     #[ORM\OneToMany(mappedBy: 'popupGroup', targetEntity: Widget::class)]
+    #[Groups(['popup_group:read'])]
     private Collection $widgets;
 
     public function __construct()

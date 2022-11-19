@@ -3,32 +3,84 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Repository\WidgetRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: WidgetRepository::class)]
-#[ApiResource]
+#[ApiResource(operations: [
+    new Get(
+        uriTemplate: '/widgets/{id}',
+        requirements: ['id' => '\d+'],
+        status: 200,
+        schemes: ['https'],
+        openapiContext: ['summary' => 'Récupérer les données d\'un widget'],
+        normalizationContext: ['groups' => ['widget:read']],
+    ),
+    new GetCollection(
+        uriTemplate: '/widgets',
+        status: 200,
+        schemes: ['https'],
+        openapiContext: ['summary' => 'Récupérer les données de tous les widgets'],
+        normalizationContext: ['groups' => ['widget:read']],
+    ),
+    new Post(
+        uriTemplate: '/widgets/add',
+        status: 201,
+        schemes: ['https'],
+        openapiContext: ['summary' => 'Ajouter un widget'],
+        normalizationContext: ['groups' => ['widget:read']],
+        denormalizationContext: ['groups' => ['widget:write']],
+    ),
+    new Put(
+        uriTemplate: '/widgets/{id}',
+        requirements: ['id' => '\d+'],
+        status: 200,
+        schemes: ['https'],
+        openapiContext: ['summary' => 'Modifier un widget'],
+        normalizationContext: ['groups' => ['widget:read']],
+        denormalizationContext: ['groups' => ['widget:write']],
+    ),
+    new Delete(
+        uriTemplate: '/widgets/{id}',
+        requirements: ['id' => '\d+'],
+        status: 204,
+        schemes: ['https'],
+        openapiContext: ['summary' => 'Supprimer un widget'],
+    )
+], schemes: ['https'], normalizationContext: ['groups' => ['widget:read']], denormalizationContext: ['groups' => ['widget:write']], openapiContext: ['summary' => 'Widget'])]
 class Widget
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['widget:read','camera_group:read','info_group:read','match_group:read','poll_group:read','popup_group:read','tweet_group:read','model:read'])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::GUID, unique: true)]
+    #[Groups(['widget:read','widget:write','camera_group:read','info_group:read','match_group:read','poll_group:read','popup_group:read','tweet_group:read','model:read'])]
     private ?string $uuid = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['widget:read','widget:write','camera_group:read','info_group:read','match_group:read','poll_group:read','popup_group:read','tweet_group:read','model:read'])]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['widget:read','widget:write','camera_group:read','info_group:read','match_group:read','poll_group:read','popup_group:read','tweet_group:read','model:read'])]
     private ?string $image = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['widget:read','widget:write','camera_group:read','info_group:read','match_group:read','poll_group:read','popup_group:read','tweet_group:read','model:read'])]
     private ?string $description = null;
 
     #[ORM\Column]
+    #[Groups(['widget:read','widget:write','camera_group:read','info_group:read','match_group:read','poll_group:read','popup_group:read','tweet_group:read','model:read'])]
     private ?bool $visible = null;
 
     #[ORM\ManyToOne(inversedBy: 'widgets')]

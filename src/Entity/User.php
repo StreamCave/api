@@ -3,6 +3,11 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -10,35 +15,83 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ApiResource]
+#[ApiResource(operations: [
+    new Get(
+        uriTemplate: '/users/{id}',
+        requirements: ['id' => '\d+'],
+        status: 200,
+        schemes: ['https'],
+        openapiContext: ['summary' => 'Récupérer les données d\'un utilisateur'],
+        normalizationContext: ['groups' => ['user:read']],
+    ),
+    new GetCollection(
+        uriTemplate: '/users',
+        status: 200,
+        schemes: ['https'],
+        openapiContext: ['summary' => 'Récupérer les données de tous les utilisateurs'],
+        normalizationContext: ['groups' => ['user:read']],
+    ),
+    new Post(
+        uriTemplate: '/users/add',
+        status: 201,
+        schemes: ['https'],
+        openapiContext: ['summary' => 'Ajouter un utilisateur'],
+        normalizationContext: ['groups' => ['user:read']],
+        denormalizationContext: ['groups' => ['user:write']],
+    ),
+    new Put(
+        uriTemplate: '/users/{id}',
+        requirements: ['id' => '\d+'],
+        status: 200,
+        schemes: ['https'],
+        openapiContext: ['summary' => 'Modifier un utilisateur'],
+        normalizationContext: ['groups' => ['user:read']],
+        denormalizationContext: ['groups' => ['user:write']],
+    ),
+    new Delete(
+        uriTemplate: '/users/{id}',
+        requirements: ['id' => '\d+'],
+        status: 204,
+        schemes: ['https'],
+        openapiContext: ['summary' => 'Supprimer un utilisateur'],
+    )
+], schemes: ['https'], normalizationContext: ['groups' => ['user:read']], denormalizationContext: ['groups' => ['user:write']], openapiContext: ['summary' => 'Utilisateur'])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['user:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $uuid = null;
 
     #[ORM\Column]
+    #[Groups(['user:read', 'user:write'])]
     private array $roles = [];
 
     /**
      * @var string The hashed password
      */
     #[ORM\Column]
+    #[Groups(['user:write'])]
     private ?string $password = null;
 
     #[ORM\Column(length: 255, unique: true)]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $email = null;
 
     #[ORM\OneToMany(mappedBy: 'userOwner', targetEntity: Overlay::class)]
+    #[Groups(['user:read', 'overlay:read'])]
     private Collection $overlays;
 
     #[ORM\ManyToMany(targetEntity: Overlay::class, mappedBy: 'userAccess')]
+    #[Groups(['user:read', 'overlay:read'])]
     private Collection $overlaysAccess;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]

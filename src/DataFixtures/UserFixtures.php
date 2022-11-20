@@ -11,6 +11,13 @@ class UserFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
+        $this->setSuperAdmin($manager);
+        $this->setSuperAdmin2($manager);
+        $this->setUsers($manager);
+    }
+
+    public function  setSuperAdmin(ObjectManager $manager): void
+    {
         $user = new User();
         $user->setUuid(Uuid::v6());
         $user->setEmail($_ENV['ADMIN_EMAIL']);
@@ -21,5 +28,37 @@ class UserFixtures extends Fixture
 
         $manager->persist($user);
         $manager->flush();
+    }
+
+    public function  setSuperAdmin2(ObjectManager $manager): void
+    {
+        $user = new User();
+        $user->setUuid(Uuid::v6());
+        $user->setEmail($_ENV['ADMIN_2_EMAIL']);
+        $user->setPassword(password_hash($_ENV['ADMIN_2_PASSWORD'], PASSWORD_BCRYPT));
+        $user->setRoles(['ROLE_ADMIN', 'ROLE_USER']);
+
+        $this->addReference('default-admin-user-2', $user);
+
+        $manager->persist($user);
+        $manager->flush();
+    }
+
+    public function  setUsers(ObjectManager $manager): void
+    {
+        $users = ["Alpha","Beta","Charlie","Delta"];
+
+        foreach ($users as $item) {
+            $user = new User();
+            $user->setUuid(Uuid::v6());
+            $user->setEmail($item . '@streamcave.tv');
+            $user->setPassword(password_hash($item, PASSWORD_BCRYPT));
+            $user->setRoles(['ROLE_USER']);
+
+            $this->addReference('default-user-' . $item, $user);
+
+            $manager->persist($user);
+            $manager->flush();
+        }
     }
 }

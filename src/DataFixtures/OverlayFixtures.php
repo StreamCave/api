@@ -17,6 +17,9 @@ class OverlayFixtures extends Fixture implements DependentFixtureInterface
         $overlay->setName('Default Overlay');
         $overlay->setModel($this->getReference('default-model'));
         $overlay->setUserOwner($this->getReference('default-admin-user'));
+        $overlay->addUserAccess($this->getReference('default-admin-user-2'));
+        $overlay->addUserAccess($this->getReference('default-user-Alpha'));
+        $overlay->addUserAccess($this->getReference('default-user-Beta'));
 
         $this->addReference('default-overlay', $overlay);
 

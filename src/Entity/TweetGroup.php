@@ -77,37 +77,37 @@ class TweetGroup
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['tweet_group:read', 'tweet_group:write'])]
-    #[ApiProperty(security: ['POST' => 'is_granted("ROLE_ADMIN")', 'PUT' => 'is_granted("ROLE_ADMIN")'])]
+    #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?string $pseudo = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['tweet_group:read', 'tweet_group:write'])]
-    #[ApiProperty(security: ['POST' => 'is_granted("ROLE_ADMIN")', 'PUT' => 'is_granted("ROLE_ADMIN")'])]
+    #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?string $at = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Groups(['tweet_group:read', 'tweet_group:write'])]
-    #[ApiProperty(security: ['POST' => 'is_granted("ROLE_ADMIN")', 'PUT' => 'is_granted("ROLE_ADMIN")'])]
+    #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?string $avatar = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['tweet_group:read', 'tweet_group:write'])]
-    #[ApiProperty(security: ['POST' => 'is_granted("ROLE_ADMIN")', 'PUT' => 'is_granted("ROLE_ADMIN")'])]
+    #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?string $mediaType = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Groups(['tweet_group:read', 'tweet_group:write'])]
-    #[ApiProperty(security: ['POST' => 'is_granted("ROLE_ADMIN")', 'PUT' => 'is_granted("ROLE_ADMIN")'])]
+    #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?string $mediaUrl = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Groups(['tweet_group:read', 'tweet_group:write'])]
-    #[ApiProperty(security: ['POST' => 'is_granted("ROLE_ADMIN")', 'PUT' => 'is_granted("ROLE_ADMIN")'])]
+    #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?string $content = null;
 
     #[ORM\OneToMany(mappedBy: 'tweetGroup', targetEntity: Widget::class)]
     #[Groups(['tweet_group:read'])]
-    #[ApiProperty(security: ['POST' => 'is_granted("ROLE_ADMIN")', 'PUT' => 'is_granted("ROLE_ADMIN")'])]
+    #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private Collection $widgets;
 
     public function __construct()

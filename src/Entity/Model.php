@@ -82,32 +82,32 @@ class Model
 
     #[ORM\Column(length: 255)]
     #[Groups(['model:read', 'model:write'])]
-    #[ApiProperty(security: ['POST' => 'is_granted("ROLE_ADMIN")', 'PUT' => 'is_granted("ROLE_ADMIN")'])]
+    #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Groups(['model:read', 'model:write'])]
-    #[ApiProperty(security: ['POST' => 'is_granted("ROLE_ADMIN")', 'PUT' => 'is_granted("ROLE_ADMIN")'])]
+    #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?string $image = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Groups(['model:read', 'model:write'])]
-    #[ApiProperty(security: ['POST' => 'is_granted("ROLE_ADMIN")', 'PUT' => 'is_granted("ROLE_ADMIN")'])]
+    #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?string $description = null;
 
     #[ORM\Column]
     #[Groups(['model:read', 'model:write'])]
-    #[ApiProperty(security: ['POST' => 'is_granted("ROLE_ADMIN")', 'PUT' => 'is_granted("ROLE_ADMIN")'])]
+    #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?int $price = null;
 
     #[ORM\OneToMany(mappedBy: 'model', targetEntity: Widget::class)]
     #[Groups(['model:read'])]
-    #[ApiProperty(security: ['POST' => 'is_granted("ROLE_ADMIN")', 'PUT' => 'is_granted("ROLE_ADMIN")'])]
+    #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private Collection $widgets;
 
     #[ORM\OneToOne(mappedBy: 'model', cascade: ['persist', 'remove'])]
     #[Groups(['model:read'])]
-    #[ApiProperty(security: ['POST' => 'is_granted("ROLE_ADMIN")', 'PUT' => 'is_granted("ROLE_ADMIN")'])]
+    #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?Overlay $overlay = null;
 
     public function __construct()

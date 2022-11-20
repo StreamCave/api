@@ -25,7 +25,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
         schemes: ['https'],
         openapiContext: ['summary' => 'Récupérer les données d\'un overlay'],
         normalizationContext: ['groups' => ['overlay:read']],
-        security: 'is_granted("ROLE_ADMIN") or object.getUserOwner() == user or object.getUserAccess() == user',
+        security: 'is_granted("ROLE_ADMIN") or object.getUserOwner() == user or is_granted("OVERLAY_VIEW", object)',
         securityMessage: 'Vous n\'avez pas accès à cet overlay',
     ),
     new GetCollection(
@@ -53,7 +53,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
         openapiContext: ['summary' => 'Modifier un overlay'],
         normalizationContext: ['groups' => ['overlay:read']],
         denormalizationContext: ['groups' => ['overlay:write']],
-        security: 'is_granted("ROLE_ADMIN") or object.getUserOwner() == user or object.getUserAccess() == user',
+        security: 'is_granted("ROLE_ADMIN") or object.getUserOwner() == user or is_granted("OVERLAY_EDIT", object)',
         securityMessage: 'Vous n\'avez pas accès à cet overlay',
     ),
     new Delete(
@@ -90,7 +90,7 @@ class Overlay
 
     #[ORM\ManyToOne(inversedBy: 'overlays')]
     #[Groups(['overlay:read','overlay:write'])]
-    #[ApiProperty(security: ['PUT' => 'is_granted("ROLE_ADMIN")'])]
+    #[ApiProperty(securityPostDenormalize: 'is_granted("UPDATE","ROLE_ADMIN")')]
     private ?User $userOwner = null;
 
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'overlaysAccess')]

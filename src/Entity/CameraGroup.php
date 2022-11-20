@@ -111,7 +111,7 @@ class CameraGroup
 
     #[ORM\OneToMany(mappedBy: 'cameraGroup', targetEntity: Widget::class)]
     #[Groups(['camera_group:read'])]
-    #[ApiProperty(security: ['POST' => 'is_granted("ROLE_ADMIN")', 'PUT' => 'is_granted("ROLE_ADMIN")'])]
+    #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private Collection $widgets;
 
     public function __construct()

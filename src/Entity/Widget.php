@@ -80,17 +80,17 @@ class Widget
 
     #[ORM\Column(length: 255)]
     #[Groups(['widget:read','widget:write','camera_group:read','info_group:read','match_group:read','poll_group:read','popup_group:read','tweet_group:read','model:read'])]
-    #[ApiProperty(security: ['POST' => 'is_granted("ROLE_ADMIN")', 'PUT' => 'is_granted("ROLE_ADMIN")'])]
+    #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Groups(['widget:read','widget:write','camera_group:read','info_group:read','match_group:read','poll_group:read','popup_group:read','tweet_group:read','model:read'])]
-    #[ApiProperty(security: ['POST' => 'is_granted("ROLE_ADMIN")', 'PUT' => 'is_granted("ROLE_ADMIN")'])]
+    #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?string $image = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Groups(['widget:read','widget:write','camera_group:read','info_group:read','match_group:read','poll_group:read','popup_group:read','tweet_group:read','model:read'])]
-    #[ApiProperty(security: ['POST' => 'is_granted("ROLE_ADMIN")', 'PUT' => 'is_granted("ROLE_ADMIN")'])]
+    #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?string $description = null;
 
     #[ORM\Column]
@@ -98,31 +98,31 @@ class Widget
     private ?bool $visible = null;
 
     #[ORM\ManyToOne(inversedBy: 'widgets')]
-    #[ApiProperty(security: ['POST' => 'is_granted("ROLE_ADMIN")', 'PUT' => 'is_granted("ROLE_ADMIN")'])]
+    #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?MatchGroup $matchGroup = null;
 
     #[ORM\ManyToOne(inversedBy: 'widgets')]
-    #[ApiProperty(security: ['POST' => 'is_granted("ROLE_ADMIN")', 'PUT' => 'is_granted("ROLE_ADMIN")'])]
+    #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?InfoGroup $infoGroup = null;
 
     #[ORM\ManyToOne(inversedBy: 'widgets')]
-    #[ApiProperty(security: ['POST' => 'is_granted("ROLE_ADMIN")', 'PUT' => 'is_granted("ROLE_ADMIN")'])]
+    #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?CameraGroup $cameraGroup = null;
 
     #[ORM\ManyToOne(inversedBy: 'widgets')]
-    #[ApiProperty(security: ['POST' => 'is_granted("ROLE_ADMIN")', 'PUT' => 'is_granted("ROLE_ADMIN")'])]
+    #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?TweetGroup $tweetGroup = null;
 
     #[ORM\ManyToOne(inversedBy: 'widgets')]
-    #[ApiProperty(security: ['POST' => 'is_granted("ROLE_ADMIN")', 'PUT' => 'is_granted("ROLE_ADMIN")'])]
+    #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?PollGroup $pollGroup = null;
 
     #[ORM\ManyToOne(inversedBy: 'widgets')]
-    #[ApiProperty(security: ['POST' => 'is_granted("ROLE_ADMIN")', 'PUT' => 'is_granted("ROLE_ADMIN")'])]
+    #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?PopupGroup $popupGroup = null;
 
     #[ORM\ManyToOne(inversedBy: 'widgets')]
-    #[ApiProperty(security: ['POST' => 'is_granted("ROLE_ADMIN")', 'PUT' => 'is_granted("ROLE_ADMIN")'])]
+    #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?Model $model = null;
 
     public function getId(): ?int

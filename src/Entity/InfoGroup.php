@@ -98,7 +98,7 @@ class InfoGroup
 
     #[ORM\OneToMany(mappedBy: 'infoGroup', targetEntity: Widget::class)]
     #[Groups(['info_group:read','info_group:write'])]
-    #[ApiProperty(security: ['POST' => 'is_granted("ROLE_ADMIN")', 'PUT' => 'is_granted("ROLE_ADMIN")'])]
+    #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private Collection $widgets;
 
     public function __construct()

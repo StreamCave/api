@@ -86,7 +86,7 @@ class PopupGroup
 
     #[ORM\OneToMany(mappedBy: 'popupGroup', targetEntity: Widget::class)]
     #[Groups(['popup_group:read'])]
-    #[ApiProperty(security: ['POST' => 'is_granted("ROLE_ADMIN")', 'PUT' => 'is_granted("ROLE_ADMIN")'])]
+    #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private Collection $widgets;
 
     public function __construct()

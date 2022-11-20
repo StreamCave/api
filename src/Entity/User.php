@@ -26,6 +26,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
         schemes: ['https'],
         openapiContext: ['summary' => 'Récupérer les données d\'un utilisateur'],
         normalizationContext: ['groups' => ['user:read']],
+        security: 'is_granted("ROLE_ADMIN") or object == user',
+        securityMessage: 'Vous n\'avez pas les droits pour accéder à cette ressource.',
     ),
     new GetCollection(
         uriTemplate: '/users',
@@ -33,6 +35,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
         schemes: ['https'],
         openapiContext: ['summary' => 'Récupérer les données de tous les utilisateurs'],
         normalizationContext: ['groups' => ['user:read']],
+        security: 'is_granted("ROLE_ADMIN")',
+        securityMessage: 'Seulement les administrateurs peuvent accéder à la liste des utilisateurs.',
     ),
     new Post(
         uriTemplate: '/users/add',
@@ -41,6 +45,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
         openapiContext: ['summary' => 'Ajouter un utilisateur'],
         normalizationContext: ['groups' => ['user:read']],
         denormalizationContext: ['groups' => ['user:write']],
+        security: 'is_granted("ROLE_ADMIN")',
+        securityMessage: 'Seulement les administrateurs peuvent ajouter des utilisateurs sans inscription'
     ),
     new Put(
         uriTemplate: '/users/{id}',
@@ -50,6 +56,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
         openapiContext: ['summary' => 'Modifier un utilisateur'],
         normalizationContext: ['groups' => ['user:read']],
         denormalizationContext: ['groups' => ['user:write']],
+        security: 'is_granted("ROLE_ADMIN") or object == user',
+        securityMessage: 'Vous ne pouvez pas modifier les données d\'un autre utilisateur',
     ),
     new Delete(
         uriTemplate: '/users/{id}',
@@ -57,6 +65,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
         status: 204,
         schemes: ['https'],
         openapiContext: ['summary' => 'Supprimer un utilisateur'],
+        security: 'is_granted("ROLE_ADMIN")',
+        securityMessage: 'Vous n\'avez pas les droits pour supprimer un utilisateur',
     )
 ], schemes: ['https'], normalizationContext: ['groups' => ['user:read']], denormalizationContext: ['groups' => ['user:write']], openapiContext: ['summary' => 'Utilisateur'])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface

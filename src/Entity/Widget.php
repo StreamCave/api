@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
@@ -22,6 +23,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
         schemes: ['https'],
         openapiContext: ['summary' => 'Récupérer les données d\'un widget'],
         normalizationContext: ['groups' => ['widget:read']],
+        security: 'is_granted("ROLE_ADMIN") or object.getModel().getOverlay().getUserOwner() == user or object.getModel().getOverlay().getUserAccess() == user',
+        securityMessage: 'Vous n\'avez pas accès à ce widget',
     ),
     new GetCollection(
         uriTemplate: '/widgets',
@@ -29,6 +32,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
         schemes: ['https'],
         openapiContext: ['summary' => 'Récupérer les données de tous les widgets'],
         normalizationContext: ['groups' => ['widget:read']],
+        security: 'is_granted("ROLE_ADMIN")',
+        securityMessage: 'Seulement les administrateurs peuvent accéder à cette ressource.',
     ),
     new Post(
         uriTemplate: '/widgets/add',
@@ -46,6 +51,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
         openapiContext: ['summary' => 'Modifier un widget'],
         normalizationContext: ['groups' => ['widget:read']],
         denormalizationContext: ['groups' => ['widget:write']],
+        security: 'is_granted("ROLE_ADMIN") or object.getModel().getOverlay().getUserOwner() == user or object.getModel().getOverlay().getUserAccess() == user',
+        securityMessage: 'Vous n\'avez pas accès à ce widget',
     ),
     new Delete(
         uriTemplate: '/widgets/{id}',
@@ -53,6 +60,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
         status: 204,
         schemes: ['https'],
         openapiContext: ['summary' => 'Supprimer un widget'],
+        security: 'is_granted("ROLE_ADMIN") or object.getModel().getOverlay().getUserOwner() == user or object.getModel().getOverlay().getUserAccess() == user',
+        securityMessage: 'Vous n\'avez pas accès à ce widget',
     )
 ], schemes: ['https'], normalizationContext: ['groups' => ['widget:read']], denormalizationContext: ['groups' => ['widget:write']], openapiContext: ['summary' => 'Widget'])]
 class Widget
@@ -61,22 +70,27 @@ class Widget
     #[ORM\GeneratedValue]
     #[ORM\Column]
     #[Groups(['widget:read','camera_group:read','info_group:read','match_group:read','poll_group:read','popup_group:read','tweet_group:read','model:read'])]
+    #[ApiProperty(security: 'is_granted("ROLE_ADMIN")')]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::GUID, unique: true)]
     #[Groups(['widget:read','widget:write','camera_group:read','info_group:read','match_group:read','poll_group:read','popup_group:read','tweet_group:read','model:read'])]
+    #[ApiProperty(security: 'is_granted("ROLE_ADMIN")')]
     private ?string $uuid = null;
 
     #[ORM\Column(length: 255)]
     #[Groups(['widget:read','widget:write','camera_group:read','info_group:read','match_group:read','poll_group:read','popup_group:read','tweet_group:read','model:read'])]
+    #[ApiProperty(security: ['POST' => 'is_granted("ROLE_ADMIN")', 'PUT' => 'is_granted("ROLE_ADMIN")'])]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Groups(['widget:read','widget:write','camera_group:read','info_group:read','match_group:read','poll_group:read','popup_group:read','tweet_group:read','model:read'])]
+    #[ApiProperty(security: ['POST' => 'is_granted("ROLE_ADMIN")', 'PUT' => 'is_granted("ROLE_ADMIN")'])]
     private ?string $image = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Groups(['widget:read','widget:write','camera_group:read','info_group:read','match_group:read','poll_group:read','popup_group:read','tweet_group:read','model:read'])]
+    #[ApiProperty(security: ['POST' => 'is_granted("ROLE_ADMIN")', 'PUT' => 'is_granted("ROLE_ADMIN")'])]
     private ?string $description = null;
 
     #[ORM\Column]
@@ -84,24 +98,31 @@ class Widget
     private ?bool $visible = null;
 
     #[ORM\ManyToOne(inversedBy: 'widgets')]
+    #[ApiProperty(security: ['POST' => 'is_granted("ROLE_ADMIN")', 'PUT' => 'is_granted("ROLE_ADMIN")'])]
     private ?MatchGroup $matchGroup = null;
 
     #[ORM\ManyToOne(inversedBy: 'widgets')]
+    #[ApiProperty(security: ['POST' => 'is_granted("ROLE_ADMIN")', 'PUT' => 'is_granted("ROLE_ADMIN")'])]
     private ?InfoGroup $infoGroup = null;
 
     #[ORM\ManyToOne(inversedBy: 'widgets')]
+    #[ApiProperty(security: ['POST' => 'is_granted("ROLE_ADMIN")', 'PUT' => 'is_granted("ROLE_ADMIN")'])]
     private ?CameraGroup $cameraGroup = null;
 
     #[ORM\ManyToOne(inversedBy: 'widgets')]
+    #[ApiProperty(security: ['POST' => 'is_granted("ROLE_ADMIN")', 'PUT' => 'is_granted("ROLE_ADMIN")'])]
     private ?TweetGroup $tweetGroup = null;
 
     #[ORM\ManyToOne(inversedBy: 'widgets')]
+    #[ApiProperty(security: ['POST' => 'is_granted("ROLE_ADMIN")', 'PUT' => 'is_granted("ROLE_ADMIN")'])]
     private ?PollGroup $pollGroup = null;
 
     #[ORM\ManyToOne(inversedBy: 'widgets')]
+    #[ApiProperty(security: ['POST' => 'is_granted("ROLE_ADMIN")', 'PUT' => 'is_granted("ROLE_ADMIN")'])]
     private ?PopupGroup $popupGroup = null;
 
     #[ORM\ManyToOne(inversedBy: 'widgets')]
+    #[ApiProperty(security: ['POST' => 'is_granted("ROLE_ADMIN")', 'PUT' => 'is_granted("ROLE_ADMIN")'])]
     private ?Model $model = null;
 
     public function getId(): ?int

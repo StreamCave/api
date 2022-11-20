@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
@@ -24,6 +25,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
         schemes: ['https'],
         openapiContext: ['summary' => 'Récupérer les données d\'un overlay'],
         normalizationContext: ['groups' => ['overlay:read']],
+        security: 'is_granted("ROLE_ADMIN") or object.getUserOwner() == user or object.getUserAccess() == user',
+        securityMessage: 'Vous n\'avez pas accès à cet overlay',
     ),
     new GetCollection(
         uriTemplate: '/overlays',
@@ -31,6 +34,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
         schemes: ['https'],
         openapiContext: ['summary' => 'Récupérer les données de tous les overlays'],
         normalizationContext: ['groups' => ['overlay:read']],
+        security: 'is_granted("ROLE_ADMIN")',
+        securityMessage: 'Seulement les administrateurs peuvent accéder à cette ressource.',
     ),
     new Post(
         uriTemplate: '/overlays/add',
@@ -48,6 +53,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
         openapiContext: ['summary' => 'Modifier un overlay'],
         normalizationContext: ['groups' => ['overlay:read']],
         denormalizationContext: ['groups' => ['overlay:write']],
+        security: 'is_granted("ROLE_ADMIN") or object.getUserOwner() == user or object.getUserAccess() == user',
+        securityMessage: 'Vous n\'avez pas accès à cet overlay',
     ),
     new Delete(
         uriTemplate: '/overlays/{id}',
@@ -55,6 +62,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
         status: 204,
         schemes: ['https'],
         openapiContext: ['summary' => 'Supprimer un overlay'],
+        security: 'is_granted("ROLE_ADMIN") or object.getUserOwner() == user',
+        securityMessage: 'Vous n\'avez pas accès à cet overlay',
     )
 ], schemes: ['https'], normalizationContext: ['groups' => ['overlay:read']], denormalizationContext: ['groups' => ['overlay:write']], openapiContext: ['summary' => 'Overlay'])]
 class Overlay
@@ -63,10 +72,12 @@ class Overlay
     #[ORM\GeneratedValue]
     #[ORM\Column]
     #[Groups(['overlay:read','model:read'])]
+    #[ApiProperty(security: 'is_granted("ROLE_ADMIN")')]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::GUID, unique: true)]
     #[Groups(['overlay:read','overlay:write','model:read'])]
+    #[ApiProperty(security: 'is_granted("ROLE_ADMIN")')]
     private ?string $uuid = null;
 
     #[ORM\Column(length: 255)]
@@ -79,6 +90,7 @@ class Overlay
 
     #[ORM\ManyToOne(inversedBy: 'overlays')]
     #[Groups(['overlay:read','overlay:write'])]
+    #[ApiProperty(security: ['PUT' => 'is_granted("ROLE_ADMIN")'])]
     private ?User $userOwner = null;
 
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'overlaysAccess')]

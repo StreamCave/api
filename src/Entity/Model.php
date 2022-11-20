@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
@@ -24,6 +25,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
         schemes: ['https'],
         openapiContext: ['summary' => 'Récupérer les données d\'un modèle'],
         normalizationContext: ['groups' => ['model:read']],
+        security: 'is_granted("ROLE_ADMIN") or object.getOverlay().getUserOwner() == user',
+        securityMessage: 'Vous n\'avez pas accès à ce modèle',
     ),
     new GetCollection(
         uriTemplate: '/models',
@@ -31,6 +34,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
         schemes: ['https'],
         openapiContext: ['summary' => 'Récupérer les données de tous les modèles'],
         normalizationContext: ['groups' => ['model:read']],
+        security: 'is_granted("ROLE_ADMIN")',
+        securityMessage: 'Seulement les administrateurs peuvent accéder à cette ressource.',
     ),
     new Post(
         uriTemplate: '/models/add',
@@ -48,6 +53,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
         openapiContext: ['summary' => 'Modifier un modèle'],
         normalizationContext: ['groups' => ['model:read']],
         denormalizationContext: ['groups' => ['model:write']],
+        security: 'is_granted("ROLE_ADMIN") or object.getOverlay().getUserOwner() == user',
+        securityMessage: 'Vous n\'avez pas accès à ce modèle',
     ),
     new Delete(
         uriTemplate: '/models/{id}',
@@ -55,6 +62,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
         status: 204,
         schemes: ['https'],
         openapiContext: ['summary' => 'Supprimer un modèle'],
+        security: 'is_granted("ROLE_ADMIN") or object.getOverlay().getUserOwner() == user',
+        securityMessage: 'Vous n\'avez pas accès à ce modèle',
     )
 ],schemes: ['https'], normalizationContext: ['groups' => ['model:read']], denormalizationContext: ['groups' => ['model:write']], openapiContext: ['summary' => 'Model'])]
 class Model
@@ -63,34 +72,42 @@ class Model
     #[ORM\GeneratedValue]
     #[ORM\Column]
     #[Groups(['model:read'])]
+    #[ApiProperty(security: 'is_granted("ROLE_ADMIN")')]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::GUID, unique: true)]
     #[Groups(['model:read', 'model:write'])]
+    #[ApiProperty(security: 'is_granted("ROLE_ADMIN")')]
     private ?string $uuid = null;
 
     #[ORM\Column(length: 255)]
     #[Groups(['model:read', 'model:write'])]
+    #[ApiProperty(security: ['POST' => 'is_granted("ROLE_ADMIN")', 'PUT' => 'is_granted("ROLE_ADMIN")'])]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Groups(['model:read', 'model:write'])]
+    #[ApiProperty(security: ['POST' => 'is_granted("ROLE_ADMIN")', 'PUT' => 'is_granted("ROLE_ADMIN")'])]
     private ?string $image = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Groups(['model:read', 'model:write'])]
+    #[ApiProperty(security: ['POST' => 'is_granted("ROLE_ADMIN")', 'PUT' => 'is_granted("ROLE_ADMIN")'])]
     private ?string $description = null;
 
     #[ORM\Column]
     #[Groups(['model:read', 'model:write'])]
+    #[ApiProperty(security: ['POST' => 'is_granted("ROLE_ADMIN")', 'PUT' => 'is_granted("ROLE_ADMIN")'])]
     private ?int $price = null;
 
     #[ORM\OneToMany(mappedBy: 'model', targetEntity: Widget::class)]
     #[Groups(['model:read'])]
+    #[ApiProperty(security: ['POST' => 'is_granted("ROLE_ADMIN")', 'PUT' => 'is_granted("ROLE_ADMIN")'])]
     private Collection $widgets;
 
     #[ORM\OneToOne(mappedBy: 'model', cascade: ['persist', 'remove'])]
     #[Groups(['model:read'])]
+    #[ApiProperty(security: ['POST' => 'is_granted("ROLE_ADMIN")', 'PUT' => 'is_granted("ROLE_ADMIN")'])]
     private ?Overlay $overlay = null;
 
     public function __construct()

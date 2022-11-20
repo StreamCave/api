@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
@@ -24,6 +25,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
         schemes: ['https'],
         openapiContext: ['summary' => 'Récupérer les données d\'un groupe de caméras'],
         normalizationContext: ['groups' => ['camera_group:read']],
+        security: 'is_granted("ROLE_ADMIN") or object.getWidgets().getModel().getOverlay().getUserOwner() == user',
+        securityMessage: 'Vous n\'avez pas accès à ce groupe de caméras',
     ),
     new GetCollection(
         uriTemplate: '/camera-groups',
@@ -31,6 +34,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
         schemes: ['https'],
         openapiContext: ['summary' => 'Récupérer les données de tous les groupes de caméras'],
         normalizationContext: ['groups' => ['camera_group:read']],
+        security: 'is_granted("ROLE_ADMIN")',
+        securityMessage: 'Seulement les administrateurs peuvent accéder à cette ressource.',
     ),
     new Post(
         uriTemplate: '/camera-groups/add',
@@ -48,6 +53,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
         openapiContext: ['summary' => 'Modifier un groupe de caméras'],
         normalizationContext: ['groups' => ['camera_group:read']],
         denormalizationContext: ['groups' => ['camera_group:write']],
+        security: 'is_granted("ROLE_ADMIN") or object.getWidgets().getModel().getOverlay().getUserOwner() == user',
+        securityMessage: 'Vous n\'avez pas les droits pour modifier ce groupe de caméras',
     ),
     new Delete(
         uriTemplate: '/camera-groups/{id}',
@@ -55,6 +62,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
         status: 204,
         schemes: ['https'],
         openapiContext: ['summary' => 'Supprimer un groupe de caméras'],
+        security: 'is_granted("ROLE_ADMIN") or object.getWidgets().getModel().getOverlay().getUserOwner() == user',
+        securityMessage: 'Vous n\'avez pas les droits pour supprimer ce groupe de caméras',
     )
 ], schemes: ['https'], normalizationContext: ['groups' => ['camera_group:read']], denormalizationContext: ['groups' => ['camera_group:write']], openapiContext: ['summary' => 'CameraGroup']
 )]
@@ -64,10 +73,12 @@ class CameraGroup
     #[ORM\GeneratedValue]
     #[ORM\Column]
     #[Groups(['camera_group:read'])]
+    #[ApiProperty(security: 'is_granted("ROLE_ADMIN")')]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::GUID, unique: true)]
     #[Groups(['camera_group:read'])]
+    #[ApiProperty(security: 'is_granted("ROLE_ADMIN")')]
     private ?string $uuid = null;
 
     #[ORM\Column(length: 255)]
@@ -100,6 +111,7 @@ class CameraGroup
 
     #[ORM\OneToMany(mappedBy: 'cameraGroup', targetEntity: Widget::class)]
     #[Groups(['camera_group:read'])]
+    #[ApiProperty(security: ['POST' => 'is_granted("ROLE_ADMIN")', 'PUT' => 'is_granted("ROLE_ADMIN")'])]
     private Collection $widgets;
 
     public function __construct()

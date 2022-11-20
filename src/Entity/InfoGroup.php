@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
@@ -24,6 +25,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
         schemes: ['https'],
         openapiContext: ['summary' => 'Récupérer les données d\'un groupe d\'informations'],
         normalizationContext: ['groups' => ['info_group:read']],
+        security: 'is_granted("ROLE_ADMIN") or object.getWidgets().getModel().getOverlay().getUserOwner() == user',
+        securityMessage: 'Vous n\'avez pas accès à ce groupe d\'informations',
     ),
     new GetCollection(
         uriTemplate: '/info-groups',
@@ -31,6 +34,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
         schemes: ['https'],
         openapiContext: ['summary' => 'Récupérer les données de tous les groupes d\'informations'],
         normalizationContext: ['groups' => ['info_group:read']],
+        security: 'is_granted("ROLE_ADMIN")',
+        securityMessage: 'Seulement les administrateurs peuvent accéder à cette ressource.',
     ),
     new Post(
         uriTemplate: '/info-groups/add',
@@ -48,6 +53,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
         openapiContext: ['summary' => 'Modifier un groupe d\'informations'],
         normalizationContext: ['groups' => ['info_group:read']],
         denormalizationContext: ['groups' => ['info_group:write']],
+        security: 'is_granted("ROLE_ADMIN") or object.getWidgets().getModel().getOverlay().getUserOwner() == user',
+        securityMessage: 'Vous n\'avez pas accès à ce groupe d\'informations',
     ),
     new Delete(
         uriTemplate: '/info-groups/{id}',
@@ -55,6 +62,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
         status: 204,
         schemes: ['https'],
         openapiContext: ['summary' => 'Supprimer un groupe d\'informations'],
+        security: 'is_granted("ROLE_ADMIN") or object.getWidgets().getModel().getOverlay().getUserOwner() == user',
+        securityMessage: 'Vous n\'avez pas accès à ce groupe d\'informations',
     )
 ], schemes: ['https'], normalizationContext: ['groups' => ['info_group:read']], denormalizationContext: ['groups' => ['info_group:write']], openapiContext: ['summary' => 'InfoGroup'])]
 class InfoGroup
@@ -63,10 +72,12 @@ class InfoGroup
     #[ORM\GeneratedValue]
     #[ORM\Column]
     #[Groups(['info_group:read'])]
+    #[ApiProperty(security: 'is_granted("ROLE_ADMIN")')]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::GUID, unique: true)]
     #[Groups(['info_group:read','info_group:write'])]
+    #[ApiProperty(security: 'is_granted("ROLE_ADMIN")')]
     private ?string $uuid = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -87,6 +98,7 @@ class InfoGroup
 
     #[ORM\OneToMany(mappedBy: 'infoGroup', targetEntity: Widget::class)]
     #[Groups(['info_group:read','info_group:write'])]
+    #[ApiProperty(security: ['POST' => 'is_granted("ROLE_ADMIN")', 'PUT' => 'is_granted("ROLE_ADMIN")'])]
     private Collection $widgets;
 
     public function __construct()

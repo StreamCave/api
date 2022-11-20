@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
@@ -24,6 +25,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
         schemes: ['https'],
         openapiContext: ['summary' => 'Récupérer les données d\'un groupe de matchs'],
         normalizationContext: ['groups' => ['match_group:read']],
+        security: 'is_granted("ROLE_ADMIN") or object.getWidgets().getModel().getOverlay().getUserOwner() == user',
+        securityMessage: 'Vous n\'avez pas accès à ce groupe de matchs',
     ),
     new GetCollection(
         uriTemplate: '/match-groups',
@@ -31,6 +34,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
         schemes: ['https'],
         openapiContext: ['summary' => 'Récupérer les données de tous les groupes de matchs'],
         normalizationContext: ['groups' => ['match_group:read']],
+        security: 'is_granted("ROLE_ADMIN")',
+        securityMessage: 'Seulement les administrateurs peuvent accéder à cette ressource.',
     ),
     new Post(
         uriTemplate: '/match-groups/add',
@@ -48,6 +53,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
         openapiContext: ['summary' => 'Modifier un groupe de matchs'],
         normalizationContext: ['groups' => ['match_group:read']],
         denormalizationContext: ['groups' => ['match_group:write']],
+        security: 'is_granted("ROLE_ADMIN") or object.getWidgets().getModel().getOverlay().getUserOwner() == user',
+        securityMessage: 'Vous n\'avez pas accès à ce groupe de matchs',
     ),
     new Delete(
         uriTemplate: '/match-groups/{id}',
@@ -55,6 +62,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
         status: 204,
         schemes: ['https'],
         openapiContext: ['summary' => 'Supprimer un groupe de matchs'],
+        security: 'is_granted("ROLE_ADMIN") or object.getWidgets().getModel().getOverlay().getUserOwner() == user',
+        securityMessage: 'Vous n\'avez pas accès à ce groupe de matchs',
     )
 ], schemes: ['https'], normalizationContext: ['groups' => ['match_group:read']], denormalizationContext: ['groups' => ['match_group:write']], openapiContext: ['summary' => 'MatchGroup'])]
 class MatchGroup
@@ -63,10 +72,12 @@ class MatchGroup
     #[ORM\GeneratedValue]
     #[ORM\Column]
     #[Groups(['match_group:read'])]
+    #[ApiProperty(security: 'is_granted("ROLE_ADMIN")')]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::GUID, unique: true)]
     #[Groups(['match_group:read', 'match_group:write'])]
+    #[ApiProperty(security: 'is_granted("ROLE_ADMIN")')]
     private ?string $uuid = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -91,6 +102,7 @@ class MatchGroup
 
     #[ORM\OneToMany(mappedBy: 'matchGroup', targetEntity: Widget::class)]
     #[Groups(['match_group:read', 'match_group:write'])]
+    #[ApiProperty(security: ['POST' => 'is_granted("ROLE_ADMIN")', 'PUT' => 'is_granted("ROLE_ADMIN")'])]
     private Collection $widgets;
 
     public function __construct()

@@ -3,6 +3,14 @@
 ## Introduction
 StreamCave est une application web permettant à quiconque de s'auto-gérer une production audiovisuelle à distance pour tout types de situation.
 
+## Versions
+- Symfony 6.1.*
+- PHP 8.1
+- MariaDB 10.10.2
+- Docker 20.10.21
+- Docker-compose 2.12.2
+- Composer 2.2.7
+
 ## Installation
 ### Prérequis
 - Symfony CLI
@@ -10,7 +18,7 @@ StreamCave est une application web permettant à quiconque de s'auto-gérer une 
 - Open SSL
 - PHP
 - MySQL ou MariaDB (changer dans le .env)
-- Postman (recommandé)
+- Postman (recommandé en local)
 - Docker (optionnel)
 
 ### Installation

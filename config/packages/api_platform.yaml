@@ -19,6 +19,8 @@ api_platform:
     versions: [3]
   enable_swagger_ui: true
   enable_re_doc: false
+  eager_loading:
+    force_eager: false
 
   # The title of the API.
   title: 'API Streamcave'

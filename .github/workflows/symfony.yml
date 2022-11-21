@@ -21,7 +21,7 @@ jobs:
         php-version: '8.1'
     - uses: actions/checkout@v3
     - name: Create .env    
-      run: touch .env
+      run: echo "# DATABASE_URL="mysql://app:!ChangeMe!@127.0.0.1:3306/app?serverVersion=8&charset=utf8mb4"" >> .env
     - name: Cache Composer packages
       id: composer-cache
       uses: actions/cache@v3

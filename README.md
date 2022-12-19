@@ -7,7 +7,7 @@ StreamCave est une application web permettant à quiconque de s'auto-gérer une 
 - Symfony 6.1.*
 - PHP 8.1
 - MariaDB 10.10.2
-- Docker 20.10.21
+- Docker 20.10.*
 - Docker-compose 2.12.2
 - Composer 2.2.7
 

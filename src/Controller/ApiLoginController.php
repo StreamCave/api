@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
+use App\Service\TokenService;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -15,8 +16,14 @@ use Symfony\Component\Uid\Uuid;
 
 class ApiLoginController extends AbstractController
 {
+
+    public function __construct()
+    {
+        $this->token = null;
+    }
+
     #[Route('/api/login', name: 'api_login', methods: ['POST'])]
-    public function index(#[CurrentUser] ?User $user, Request $request, UserRepository $userRepository, ManagerRegistry $doctrine): Response
+    public function index(#[CurrentUser] ?User $user, Request $request, UserRepository $userRepository, ManagerRegistry $doctrine, TokenService $tokenService): Response
     {
 
         if (!$request->get('email') || !$request->get('password')) {
@@ -27,7 +34,7 @@ class ApiLoginController extends AbstractController
         }
         $email = $request->get('email');
         $password = $request->get('password');
-        $user = $userRepository->findBy(['email' => $email]);
+        $user = $userRepository->findOneBy(['email' => $email]);
 
         password_verify($password, $user[0]->getPassword()) ? $accessOk = true : $accessOk = false;
 
@@ -37,16 +44,22 @@ class ApiLoginController extends AbstractController
             ], Response::HTTP_UNAUTHORIZED);
         }
 
-        $token = Uuid::v4();
-        $user[0]->setToken($token);
+
+        if ($userRepository->findOneBy(['token' => $this->token])) {
+            return $tokenService->generateToken();
+        }
 
         $em = $doctrine->getManager();
-        $em->persist($user[0]);
+        $user->setToken($this->token);
+        $em->persist($user);
         $em->flush();
 
+
+
         return $this->json([
-            'user' => $user[0],
-            'token' => $token
+            'user' => $user,
+            'token' => $this->token
         ]);
     }
+
 }

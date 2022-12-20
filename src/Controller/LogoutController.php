@@ -7,7 +7,7 @@ use App\Service\TokenService;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
 class LogoutController extends AbstractController
@@ -18,17 +18,15 @@ class LogoutController extends AbstractController
     }
 
     #[Route('/api/logout', name: 'api_logout', methods: ['GET'])]
-    public function logout(Request $request, UserRepository $userRepository, ManagerRegistry $doctrine, TokenService $tokenService)
+    public function logout(Request $request, UserRepository $userRepository, ManagerRegistry $doctrine, TokenService $tokenService): JsonResponse
     {
 
-        $this->token = $tokenService->translateTokenFromCookie($request->headers->get('set-cookie'));
-
+        $this->token = $tokenService->translateTokenFromCookie($request->cookies->get('refresh_token'));
         $user = $userRepository->findOneBy(['token' => $this->token]);
-        // Régénérer le refresh_token
         if (!$user) {
             return $this->json([
                 'message' => 'missing credentials',
-            ], Response::HTTP_UNAUTHORIZED);
+            ], 401);
         }
 
         $user->setToken(null);
@@ -36,10 +34,8 @@ class LogoutController extends AbstractController
         $em->persist($user);
         $em->flush();
 
-        $request->headers->remove('set-cookie');
-
-        return $this->json([
-            'message' => 'logout',
-        ]);
+        $response = new JsonResponse([ 'message' => 'Logged Out' ], 200);
+        $response->headers->clearCookie('refresh_token');
+        return $response;
     }
 }

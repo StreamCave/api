@@ -23,10 +23,10 @@ class TokenController extends AbstractController
         $this->token = null;
     }
 
-    #[Route('/api/refresh_token', name: 'app_token', methods: ['POST'])]
+    #[Route('/api/refresh_token', name: 'app_token', methods: ['GET'])]
     public function index(Request $request, UserRepository $userRepository, ManagerRegistry $doctrine, TokenService $tokenService): Response
     {
-        $this->token = $tokenService->translateTokenFromCookie($request->headers->get('set-cookie'));
+        $this->token = $tokenService->translateTokenFromCookie($request->cookies->get('refresh_token'));
 
         $user = $userRepository->findOneBy(['token' => $this->token]);
         // Régénérer le refresh_token

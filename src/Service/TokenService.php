@@ -20,15 +20,20 @@ class TokenService
     }
 
     public function translateTokenFromCookie($data): string
-    {
-        $matches = array();
-        $t = preg_match('/=(.*?);/s', $data, $matches);
-        $this->token = $matches[1];
-        return $this->token;
+    {   
+        if($data) {
+            return $this->token = $data;
+        }
+        return 'Invalid Token';
+        
+        // if(preg_match('/refresh_token', $data)) {
+        //     $matches = array();
+        //     $t = preg_match('/=(.*?);/s', $data, $matches);
+        //     $this->token = $matches[1];
+        //     return $this->token;
+        // } else {
+        //     return $this->token = $data;
+        // }
 
-        $data = $request->headers->get('set-cookie');
-        $matches = array();
-        $t = preg_match('/=(.*?);/s', $data, $matches);
-        $this->token = $matches[1];
     }
 }

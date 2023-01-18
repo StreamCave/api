@@ -72,41 +72,41 @@ class CameraGroup
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['camera_group:read'])]
+    #[Groups(['camera_group:read','widget:read','model:read','overlay:read'])]
     #[ApiProperty(security: 'is_granted("ROLE_ADMIN")')]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::GUID, unique: true)]
-    #[Groups(['camera_group:read'])]
+    #[Groups(['camera_group:read','widget:read','model:read','overlay:read'])]
     #[ApiProperty(security: 'is_granted("ROLE_ADMIN")')]
     private ?string $uuid = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['camera_group:read', 'camera_group:write'])]
+    #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read'])]
     private ?string $idNinja = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['camera_group:read', 'camera_group:write'])]
+    #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['camera_group:read', 'camera_group:write'])]
+    #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read'])]
     private ?string $uplayTag = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['camera_group:read', 'camera_group:write'])]
+    #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read'])]
     private ?int $positionTop = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['camera_group:read', 'camera_group:write'])]
+    #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read'])]
     private ?int $positionBottom = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['camera_group:read', 'camera_group:write'])]
+    #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read'])]
     private ?int $positionLeft = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['camera_group:read', 'camera_group:write'])]
+    #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read'])]
     private ?int $positionRight = null;
 
     #[ORM\OneToMany(mappedBy: 'cameraGroup', targetEntity: Widget::class)]

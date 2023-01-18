@@ -71,33 +71,33 @@ class MatchGroup
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['match_group:read'])]
+    #[Groups(['match_group:read','widget:read','model:read','overlay:read'])]
     #[ApiProperty(security: 'is_granted("ROLE_ADMIN")')]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::GUID, unique: true)]
-    #[Groups(['match_group:read', 'match_group:write'])]
+    #[Groups(['match_group:read', 'match_group:write','widget:read','model:read','overlay:read'])]
     #[ApiProperty(security: 'is_granted("ROLE_ADMIN")')]
     private ?string $uuid = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['match_group:read', 'match_group:write'])]
+    #[Groups(['match_group:read', 'match_group:write','widget:read','model:read','overlay:read'])]
     private ?string $teamNameA = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups(['match_group:read', 'match_group:write'])]
+    #[Groups(['match_group:read', 'match_group:write','widget:read','model:read','overlay:read'])]
     private ?string $logoTeamA = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['match_group:read', 'match_group:write'])]
+    #[Groups(['match_group:read', 'match_group:write','widget:read','model:read','overlay:read'])]
     private ?string $teamNameB = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['match_group:read', 'match_group:write'])]
+    #[Groups(['match_group:read', 'match_group:write','widget:read','model:read','overlay:read'])]
     private ?string $logoTeamB = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['match_group:read', 'match_group:write'])]
+    #[Groups(['match_group:read', 'match_group:write','widget:read','model:read','overlay:read'])]
     private ?\DateTimeImmutable $startDate = null;
 
     #[ORM\OneToMany(mappedBy: 'matchGroup', targetEntity: Widget::class)]

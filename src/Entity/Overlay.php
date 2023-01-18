@@ -71,21 +71,21 @@ class Overlay
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['overlay:read','model:read'])]
+    #[Groups(['overlay:read'])]
     #[ApiProperty(security: 'is_granted("ROLE_ADMIN")')]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::GUID, unique: true)]
-    #[Groups(['overlay:read','overlay:write','model:read'])]
+    #[Groups(['overlay:read','overlay:write'])]
     #[ApiProperty(security: 'is_granted("ROLE_ADMIN")')]
     private ?string $uuid = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['overlay:read','overlay:write','model:read'])]
+    #[Groups(['overlay:read','overlay:write'])]
     private ?string $name = null;
 
     #[ORM\OneToOne(inversedBy: 'overlay', cascade: ['persist', 'remove'])]
-    #[Groups(['overlay:read'])]
+    #[Groups(['overlay:read','overlay:write'])]
     private ?Model $model = null;
 
     #[ORM\ManyToOne(inversedBy: 'overlays')]

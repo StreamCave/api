@@ -71,17 +71,17 @@ class PopupGroup
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['popup_group:read'])]
+    #[Groups(['popup_group:read','widget:read','model:read','overlay:read'])]
     #[ApiProperty(security: 'is_granted("ROLE_ADMIN")')]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::GUID, unique: true)]
-    #[Groups(['popup_group:read', 'popup_group:write'])]
+    #[Groups(['popup_group:read', 'popup_group:write','widget:read','model:read','overlay:read'])]
     #[ApiProperty(security: 'is_granted("ROLE_ADMIN")')]
     private ?string $uuid = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups(['popup_group:read', 'popup_group:write'])]
+    #[Groups(['popup_group:read', 'popup_group:write','widget:read','model:read','overlay:read'])]
     private ?string $content = null;
 
     #[ORM\OneToMany(mappedBy: 'popupGroup', targetEntity: Widget::class)]

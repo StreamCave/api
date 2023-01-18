@@ -50,7 +50,7 @@ class AuthenticationSuccessListener
                 $user->getToken(),
                 new \DateTime('+1 day'),
                 '/',
-                'localhost',
+                $_ENV["DOMAIN"],
                 true,
                 true,
                 false,

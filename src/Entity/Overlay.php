@@ -15,6 +15,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: OverlayRepository::class)]
 #[ApiResource(operations: [
@@ -102,12 +103,17 @@ class Overlay
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $modifiedDate = null;
+    
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['overlay:read','overlay:write'])]
+    private ?string $image = null;
 
     public function __construct()
     {
         $this->userAccess = new ArrayCollection();
         $this->createdDate = new \DateTimeImmutable();
         $this->modifiedDate = new \DateTime();
+        $this->uuid = Uuid::v4();
     }
 
     public function getId(): ?int
@@ -207,6 +213,15 @@ class Overlay
     public function setModifiedDate(\DateTimeInterface $modifiedDate): self
     {
         $this->modifiedDate = $modifiedDate;
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(?string $image): self
+    {
+        $this->image = $image;
 
         return $this;
     }

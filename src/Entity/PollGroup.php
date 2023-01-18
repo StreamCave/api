@@ -15,6 +15,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: PollGroupRepository::class)]
 #[ApiResource(operations: [
@@ -112,6 +113,7 @@ class PollGroup
         $this->widgets = new ArrayCollection();
         $this->createdDate = new \DateTimeImmutable();
         $this->modifiedDate = new \DateTime();
+        $this->uuid = Uuid::v4();
     }
 
     public function getId(): ?int

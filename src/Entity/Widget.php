@@ -69,59 +69,66 @@ class Widget
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['widget:read','camera_group:read','info_group:read','match_group:read','poll_group:read','popup_group:read','tweet_group:read','model:read'])]
+    #[Groups(['widget:read','overlay:read','model:read'])]
     #[ApiProperty(security: 'is_granted("ROLE_ADMIN")')]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::GUID, unique: true)]
-    #[Groups(['widget:read','widget:write','camera_group:read','info_group:read','match_group:read','poll_group:read','popup_group:read','tweet_group:read','model:read'])]
+    #[Groups(['widget:read','widget:write','overlay:read','model:read'])]
     #[ApiProperty(security: 'is_granted("ROLE_ADMIN")')]
     private ?string $uuid = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['widget:read','widget:write','camera_group:read','info_group:read','match_group:read','poll_group:read','popup_group:read','tweet_group:read','model:read'])]
+    #[Groups(['widget:read','widget:write','overlay:read','model:read'])]
     #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups(['widget:read','widget:write','camera_group:read','info_group:read','match_group:read','poll_group:read','popup_group:read','tweet_group:read','model:read'])]
+    #[Groups(['widget:read','widget:write','overlay:read','model:read'])]
     #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?string $image = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups(['widget:read','widget:write','camera_group:read','info_group:read','match_group:read','poll_group:read','popup_group:read','tweet_group:read','model:read'])]
+    #[Groups(['widget:read','widget:write','overlay:read','model:read'])]
     #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?string $description = null;
 
     #[ORM\Column]
-    #[Groups(['widget:read','widget:write','camera_group:read','info_group:read','match_group:read','poll_group:read','popup_group:read','tweet_group:read','model:read'])]
+    #[Groups(['widget:read','widget:write','overlay:read','model:read'])]
     private ?bool $visible = null;
 
     #[ORM\ManyToOne(inversedBy: 'widgets')]
+    #[Groups(['widget:read','widget:write','overlay:read','model:read'])]
     #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?MatchGroup $matchGroup = null;
 
     #[ORM\ManyToOne(inversedBy: 'widgets')]
+    #[Groups(['widget:read','widget:write','overlay:read','model:read'])]
     #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?InfoGroup $infoGroup = null;
 
     #[ORM\ManyToOne(inversedBy: 'widgets')]
+    #[Groups(['widget:read','widget:write','overlay:read','model:read'])]
     #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?CameraGroup $cameraGroup = null;
 
     #[ORM\ManyToOne(inversedBy: 'widgets')]
+    #[Groups(['widget:read','widget:write','overlay:read','model:read'])]
     #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?TweetGroup $tweetGroup = null;
 
     #[ORM\ManyToOne(inversedBy: 'widgets')]
+    #[Groups(['widget:read','widget:write','overlay:read','model:read'])]
     #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?PollGroup $pollGroup = null;
 
     #[ORM\ManyToOne(inversedBy: 'widgets')]
+    #[Groups(['widget:read','widget:write','overlay:read','model:read'])]
     #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?PopupGroup $popupGroup = null;
 
     #[ORM\ManyToOne(inversedBy: 'widgets')]
+    #[Groups(['widget:read','widget:write','overlay:read','model:read'])]
     #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?Model $model = null;
 

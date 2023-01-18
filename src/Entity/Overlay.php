@@ -98,6 +98,12 @@ class Overlay
     #[Groups(['overlay:read','overlay:write'])]
     private Collection $userAccess;
 
+    #[ORM\Column(type: Types::DATE_IMMUTABLE)]
+    private ?\DateTimeInterface $createdDate = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $modifiedDate = null;
+    
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Groups(['overlay:read','overlay:write'])]
     private ?string $image = null;
@@ -105,6 +111,8 @@ class Overlay
     public function __construct()
     {
         $this->userAccess = new ArrayCollection();
+        $this->createdDate = new \DateTimeImmutable();
+        $this->modifiedDate = new \DateTime();
         $this->uuid = Uuid::v4();
     }
 
@@ -184,6 +192,27 @@ class Overlay
 
         return $this;
     }
+
+    public function getCreatedDate(): ?\DateTimeInterface
+    {
+        return $this->createdDate;
+    }
+
+    public function setCreatedDate(\DateTimeInterface $createdDate): self
+    {
+        $this->createdDate = $createdDate;
+
+        return $this;
+    }
+
+    public function getModifiedDate(): ?\DateTimeInterface
+    {
+        return $this->modifiedDate;
+    }
+
+    public function setModifiedDate(\DateTimeInterface $modifiedDate): self
+    {
+        $this->modifiedDate = $modifiedDate;
 
     public function getImage(): ?string
     {

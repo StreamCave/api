@@ -97,9 +97,17 @@ class Overlay
     #[Groups(['overlay:read','overlay:write'])]
     private Collection $userAccess;
 
+    #[ORM\Column(type: Types::DATE_IMMUTABLE)]
+    private ?\DateTimeInterface $createdDate = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $modifiedDate = null;
+
     public function __construct()
     {
         $this->userAccess = new ArrayCollection();
+        $this->createdDate = new \DateTimeImmutable();
+        $this->modifiedDate = new \DateTime();
     }
 
     public function getId(): ?int
@@ -175,6 +183,30 @@ class Overlay
     public function removeUserAccess(User $userAccess): self
     {
         $this->userAccess->removeElement($userAccess);
+
+        return $this;
+    }
+
+    public function getCreatedDate(): ?\DateTimeInterface
+    {
+        return $this->createdDate;
+    }
+
+    public function setCreatedDate(\DateTimeInterface $createdDate): self
+    {
+        $this->createdDate = $createdDate;
+
+        return $this;
+    }
+
+    public function getModifiedDate(): ?\DateTimeInterface
+    {
+        return $this->modifiedDate;
+    }
+
+    public function setModifiedDate(\DateTimeInterface $modifiedDate): self
+    {
+        $this->modifiedDate = $modifiedDate;
 
         return $this;
     }

@@ -132,6 +132,18 @@ class Widget
     #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?Model $model = null;
 
+    #[ORM\Column(type: Types::DATE_IMMUTABLE)]
+    private ?\DateTimeInterface $createdDate = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $modifiedDate = null;
+
+    public function __construct()
+    {
+        $this->createdDate = new \DateTimeImmutable();
+        $this->modifiedDate = new \DateTime();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -277,6 +289,30 @@ class Widget
     public function setModel(?Model $model): self
     {
         $this->model = $model;
+
+        return $this;
+    }
+
+    public function getCreatedDate(): ?\DateTimeInterface
+    {
+        return $this->createdDate;
+    }
+
+    public function setCreatedDate(\DateTimeInterface $createdDate): self
+    {
+        $this->createdDate = $createdDate;
+
+        return $this;
+    }
+
+    public function getModifiedDate(): ?\DateTimeInterface
+    {
+        return $this->modifiedDate;
+    }
+
+    public function setModifiedDate(\DateTimeInterface $modifiedDate): self
+    {
+        $this->modifiedDate = $modifiedDate;
 
         return $this;
     }

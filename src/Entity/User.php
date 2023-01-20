@@ -6,6 +6,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Repository\UserRepository;
@@ -21,8 +22,10 @@ use Symfony\Component\Uid\Uuid;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ApiResource(operations: [
     new Get(
-        uriTemplate: '/users/{id}',
-        requirements: ['id' => '\d+'],
+        uriTemplate: '/users/{uuid}',
+        uriVariables: [
+            'uuid' => new Link(fromClass: User::class),
+        ],
         status: 200,
         schemes: ['https'],
         openapiContext: ['summary' => 'Récupérer les données d\'un utilisateur'],

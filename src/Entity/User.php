@@ -97,7 +97,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     #[ORM\Column(length: 255, unique: true)]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:read', 'user:write','overlay:read'])]
     private ?string $email = null;
 
     #[ORM\OneToMany(mappedBy: 'userOwner', targetEntity: Overlay::class)]

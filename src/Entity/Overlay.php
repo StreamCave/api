@@ -213,7 +213,7 @@ class Overlay
     public function setModifiedDate(\DateTimeInterface $modifiedDate): self
     {
         $this->modifiedDate = $modifiedDate;
-
+    }
     public function getImage(): ?string
     {
         return $this->image;

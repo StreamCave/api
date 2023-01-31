@@ -87,10 +87,6 @@ class Overlay
     #[Groups(['overlay:read','overlay:write'])]
     private ?string $name = null;
 
-    #[ORM\OneToOne(inversedBy: 'overlay', cascade: ['persist', 'remove'])]
-    #[Groups(['overlay:read','overlay:write'])]
-    private ?Model $model = null;
-
     #[ORM\ManyToOne(inversedBy: 'overlays')]
     #[Groups(['overlay:read','overlay:write'])]
     #[ApiProperty(securityPostDenormalize: 'is_granted("UPDATE","ROLE_ADMIN")')]
@@ -109,6 +105,9 @@ class Overlay
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Groups(['overlay:read','overlay:write'])]
     private ?string $image = null;
+
+    #[ORM\ManyToOne(inversedBy: 'overlays')]
+    private ?Model $Model = null;
 
     public function __construct()
     {
@@ -143,18 +142,6 @@ class Overlay
     public function setName(string $name): self
     {
         $this->name = $name;
-
-        return $this;
-    }
-
-    public function getModel(): ?Model
-    {
-        return $this->model;
-    }
-
-    public function setModel(?Model $model): self
-    {
-        $this->model = $model;
 
         return $this;
     }
@@ -224,6 +211,18 @@ class Overlay
     public function setImage(?string $image): self
     {
         $this->image = $image;
+
+        return $this;
+    }
+
+    public function getModel(): ?Model
+    {
+        return $this->Model;
+    }
+
+    public function setModel(?Model $Model): self
+    {
+        $this->Model = $Model;
 
         return $this;
     }

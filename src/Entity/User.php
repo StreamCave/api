@@ -9,6 +9,7 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use App\Controller\UserController;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -22,12 +23,15 @@ use Symfony\Component\Uid\Uuid;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ApiResource(operations: [
     new Get(
-        uriTemplate: '/users/{uuid}',
+        uriTemplate: '/users/search/{uuid}',
         uriVariables: [
-            'uuid' => new Link(fromClass: User::class),
+            "uuid" => new Link(
+                fromClass: User::class,
+            )
         ],
         status: 200,
         schemes: ['https'],
+        controller: UserController::class,
         openapiContext: ['summary' => 'Récupérer les données d\'un utilisateur'],
         normalizationContext: ['groups' => ['user:read']],
         security: 'is_granted("ROLE_ADMIN") or object == user',

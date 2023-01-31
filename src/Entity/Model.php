@@ -106,16 +106,14 @@ class Model
     #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private Collection $widgets;
 
-    #[ORM\OneToOne(mappedBy: 'model', cascade: ['persist', 'remove'])]
-    #[Groups(['model:read'])]
-    #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
-    private ?Overlay $overlay = null;
-
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
     private ?\DateTimeInterface $createdDate = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $modifiedDate = null;
+
+    #[ORM\OneToMany(mappedBy: 'Model', targetEntity: Overlay::class)]
+    private Collection $overlays;
 
     public function __construct()
     {
@@ -123,6 +121,7 @@ class Model
         $this->createdDate = new \DateTimeImmutable();
         $this->modifiedDate = new \DateTime();
         $this->uuid = Uuid::v4();
+        $this->overlays = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -220,28 +219,6 @@ class Model
         return $this;
     }
 
-    public function getOverlay(): ?Overlay
-    {
-        return $this->overlay;
-    }
-
-    public function setOverlay(?Overlay $overlay): self
-    {
-        // unset the owning side of the relation if necessary
-        if ($overlay === null && $this->overlay !== null) {
-            $this->overlay->setModel(null);
-        }
-
-        // set the owning side of the relation if necessary
-        if ($overlay !== null && $overlay->getModel() !== $this) {
-            $overlay->setModel($this);
-        }
-
-        $this->overlay = $overlay;
-
-        return $this;
-    }
-
     public function getCreatedDate(): ?\DateTimeInterface
     {
         return $this->createdDate;
@@ -262,6 +239,36 @@ class Model
     public function setModifiedDate(\DateTimeInterface $modifiedDate): self
     {
         $this->modifiedDate = $modifiedDate;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Overlay>
+     */
+    public function getOverlays(): Collection
+    {
+        return $this->overlays;
+    }
+
+    public function addOverlay(Overlay $overlay): self
+    {
+        if (!$this->overlays->contains($overlay)) {
+            $this->overlays->add($overlay);
+            $overlay->setModel($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOverlay(Overlay $overlay): self
+    {
+        if ($this->overlays->removeElement($overlay)) {
+            // set the owning side to null (unless already changed)
+            if ($overlay->getModel() === $this) {
+                $overlay->setModel(null);
+            }
+        }
 
         return $this;
     }

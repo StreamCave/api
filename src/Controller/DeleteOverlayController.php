@@ -22,30 +22,12 @@ class DeleteOverlayController extends AbstractController
     public function __invoke($id): Response
     {
         $overlay = $this->overlayRepository->find($id);
-        $this->deleteWidgets($overlay->getModel()->getWidgets());
-        $this->deleteModel($overlay->getModel());
         $this->deleteOverlay($overlay);
 
         return $this->json([
             'statusCode' => 200,
             'message' => 'Overlay deleted',
         ]);
-    }
-
-    private function deleteWidgets($widgets)
-    {
-        $entityManager = $this->doctrine->getManager();
-        foreach ($widgets as $widget) {
-            $entityManager->remove($widget);
-            $entityManager->flush();
-        }
-    }
-
-    private function deleteModel($model)
-    {
-        $entityManager = $this->doctrine->getManager();
-        $entityManager->remove($model);
-        $entityManager->flush();
     }
 
     private function deleteOverlay($overlay)

@@ -21,6 +21,7 @@ class UserFixtures extends Fixture
         $user = new User();
         $user->setUuid(Uuid::v6());
         $user->setEmail($_ENV['ADMIN_EMAIL']);
+        $user->setPseudo("ADMIN Alexis");
         $user->setPassword(password_hash($_ENV['ADMIN_PASSWORD'], PASSWORD_BCRYPT));
         $user->setRoles(['ROLE_ADMIN', 'ROLE_USER']);
 
@@ -35,6 +36,7 @@ class UserFixtures extends Fixture
         $user = new User();
         $user->setUuid(Uuid::v6());
         $user->setEmail($_ENV['ADMIN_2_EMAIL']);
+        $user->setPseudo("ADMIN Jémérmy");
         $user->setPassword(password_hash($_ENV['ADMIN_2_PASSWORD'], PASSWORD_BCRYPT));
         $user->setRoles(['ROLE_ADMIN', 'ROLE_USER']);
 
@@ -52,6 +54,7 @@ class UserFixtures extends Fixture
             $user = new User();
             $user->setUuid(Uuid::v6());
             $user->setEmail($item . '@streamcave.tv');
+            $user->setPseudo("User " . $item);
             $user->setPassword(password_hash($item, PASSWORD_BCRYPT));
             $user->setRoles(['ROLE_USER']);
 

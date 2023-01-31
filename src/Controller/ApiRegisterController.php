@@ -38,8 +38,16 @@ class ApiRegisterController extends AbstractController
                 'message' => 'Les champs email et password sont obligatoires'
             ], 400);
         }
-
         $user->setEmail($data['email']);
+
+        if (empty($data['pseudo'])) {
+            return new JsonResponse([
+                'statusCode' => 400,
+                'message' => 'Le pseudo est obligatoire'
+            ], 400);
+        }
+        $user->setPseudo($data['pseudo']);
+
         $hashedPassword = $passwordHasher->hashPassword(
             $user,
             $data['password']

@@ -106,6 +106,7 @@ class Overlay
     #[Groups(['overlay:read','overlay:write'])]
     private ?string $image = null;
 
+    #[Groups(['overlay:read','overlay:write'])]
     #[ORM\ManyToOne(inversedBy: 'overlays')]
     private ?Model $Model = null;
 

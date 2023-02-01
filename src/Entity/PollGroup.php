@@ -72,29 +72,29 @@ class PollGroup
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['poll_group:read','widget:read','model:read','overlay:read'])]
+    #[Groups(['poll_group:read','widget:read','model:read','overlay:read', 'overlay:write'])]
     #[ApiProperty(security: 'is_granted("ROLE_ADMIN")')]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::GUID, unique: true)]
-    #[Groups(['poll_group:read', 'poll_group:write','widget:read','model:read','overlay:read'])]
+    #[Groups(['poll_group:read', 'poll_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     #[ApiProperty(security: 'is_granted("ROLE_ADMIN")')]
     private ?string $uuid = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups(['poll_group:read', 'poll_group:write','widget:read','model:read','overlay:read'])]
+    #[Groups(['poll_group:read', 'poll_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $question = null;
 
     #[ORM\Column]
-    #[Groups(['poll_group:read', 'poll_group:write','widget:read','model:read','overlay:read'])]
+    #[Groups(['poll_group:read', 'poll_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private array $answers = [];
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['poll_group:read', 'poll_group:write','widget:read','model:read','overlay:read'])]
+    #[Groups(['poll_group:read', 'poll_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?int $time = null;
 
     #[ORM\Column]
-    #[Groups(['poll_group:read', 'poll_group:write','widget:read','model:read','overlay:read'])]
+    #[Groups(['poll_group:read', 'poll_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private array $goodAnswer = [];
 
     #[ORM\OneToMany(mappedBy: 'pollGroup', targetEntity: Widget::class)]

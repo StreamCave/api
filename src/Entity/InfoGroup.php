@@ -77,24 +77,24 @@ class InfoGroup
     private ?int $id = null;
 
     #[ORM\Column(type: Types::GUID, unique: true)]
-    #[Groups(['info_group:read','info_group:write','widget:read','model:read','overlay:read'])]
+    #[Groups(['info_group:read','info_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     #[ApiProperty(security: 'is_granted("ROLE_ADMIN")')]
     private ?string $uuid = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['info_group:read','info_group:write','widget:read','model:read','overlay:read'])]
+    #[Groups(['info_group:read','info_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $titre = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups(['info_group:read','info_group:write','widget:read','model:read','overlay:read'])]
+    #[Groups(['info_group:read','info_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups(['info_group:read','info_group:write','widget:read','model:read','overlay:read'])]
+    #[Groups(['info_group:read','info_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $logo = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['info_group:read','info_group:write','widget:read','model:read','overlay:read'])]
+    #[Groups(['info_group:read','info_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private array $textScroll = [];
 
     #[ORM\OneToMany(mappedBy: 'infoGroup', targetEntity: Widget::class)]

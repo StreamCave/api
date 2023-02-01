@@ -82,27 +82,27 @@ class Model
     private ?string $uuid = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['model:read', 'model:write', 'overlay:read'])]
+    #[Groups(['model:read', 'model:write', 'overlay:read', 'overlay:write'])]
     #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups(['model:read', 'model:write', 'overlay:read'])]
+    #[Groups(['model:read', 'model:write', 'overlay:read', 'overlay:write'])]
     #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?string $image = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups(['model:read', 'model:write', 'overlay:read'])]
+    #[Groups(['model:read', 'model:write', 'overlay:read', 'overlay:write'])]
     #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?string $description = null;
 
     #[ORM\Column]
-    #[Groups(['model:read', 'model:write', 'overlay:read'])]
+    #[Groups(['model:read', 'model:write', 'overlay:read', 'overlay:write'])]
     #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?int $price = null;
 
     #[ORM\OneToMany(mappedBy: 'model', targetEntity: Widget::class)]
-    #[Groups(['model:read', 'overlay:read'])]
+    #[Groups(['model:read', 'overlay:read', 'overlay:write'])]
     #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private Collection $widgets;
 

@@ -72,37 +72,37 @@ class TweetGroup
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['tweet_group:read','widget:read','model:read','overlay:read'])]
+    #[Groups(['tweet_group:read','widget:read','model:read','overlay:read', 'overlay:write'])]
     #[ApiProperty(security: 'is_granted("ROLE_ADMIN")')]
     private ?int $id = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['tweet_group:read', 'tweet_group:write','widget:read','model:read','overlay:read'])]
+    #[Groups(['tweet_group:read', 'tweet_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?string $pseudo = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['tweet_group:read', 'tweet_group:write','widget:read','model:read','overlay:read'])]
+    #[Groups(['tweet_group:read', 'tweet_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?string $at = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups(['tweet_group:read', 'tweet_group:write','widget:read','model:read','overlay:read'])]
+    #[Groups(['tweet_group:read', 'tweet_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?string $avatar = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['tweet_group:read', 'tweet_group:write','widget:read','model:read','overlay:read'])]
+    #[Groups(['tweet_group:read', 'tweet_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?string $mediaType = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups(['tweet_group:read', 'tweet_group:write','widget:read','model:read','overlay:read'])]
+    #[Groups(['tweet_group:read', 'tweet_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?string $mediaUrl = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups(['tweet_group:read', 'tweet_group:write','widget:read','model:read','overlay:read'])]
+    #[Groups(['tweet_group:read', 'tweet_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?string $content = null;
 

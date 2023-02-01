@@ -37,6 +37,21 @@ use Symfony\Component\Uid\Uuid;
         security: 'is_granted("ROLE_ADMIN") or object == user',
         securityMessage: 'Vous n\'avez pas les droits pour accéder à cette ressource.',
     ),
+    new Get(
+        uriTemplate: '/users/search/{uuid}',
+        uriVariables: [
+            "uuid" => new Link(
+                fromClass: User::class,
+            )
+        ],
+        status: 200,
+        schemes: ['https'],
+        controller: UserController::class,
+        openapiContext: ['summary' => 'Récupérer les données d\'un utilisateur'],
+        normalizationContext: ['groups' => ['user:read']],
+        security: 'is_granted("ROLE_ADMIN") or object == user',
+        securityMessage: 'Vous n\'avez pas les droits pour accéder à cette ressource.',
+    ),
     new GetCollection(
         uriTemplate: '/users',
         status: 200,

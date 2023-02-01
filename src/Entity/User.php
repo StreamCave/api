@@ -23,7 +23,7 @@ use Symfony\Component\Uid\Uuid;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ApiResource(operations: [
     new Get(
-        uriTemplate: '/users/{uuid}',
+        uriTemplate: '/users/search/{uuid}',
         uriVariables: [
             "uuid" => new Link(
                 fromClass: User::class,

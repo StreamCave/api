@@ -27,7 +27,7 @@ class GroupFixtures extends Fixture
     public function setCameraGroup(ObjectManager $manager): void
     {
         $group = new CameraGroup();
-        $group->setUuid(Uuid::v5(Uuid::v6(), 'Default Camera'));
+        $group->setUuid(Uuid::v5(Uuid::v6(), 'Camera Louvard'));
         $group->setIdNinja(Uuid::v5(Uuid::v6(), 'Default Id Ninja'));
         $group->setName('Default Camera');
         $group->setUplayTag('Default Uplay Tag');
@@ -36,7 +36,7 @@ class GroupFixtures extends Fixture
         $group->setPositionLeft(0);
         $group->setPositionRight(0);
 
-        $this->addReference('default-camera-group', $group);
+        $this->addReference('camera-group-louvard', $group);
 
         $manager->persist($group);
         $manager->flush();
@@ -45,12 +45,13 @@ class GroupFixtures extends Fixture
     public function setInfoGroup(ObjectManager $manager): void
     {
         $group = new InfoGroup();
-        $group->setUuid(Uuid::v5(Uuid::v6(), 'Default Info'));
-        $group->setTitre('Default Title');
-        $group->setDescription('Default Description');
-        $group->setTextScroll(['Default Text Scroll', 'Default Text Scroll 2', 'Default Text Scroll 3']);
+        $group->setUuid(Uuid::v5(Uuid::v6(), 'Info Louvard'));
+        $group->setTitre('Louvard 2023');
+        $group->setLogo('https://cdn.streamcave.tv/louvard/logo.svg');
+        $group->setDescription('Groupe info de la Louvard 2023');
+        $group->setTextScroll(['Bienvenue sur la Louvard 2023 !', 'Sixquatre assure le Cast de ce tournoi R6 en compagnie de StreamCave.', 'Un grand merci aux belges de nous accueillir !', 'Bonne chance à tous !']);
 
-        $this->addReference('default-info-group', $group);
+        $this->addReference('info-group-louvard', $group);
 
         $manager->persist($group);
         $manager->flush();
@@ -59,14 +60,16 @@ class GroupFixtures extends Fixture
     public function setMatchGroup(ObjectManager $manager): void
     {
         $group = new MatchGroup();
-        $group->setUuid(Uuid::v5(Uuid::v6(), 'Default Match'));
+        $group->setUuid(Uuid::v5(Uuid::v6(), 'Default Match Louvard'));
         $group->setTeamNameA('Alpha');
+        $group->setLogoTeamA('https://cdn.streamcave.tv/teams/alpha.png');
         $group->setTeamNameB('Beta');
-        $group->setStartDate(new \DateTimeImmutable());
+        $group->setLogoTeamB('https://cdn.streamcave.tv/teams/beta.png');
+        $group->setStartDate(new \DateTimeImmutable("2023-03-31 12:00:00"));
 
         $manager->persist($group);
         $manager->flush();
-        $this->addReference('default-match-group', $group);
+        $this->addReference('match-group-louvard', $group);
 
     }
 
@@ -74,11 +77,12 @@ class GroupFixtures extends Fixture
     {
         $group = new PollGroup();
         $group->setUuid(Uuid::v5(Uuid::v6(), 'Default Poll'));
-        $group->setQuestion('Default Question');
-        $group->setAnswers(['Default Answer', 'Default Answer 2', 'Default Answer 3']);
-        $group->setGoodAnswer(['Default Answer 2']);
+        $group->setQuestion('Quel joueur est en attaque ?');
+        $group->setAnswers(['Ace', 'Castle', 'Pulse']);
+        $group->setGoodAnswer(['Ace']);
+        $group->setTime(300);
 
-        $this->addReference('default-poll-group', $group);
+        $this->addReference('poll-group-louvard', $group);
 
         $manager->persist($group);
         $manager->flush();
@@ -88,9 +92,9 @@ class GroupFixtures extends Fixture
     {
         $group = new PopupGroup();
         $group->setUuid(Uuid::v5(Uuid::v6(), 'Default Popup'));
-        $group->setContent('Default Content');
+        $group->setContent('Bienvenue en cettre première édition de la Louvard 2023 !');
 
-        $this->addReference('default-popup-group', $group);
+        $this->addReference('popup-group-louvard', $group);
 
         $manager->persist($group);
         $manager->flush();
@@ -99,13 +103,13 @@ class GroupFixtures extends Fixture
     public function setTweetGroup(ObjectManager $manager): void
     {
         $group = new TweetGroup();
-        $group->setPseudo('Default Pseudo');
-        $group->setAt('defaultat');
+        $group->setPseudo('BRIETGAME');
+        $group->setAt('brietgame');
         $group->setMediaType('image');
         $group->setMediaUrl('https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png');
-        $group->setContent('Default Content');
+        $group->setContent('Bienvenue sur la Louvard 2023 !');
 
-        $this->addReference('default-tweet-group', $group);
+        $this->addReference('tweet-group-louvard', $group);
 
         $manager->persist($group);
         $manager->flush();

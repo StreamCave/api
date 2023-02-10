@@ -7,9 +7,11 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Controller\DeleteOverlayController;
+use App\Controller\OverlayController;
 use App\Repository\OverlayRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -21,10 +23,15 @@ use Symfony\Component\Uid\Uuid;
 #[ORM\Entity(repositoryClass: OverlayRepository::class)]
 #[ApiResource(operations: [
     new Get(
-        uriTemplate: '/overlays/{id}',
-        requirements: ['id' => '\d+'],
+        uriTemplate: '/overlays/{uuid}',
+        uriVariables: [
+            "uuid" => new Link(
+                fromClass: Overlay::class,
+            )
+        ],
         status: 200,
         schemes: ['https'],
+        controller: OverlayController::class,
         openapiContext: ['summary' => 'Récupérer les données d\'un overlay'],
         normalizationContext: ['groups' => ['overlay:read']],
         security: 'is_granted("ROLE_ADMIN") or object.getUserOwner() == user or is_granted("OVERLAY_VIEW", object)',
@@ -107,7 +114,7 @@ class Overlay
     private ?string $image = null;
 
     #[Groups(['overlay:read','overlay:write'])]
-    #[ORM\ManyToOne(inversedBy: 'overlays')]
+    #[ORM\ManyToOne(inversedBy: 'overlays', cascade: ['persist'])]
     private ?Model $Model = null;
 
     public function __construct()

@@ -21,5 +21,20 @@ class ModelFixtures extends Fixture
 
         $manager->persist($model);
         $manager->flush();
+
+        $this->modelLouvard($manager);
+    }
+
+    private function modelLouvard(ObjectManager $manager) {
+        $model = new Model();
+        $model->setUuid(Uuid::v5(Uuid::v6(), 'Louvard'));
+        $model->setName('Louvard');
+        $model->setDescription('Ceci est le modèle Louvard.');
+        $model->setPrice(0);
+
+        $this->addReference('model-louvard', $model);
+
+        $manager->persist($model);
+        $manager->flush();
     }
 }

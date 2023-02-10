@@ -27,10 +27,10 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $widget = new Widget();
         $widget->setUuid(Uuid::v5(Uuid::v6(), 'TopBar'));
         $widget->setName('TopBar');
-        $widget->setDescription('Barre de navigation en haut de page.');
+        $widget->setDescription('Barre en haut de page.');
         $widget->setVisible(false);
-        $widget->setInfoGroup($this->getReference('default-info-group'));
-        $widget->setModel($this->getReference('default-model'));
+        $widget->setInfoGroup($this->getReference('info-group-louvard'));
+        $widget->setModel($this->getReference('model-louvard'));
 
         $manager->persist($widget);
         $manager->flush();
@@ -41,10 +41,10 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $widget = new Widget();
         $widget->setUuid(Uuid::v5(Uuid::v6(), 'BottomBar'));
         $widget->setName('BottomBar');
-        $widget->setDescription('Barre de navigation en bas de page.');
+        $widget->setDescription('Barre en bas de page.');
         $widget->setVisible(false);
-        $widget->setInfoGroup($this->getReference('default-info-group'));
-        $widget->setModel($this->getReference('default-model'));
+        $widget->setInfoGroup($this->getReference('info-group-louvard'));
+        $widget->setModel($this->getReference('model-louvard'));
 
         $manager->persist($widget);
         $manager->flush();
@@ -57,8 +57,8 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $widget->setName('NextMatch');
         $widget->setDescription('Prochain match.');
         $widget->setVisible(false);
-        $widget->setMatchGroup($this->getReference('default-match-group'));
-        $widget->setModel($this->getReference('default-model'));
+        $widget->setMatchGroup($this->getReference('match-group-louvard'));
+        $widget->setModel($this->getReference('model-louvard'));
 
         $manager->persist($widget);
         $manager->flush();
@@ -71,8 +71,8 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $widget->setName('CurrentMatch');
         $widget->setDescription('Match en cours.');
         $widget->setVisible(false);
-        $widget->setMatchGroup($this->getReference('default-match-group'));
-        $widget->setModel($this->getReference('default-model'));
+        $widget->setMatchGroup($this->getReference('match-group-louvard'));
+        $widget->setModel($this->getReference('model-louvard'));
 
         $manager->persist($widget);
         $manager->flush();
@@ -85,8 +85,8 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $widget->setName('Poll');
         $widget->setDescription('Sondage.');
         $widget->setVisible(false);
-        $widget->setPollGroup($this->getReference('default-poll-group'));
-        $widget->setModel($this->getReference('default-model'));
+        $widget->setPollGroup($this->getReference('poll-group-louvard'));
+        $widget->setModel($this->getReference('model-louvard'));
 
         $manager->persist($widget);
         $manager->flush();
@@ -99,8 +99,8 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $widget->setName('Popup');
         $widget->setDescription('Popup.');
         $widget->setVisible(false);
-        $widget->setPopupGroup($this->getReference('default-popup-group'));
-        $widget->setModel($this->getReference('default-model'));
+        $widget->setPopupGroup($this->getReference('popup-group-louvard'));
+        $widget->setModel($this->getReference('model-louvard'));
 
         $manager->persist($widget);
         $manager->flush();
@@ -113,8 +113,8 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $widget->setName('Tweets');
         $widget->setDescription('Tweets.');
         $widget->setVisible(false);
-        $widget->setTweetGroup($this->getReference('default-tweet-group'));
-        $widget->setModel($this->getReference('default-model'));
+        $widget->setTweetGroup($this->getReference('tweet-group-louvard'));
+        $widget->setModel($this->getReference('model-louvard'));
 
         $manager->persist($widget);
         $manager->flush();
@@ -127,8 +127,8 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $widget->setName('Cameras');
         $widget->setDescription('Cameras.');
         $widget->setVisible(false);
-        $widget->setCameraGroup($this->getReference('default-camera-group'));
-        $widget->setModel($this->getReference('default-model'));
+        $widget->setCameraGroup($this->getReference('camera-group-louvard'));
+        $widget->setModel($this->getReference('model-louvard'));
 
         $manager->persist($widget);
         $manager->flush();

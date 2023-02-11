@@ -16,7 +16,8 @@ class GroupFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
-        $this->setCameraGroup($manager);
+        $this->setCameraGroupAlpha($manager);
+        $this->setCameraGroupBeta($manager);
         $this->setInfoGroup($manager);
         $this->setMatchGroup($manager);
         $this->setPollGroup($manager);
@@ -24,19 +25,35 @@ class GroupFixtures extends Fixture
         $this->setTweetGroup($manager);
     }
 
-    public function setCameraGroup(ObjectManager $manager): void
+    public function setCameraGroupAlpha(ObjectManager $manager): void
     {
         $group = new CameraGroup();
-        $group->setUuid(Uuid::v5(Uuid::v6(), 'Camera Louvard'));
-        $group->setIdNinja(Uuid::v5(Uuid::v6(), 'Default Id Ninja'));
-        $group->setName('Default Camera');
-        $group->setUplayTag('Default Uplay Tag');
-        $group->setPositionTop(0);
-        $group->setPositionBottom(0);
-        $group->setPositionLeft(0);
-        $group->setPositionRight(0);
+        $group->setName("Camera Alpha");
+        $group->setVisible(true);
+        $group->setMuet(true);
+        $group->setHeight("150");
+        $group->setWidth("300");
+        $group->setPositionX(19.8);
+        $group->setPositionY(20.1);
 
-        $this->addReference('camera-group-louvard', $group);
+        $this->addReference('camera-group-louvard-alpha', $group);
+
+        $manager->persist($group);
+        $manager->flush();
+    }
+
+    public function setCameraGroupBeta(ObjectManager $manager): void
+    {
+        $group = new CameraGroup();
+        $group->setName("Camera Beta");
+        $group->setVisible(true);
+        $group->setMuet(true);
+        $group->setHeight("150");
+        $group->setWidth("300");
+        $group->setPositionX(13.8);
+        $group->setPositionY(32.1);
+
+        $this->addReference('camera-group-louvard-beta', $group);
 
         $manager->persist($group);
         $manager->flush();

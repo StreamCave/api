@@ -10,6 +10,8 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Repository\WidgetRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -111,11 +113,6 @@ class Widget
     #[ORM\ManyToOne(inversedBy: 'widgets')]
     #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
     #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
-    private ?CameraGroup $cameraGroup = null;
-
-    #[ORM\ManyToOne(inversedBy: 'widgets')]
-    #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
-    #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?TweetGroup $tweetGroup = null;
 
     #[ORM\ManyToOne(inversedBy: 'widgets')]
@@ -139,11 +136,15 @@ class Widget
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $modifiedDate = null;
 
+    #[ORM\ManyToMany(targetEntity: cameraGroup::class, inversedBy: 'widgets')]
+    private Collection $cameraGroup;
+
     public function __construct()
     {
         $this->createdDate = new \DateTimeImmutable();
         $this->modifiedDate = new \DateTime();
         $this->uuid = Uuid::v4();
+        $this->cameraGroup = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -235,18 +236,6 @@ class Widget
         return $this;
     }
 
-    public function getCameraGroup(): ?CameraGroup
-    {
-        return $this->cameraGroup;
-    }
-
-    public function setCameraGroup(?CameraGroup $cameraGroup): self
-    {
-        $this->cameraGroup = $cameraGroup;
-
-        return $this;
-    }
-
     public function getTweetGroup(): ?TweetGroup
     {
         return $this->tweetGroup;
@@ -315,6 +304,30 @@ class Widget
     public function setModifiedDate(\DateTimeInterface $modifiedDate): self
     {
         $this->modifiedDate = $modifiedDate;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, cameraGroup>
+     */
+    public function getCameraGroup(): Collection
+    {
+        return $this->cameraGroup;
+    }
+
+    public function addCameraGroup(cameraGroup $cameraGroup): self
+    {
+        if (!$this->cameraGroup->contains($cameraGroup)) {
+            $this->cameraGroup->add($cameraGroup);
+        }
+
+        return $this;
+    }
+
+    public function removeCameraGroup(cameraGroup $cameraGroup): self
+    {
+        $this->cameraGroup->removeElement($cameraGroup);
 
         return $this;
     }

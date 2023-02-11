@@ -127,7 +127,8 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $widget->setName('Cameras');
         $widget->setDescription('Cameras.');
         $widget->setVisible(false);
-        $widget->setCameraGroup($this->getReference('camera-group-louvard'));
+        $widget->addCameraGroup($this->getReference('camera-group-louvard-alpha'));
+        $widget->addCameraGroup($this->getReference('camera-group-louvard-beta'));
         $widget->setModel($this->getReference('model-louvard'));
 
         $manager->persist($widget);

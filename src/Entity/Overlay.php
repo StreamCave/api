@@ -7,11 +7,9 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
-use App\Controller\DeleteOverlayController;
-use App\Controller\OverlayController;
+use App\Controller\CreateOverlayController;
 use App\Repository\OverlayRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -24,18 +22,13 @@ use Symfony\Component\Uid\Uuid;
 #[ApiResource(operations: [
     new Get(
         uriTemplate: '/overlays/{uuid}',
-        uriVariables: [
-            "uuid" => new Link(
-                fromClass: Overlay::class,
-            )
-        ],
+        uriVariables: "uuid",
         status: 200,
         schemes: ['https'],
-        controller: OverlayController::class,
         openapiContext: ['summary' => 'Récupérer les données d\'un overlay'],
         normalizationContext: ['groups' => ['overlay:read']],
-        security: 'is_granted("ROLE_ADMIN") or object.getUserOwner() == user or is_granted("OVERLAY_VIEW", object)',
-        securityMessage: 'Vous n\'avez pas accès à cet overlay',
+        security: 'is_granted("ROLE_ADMIN")',
+        securityMessage: 'Seulement les administrateurs peuvent accéder à cette ressource.',
     ),
     new GetCollection(
         uriTemplate: '/overlays',
@@ -50,12 +43,13 @@ use Symfony\Component\Uid\Uuid;
         uriTemplate: '/overlays/add',
         status: 201,
         schemes: ['https'],
+        controller: CreateOverlayController::class,
         openapiContext: ['summary' => 'Ajouter un overlay'],
         normalizationContext: ['groups' => ['overlay:read']],
         denormalizationContext: ['groups' => ['overlay:write']],
     ),
     new Put(
-        uriTemplate: '/overlays/{id}',
+        uriTemplate: '/overlays/{uuid}',
         requirements: ['id' => '\d+'],
         status: 200,
         schemes: ['https'],
@@ -66,11 +60,10 @@ use Symfony\Component\Uid\Uuid;
         securityMessage: 'Vous n\'avez pas accès à cet overlay',
     ),
     new Delete(
-        uriTemplate: '/overlays/{id}',
+        uriTemplate: '/overlays/{uuid}',
         requirements: ['id' => '\d+'],
         status: 204,
         schemes: ['https'],
-        controller: DeleteOverlayController::class,
         openapiContext: ['summary' => 'Supprimer un overlay'],
         security: 'is_granted("ROLE_ADMIN") or object.getUserOwner() == user',
         securityMessage: 'Vous n\'avez pas accès à cet overlay',
@@ -85,9 +78,8 @@ class Overlay
     #[ApiProperty(security: 'is_granted("ROLE_ADMIN")')]
     private ?int $id = null;
 
-    #[ORM\Column(type: Types::GUID, unique: true)]
+    #[ORM\Column(length: 180, unique: true)]
     #[Groups(['overlay:read','overlay:write'])]
-    #[ApiProperty(security: 'is_granted("ROLE_ADMIN")')]
     private ?string $uuid;
 
     #[ORM\Column(length: 255)]

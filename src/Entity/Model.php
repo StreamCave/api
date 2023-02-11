@@ -7,10 +7,8 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
-use App\Controller\ModelController;
 use App\Repository\ModelRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -23,14 +21,9 @@ use Symfony\Component\Uid\Uuid;
 #[ApiResource(operations: [
     new Get(
         uriTemplate: '/models/{uuid}',
-        uriVariables: [
-            "uuid" => new Link(
-                fromClass: Model::class,
-            )
-        ],
+        uriVariables: "uuid",
         status: 200,
         schemes: ['https'],
-        controller: ModelController::class,
         openapiContext: ['summary' => 'Récupérer les données d\'un modèle'],
         normalizationContext: ['groups' => ['model:read']],
         security: 'is_granted("ROLE_ADMIN") or object.getOverlay().getUserOwner() == user',
@@ -54,8 +47,8 @@ use Symfony\Component\Uid\Uuid;
         denormalizationContext: ['groups' => ['model:write']],
     ),
     new Put(
-        uriTemplate: '/models/{id}',
-        requirements: ['id' => '\d+'],
+        uriTemplate: '/models/{uuid}',
+        uriVariables: "uuid",
         status: 200,
         schemes: ['https'],
         openapiContext: ['summary' => 'Modifier un modèle'],
@@ -65,8 +58,8 @@ use Symfony\Component\Uid\Uuid;
         securityMessage: 'Vous n\'avez pas accès à ce modèle',
     ),
     new Delete(
-        uriTemplate: '/models/{id}',
-        requirements: ['id' => '\d+'],
+        uriTemplate: '/models/{uuid}',
+        uriVariables: "uuid",
         status: 204,
         schemes: ['https'],
         openapiContext: ['summary' => 'Supprimer un modèle'],
@@ -83,7 +76,7 @@ class Model
     #[ApiProperty(security: 'is_granted("ROLE_ADMIN")')]
     private ?int $id = null;
 
-    #[ORM\Column(type: Types::GUID, unique: true)]
+    #[ORM\Column(length: 180, unique: true)]
     #[Groups(['model:read', 'model:write', 'overlay:read'])]
     #[ApiProperty(security: 'is_granted("ROLE_ADMIN")')]
     private ?string $uuid;
@@ -119,7 +112,7 @@ class Model
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $modifiedDate;
 
-    #[ORM\OneToMany(mappedBy: 'Model', targetEntity: Overlay::class)]
+    #[ORM\OneToMany(mappedBy: 'Model', targetEntity: Overlay::class, cascade: ['persist'])]
     private Collection $overlays;
 
     public function __construct()

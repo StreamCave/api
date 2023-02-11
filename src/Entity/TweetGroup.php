@@ -7,10 +7,8 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
-use App\Controller\TweetGroupController;
 use App\Repository\TweetGroupRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -23,18 +21,13 @@ use Symfony\Component\Uid\Uuid;
 #[ApiResource(operations: [
     new Get(
         uriTemplate: '/tweet-groups/{uuid}',
-        uriVariables: [
-            "uuid" => new Link(
-                fromClass: TweetGroup::class,
-            )
-        ],
+        uriVariables: "uuid",
         status: 200,
         schemes: ['https'],
-        controller: TweetGroupController::class,
         openapiContext: ['summary' => 'Récupérer les données d\'un groupe de tweets'],
         normalizationContext: ['groups' => ['tweet_group:read']],
-        security: 'is_granted("ROLE_ADMIN") or object.getWidgets().getModel().getOverlay().getUserOwner() == user',
-        securityMessage: 'Vous n\'avez pas accès à ce groupe de tweets',
+        security: 'is_granted("ROLE_ADMIN")',
+        securityMessage: 'Seulement les administrateurs peuvent accéder à cette ressource.',
     ),
     new GetCollection(
         uriTemplate: '/tweet-groups',
@@ -54,8 +47,8 @@ use Symfony\Component\Uid\Uuid;
         denormalizationContext: ['groups' => ['tweet_group:write']],
     ),
     new Put(
-        uriTemplate: '/tweet-groups/{id}',
-        requirements: ['id' => '\d+'],
+        uriTemplate: '/tweet-groups/{uuid}',
+        uriVariables: "uuid",
         status: 200,
         schemes: ['https'],
         openapiContext: ['summary' => 'Modifier un groupe de tweets'],
@@ -65,8 +58,8 @@ use Symfony\Component\Uid\Uuid;
         securityMessage: 'Vous n\'avez pas accès à ce groupe de tweets',
     ),
     new Delete(
-        uriTemplate: '/tweet-groups/{id}',
-        requirements: ['id' => '\d+'],
+        uriTemplate: '/tweet-groups/{uuid}',
+        uriVariables: "uuid",
         status: 204,
         schemes: ['https'],
         openapiContext: ['summary' => 'Supprimer un groupe de tweets'],

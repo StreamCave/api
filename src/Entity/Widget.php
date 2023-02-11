@@ -7,10 +7,8 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
-use App\Controller\WidgetController;
 use App\Repository\WidgetRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -23,18 +21,13 @@ use Symfony\Component\Uid\Uuid;
 #[ApiResource(operations: [
     new Get(
         uriTemplate: '/widgets/{uuid}',
-        uriVariables: [
-            "uuid" => new Link(
-                fromClass: Widget::class,
-            )
-        ],
+        uriVariables: "uuid",
         status: 200,
         schemes: ['https'],
-        controller: WidgetController::class,
         openapiContext: ['summary' => 'Récupérer les données d\'un widget'],
         normalizationContext: ['groups' => ['widget:read']],
-        security: 'is_granted("ROLE_ADMIN") or object.getModel().getOverlay().getUserOwner() == user or object.getModel().getOverlay().getUserAccess() == user',
-        securityMessage: 'Vous n\'avez pas accès à ce widget',
+        security: 'is_granted("ROLE_ADMIN")',
+        securityMessage: 'Seulement les administrateurs peuvent accéder à cette ressource.',
     ),
     new GetCollection(
         uriTemplate: '/widgets',
@@ -54,8 +47,8 @@ use Symfony\Component\Uid\Uuid;
         denormalizationContext: ['groups' => ['widget:write']],
     ),
     new Put(
-        uriTemplate: '/widgets/{id}',
-        requirements: ['id' => '\d+'],
+        uriTemplate: '/widgets/{uuid}',
+        uriVariables: "uuid",
         status: 200,
         schemes: ['https'],
         openapiContext: ['summary' => 'Modifier un widget'],
@@ -65,8 +58,8 @@ use Symfony\Component\Uid\Uuid;
         securityMessage: 'Vous n\'avez pas accès à ce widget',
     ),
     new Delete(
-        uriTemplate: '/widgets/{id}',
-        requirements: ['id' => '\d+'],
+        uriTemplate: '/widgets/{uuid}',
+        uriVariables: "uuid",
         status: 204,
         schemes: ['https'],
         openapiContext: ['summary' => 'Supprimer un widget'],
@@ -107,32 +100,36 @@ class Widget
     #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
     private ?bool $visible = null;
 
-    #[ORM\ManyToOne(inversedBy: 'widgets')]
+    #[ORM\ManyToOne(cascade: ['persist'], inversedBy: 'widgets')]
     #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
     #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?MatchGroup $matchGroup = null;
 
-    #[ORM\ManyToOne(inversedBy: 'widgets')]
+    #[ORM\ManyToOne(cascade: ['persist'], inversedBy: 'widgets')]
     #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
     #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?InfoGroup $infoGroup = null;
 
-    #[ORM\ManyToOne(inversedBy: 'widgets')]
+    #[ORM\ManyToOne(cascade: ['persist'], inversedBy: 'widgets')]
     #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
     #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?TweetGroup $tweetGroup = null;
 
-    #[ORM\ManyToOne(inversedBy: 'widgets')]
+    #[ORM\ManyToOne(cascade: ['persist'], inversedBy: 'widgets')]
     #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
     #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?PollGroup $pollGroup = null;
 
-    #[ORM\ManyToOne(inversedBy: 'widgets')]
+    #[ORM\ManyToOne(cascade: ['persist'], inversedBy: 'widgets')]
     #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
     #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?PopupGroup $popupGroup = null;
 
-    #[ORM\ManyToOne(inversedBy: 'widgets')]
+    #[ORM\ManyToMany(targetEntity: CameraGroup::class, inversedBy: 'widgets', cascade: ['persist'])]
+    #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
+    private Collection $cameraGroup;
+
+    #[ORM\ManyToOne(cascade: ['persist'], inversedBy: 'widgets')]
     #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
     #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?Model $model = null;
@@ -142,9 +139,6 @@ class Widget
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $modifiedDate;
-
-    #[ORM\ManyToMany(targetEntity: cameraGroup::class, inversedBy: 'widgets')]
-    private Collection $cameraGroup;
 
     public function __construct()
     {

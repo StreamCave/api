@@ -7,10 +7,8 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
-use App\Controller\PopupGroupController;
 use App\Repository\PopupGroupRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -23,18 +21,13 @@ use Symfony\Component\Uid\Uuid;
 #[ApiResource(operations: [
     new Get(
         uriTemplate: '/popup-groups/{uuid}',
-        uriVariables: [
-            "uuid" => new Link(
-                fromClass: PopupGroup::class,
-            )
-        ],
+        uriVariables: "uuid",
         status: 200,
         schemes: ['https'],
-        controller: PopupGroupController::class,
         openapiContext: ['summary' => 'Récupérer les données d\'un groupe de popups'],
         normalizationContext: ['groups' => ['popup_group:read']],
-        security: 'is_granted("ROLE_ADMIN") or object.getWidgets().getModel().getOverlay().getUserOwner() == user',
-        securityMessage: 'Vous n\'avez pas accès à ce groupe de popups',
+        security: 'is_granted("ROLE_ADMIN")',
+        securityMessage: 'Seulement les administrateurs peuvent accéder à cette ressource.',
     ),
     new GetCollection(
         uriTemplate: '/popup-groups',
@@ -54,8 +47,8 @@ use Symfony\Component\Uid\Uuid;
         denormalizationContext: ['groups' => ['popup_group:write']],
     ),
     new Put(
-        uriTemplate: '/popup-groups/{id}',
-        requirements: ['id' => '\d+'],
+        uriTemplate: '/popup-groups/{uuid}',
+        uriVariables: "uuid",
         status: 200,
         schemes: ['https'],
         openapiContext: ['summary' => 'Modifier un groupe de popups'],
@@ -65,8 +58,8 @@ use Symfony\Component\Uid\Uuid;
         securityMessage: 'Vous n\'avez pas accès à ce groupe de popups',
     ),
     new Delete(
-        uriTemplate: '/popup-groups/{id}',
-        requirements: ['id' => '\d+'],
+        uriTemplate: '/popup-groups/{uuid}',
+        uriVariables: "uuid",
         status: 204,
         schemes: ['https'],
         openapiContext: ['summary' => 'Supprimer un groupe de popups'],

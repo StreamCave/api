@@ -7,10 +7,8 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
-use App\Controller\MatchGroupController;
 use App\Repository\MatchGroupRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -23,14 +21,9 @@ use Symfony\Component\Uid\Uuid;
 #[ApiResource(operations: [
     new Get(
         uriTemplate: '/match-groups/{uuid}',
-        uriVariables: [
-            "uuid" => new Link(
-                fromClass: MatchGroup::class,
-            )
-        ],
+        uriVariables: "uuid",
         status: 200,
         schemes: ['https'],
-        controller: MatchGroupController::class,
         openapiContext: ['summary' => 'Récupérer les données d\'un groupe de matchs'],
         normalizationContext: ['groups' => ['match_group:read']],
         security: 'is_granted("ROLE_ADMIN") or object.getWidgets().getModel().getOverlay().getUserOwner() == user',
@@ -54,7 +47,7 @@ use Symfony\Component\Uid\Uuid;
         denormalizationContext: ['groups' => ['match_group:write']],
     ),
     new Put(
-        uriTemplate: '/match-groups/{id}',
+        uriTemplate: '/match-groups/{uuid}',
         requirements: ['id' => '\d+'],
         status: 200,
         schemes: ['https'],
@@ -65,7 +58,7 @@ use Symfony\Component\Uid\Uuid;
         securityMessage: 'Vous n\'avez pas accès à ce groupe de matchs',
     ),
     new Delete(
-        uriTemplate: '/match-groups/{id}',
+        uriTemplate: '/match-groups/{uuid}',
         requirements: ['id' => '\d+'],
         status: 204,
         schemes: ['https'],

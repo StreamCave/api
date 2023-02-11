@@ -7,10 +7,8 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
-use App\Controller\InfoGroupController;
 use App\Repository\InfoGroupRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -23,14 +21,9 @@ use Symfony\Component\Uid\Uuid;
 #[ApiResource(operations: [
     new Get(
         uriTemplate: '/info-groups/{uuid}',
-        uriVariables: [
-            "uuid" => new Link(
-                fromClass: InfoGroup::class,
-            )
-        ],
+        uriVariables: "uuid",
         status: 200,
         schemes: ['https'],
-        controller: InfoGroupController::class,
         openapiContext: ['summary' => 'Récupérer les données d\'un groupe d\'informations'],
         normalizationContext: ['groups' => ['info_group:read']],
         security: 'is_granted("ROLE_ADMIN") or object.getWidgets().getModel().getOverlay().getUserOwner() == user',
@@ -54,8 +47,8 @@ use Symfony\Component\Uid\Uuid;
         denormalizationContext: ['groups' => ['info_group:write']],
     ),
     new Put(
-        uriTemplate: '/info-groups/{id}',
-        requirements: ['id' => '\d+'],
+        uriTemplate: '/info-groups/{uui}',
+        uriVariables: "uuid",
         status: 200,
         schemes: ['https'],
         openapiContext: ['summary' => 'Modifier un groupe d\'informations'],
@@ -65,8 +58,8 @@ use Symfony\Component\Uid\Uuid;
         securityMessage: 'Vous n\'avez pas accès à ce groupe d\'informations',
     ),
     new Delete(
-        uriTemplate: '/info-groups/{id}',
-        requirements: ['id' => '\d+'],
+        uriTemplate: '/info-groups/{uuid}',
+        uriVariables: "uuid",
         status: 204,
         schemes: ['https'],
         openapiContext: ['summary' => 'Supprimer un groupe d\'informations'],
@@ -83,7 +76,7 @@ class InfoGroup
     #[ApiProperty(security: 'is_granted("ROLE_ADMIN")')]
     private ?int $id = null;
 
-    #[ORM\Column(type: Types::GUID, unique: true)]
+    #[ORM\Column(name: 'uuid', length: 180, unique: true)]
     #[Groups(['info_group:read','info_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     #[ApiProperty(security: 'is_granted("ROLE_ADMIN")')]
     private ?string $uuid;

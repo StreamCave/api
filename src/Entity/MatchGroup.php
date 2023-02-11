@@ -112,6 +112,12 @@ class MatchGroup
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $modifiedDate;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $scoreA = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $scoreB = null;
+
     public function __construct()
     {
         $this->widgets = new ArrayCollection();
@@ -247,6 +253,30 @@ class MatchGroup
     public function setModifiedDate(\DateTimeInterface $modifiedDate): self
     {
         $this->modifiedDate = $modifiedDate;
+
+        return $this;
+    }
+
+    public function getScoreA(): ?string
+    {
+        return $this->scoreA;
+    }
+
+    public function setScoreA(?string $scoreA): self
+    {
+        $this->scoreA = $scoreA;
+
+        return $this;
+    }
+
+    public function getScoreB(): ?string
+    {
+        return $this->scoreB;
+    }
+
+    public function setScoreB(?string $scoreB): self
+    {
+        $this->scoreB = $scoreB;
 
         return $this;
     }

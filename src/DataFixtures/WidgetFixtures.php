@@ -30,6 +30,7 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $widget->setDescription('Barre en haut de page.');
         $widget->setVisible(false);
         $widget->setInfoGroup($this->getReference('info-group-louvard'));
+        $widget->setMatchGroup($this->getReference('match-group-louvard'));
         $widget->setModel($this->getReference('model-louvard'));
 
         $manager->persist($widget);
@@ -44,6 +45,7 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $widget->setDescription('Barre en bas de page.');
         $widget->setVisible(false);
         $widget->setInfoGroup($this->getReference('info-group-louvard'));
+        $widget->setMatchGroup($this->getReference('match-group-louvard'));
         $widget->setModel($this->getReference('model-louvard'));
 
         $manager->persist($widget);

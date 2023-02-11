@@ -3,52 +3,133 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Repository\CameraGroupRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: CameraGroupRepository::class)]
-#[ApiResource]
+#[ApiResource(operations: [
+    new Get(
+        uriTemplate: '/camera-groups/{id}',
+        requirements: ['id' => '\d+'],
+        status: 200,
+        schemes: ['https'],
+        openapiContext: ['summary' => 'Récupérer les données d\'un groupe de camera'],
+        normalizationContext: ['groups' => ['camera_group:read']],
+        security: 'is_granted("ROLE_ADMIN") or object.getWidgets().getModel().getOverlay().getUserOwner() == user',
+        securityMessage: 'Vous n\'avez pas accès à ce groupe de camera',
+    ),
+    new GetCollection(
+        uriTemplate: '/camera-groups',
+        status: 200,
+        schemes: ['https'],
+        openapiContext: ['summary' => 'Récupérer les données de tous les groupes de camera'],
+        normalizationContext: ['groups' => ['camera_group:read']],
+        security: 'is_granted("ROLE_ADMIN")',
+        securityMessage: 'Seulement les administrateurs peuvent accéder à cette ressource.',
+    ),
+    new Post(
+        uriTemplate: '/match-groups/add',
+        status: 201,
+        schemes: ['https'],
+        openapiContext: ['summary' => 'Ajouter un groupe de matchs'],
+        normalizationContext: ['groups' => ['camera_group:read']],
+        denormalizationContext: ['groups' => ['camera_group:write']],
+    ),
+    new Put(
+        uriTemplate: '/camera-groups/{id}',
+        requirements: ['id' => '\d+'],
+        status: 200,
+        schemes: ['https'],
+        openapiContext: ['summary' => 'Modifier un groupe de camera'],
+        normalizationContext: ['groups' => ['camera_group:read']],
+        denormalizationContext: ['groups' => ['camera_group:write']],
+        security: 'is_granted("ROLE_ADMIN") or object.getWidgets().getModel().getOverlay().getUserOwner() == user',
+        securityMessage: 'Vous n\'avez pas accès à ce groupe de camera',
+    ),
+    new Delete(
+        uriTemplate: '/camera-groups/{id}',
+        requirements: ['id' => '\d+'],
+        status: 204,
+        schemes: ['https'],
+        openapiContext: ['summary' => 'Supprimer un groupe de camera'],
+        security: 'is_granted("ROLE_ADMIN") or object.getWidgets().getModel().getOverlay().getUserOwner() == user',
+        securityMessage: 'Vous n\'avez pas accès à ce groupe de camera',
+    )
+], schemes: ['https'], normalizationContext: ['groups' => ['camera_group:read']], denormalizationContext: ['groups' => ['camera_group:write']], openapiContext: ['summary' => 'CameraGroup'])]
 class CameraGroup
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['camera_group:read','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?int $id = null;
 
+    #[ORM\Column(type: 'uuid', unique: true)]
+    #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
+    private ?Uuid $uuid = null;
+
     #[ORM\Column(length: 255)]
+    #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $height = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $width = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?float $positionX = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?float $positionY = null;
 
     #[ORM\Column]
+    #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?bool $visible = null;
 
     #[ORM\Column]
+    #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?bool $muet = null;
 
     #[ORM\ManyToMany(targetEntity: Widget::class, mappedBy: 'cameraGroup')]
+    #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private Collection $widgets;
 
     public function __construct()
     {
         $this->widgets = new ArrayCollection();
+        $this->uuid = Uuid::v4();
     }
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getUuid(): ?Uuid
+    {
+        return $this->uuid;
+    }
+
+    public function setUuid(Uuid $uuid): self
+    {
+        $this->uuid = $uuid;
+
+        return $this;
     }
 
     public function getName(): ?string

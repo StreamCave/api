@@ -88,7 +88,7 @@ class Overlay
     #[ORM\Column(type: Types::GUID, unique: true)]
     #[Groups(['overlay:read','overlay:write'])]
     #[ApiProperty(security: 'is_granted("ROLE_ADMIN")')]
-    private ?string $uuid = null;
+    private ?string $uuid;
 
     #[ORM\Column(length: 255)]
     #[Groups(['overlay:read','overlay:write'])]
@@ -104,10 +104,10 @@ class Overlay
     private Collection $userAccess;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
-    private ?\DateTimeInterface $createdDate = null;
+    private ?\DateTimeInterface $createdDate;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $modifiedDate = null;
+    private ?\DateTimeInterface $modifiedDate;
     
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Groups(['overlay:read','overlay:write'])]

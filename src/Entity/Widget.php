@@ -7,8 +7,10 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use App\Controller\WidgetController;
 use App\Repository\WidgetRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -20,10 +22,15 @@ use Symfony\Component\Uid\Uuid;
 #[ORM\Entity(repositoryClass: WidgetRepository::class)]
 #[ApiResource(operations: [
     new Get(
-        uriTemplate: '/widgets/{id}',
-        requirements: ['id' => '\d+'],
+        uriTemplate: '/widgets/{uuid}',
+        uriVariables: [
+            "uuid" => new Link(
+                fromClass: Widget::class,
+            )
+        ],
         status: 200,
         schemes: ['https'],
+        controller: WidgetController::class,
         openapiContext: ['summary' => 'Récupérer les données d\'un widget'],
         normalizationContext: ['groups' => ['widget:read']],
         security: 'is_granted("ROLE_ADMIN") or object.getModel().getOverlay().getUserOwner() == user or object.getModel().getOverlay().getUserAccess() == user',
@@ -79,7 +86,7 @@ class Widget
     #[ORM\Column(type: Types::GUID, unique: true)]
     #[Groups(['widget:read','widget:write','overlay:read','model:read'])]
     #[ApiProperty(security: 'is_granted("ROLE_ADMIN")')]
-    private ?string $uuid = null;
+    private ?string $uuid;
 
     #[ORM\Column(length: 255)]
     #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
@@ -131,10 +138,10 @@ class Widget
     private ?Model $model = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
-    private ?\DateTimeInterface $createdDate = null;
+    private ?\DateTimeInterface $createdDate;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $modifiedDate = null;
+    private ?\DateTimeInterface $modifiedDate;
 
     #[ORM\ManyToMany(targetEntity: cameraGroup::class, inversedBy: 'widgets')]
     private Collection $cameraGroup;

@@ -7,8 +7,10 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use App\Controller\TweetGroupController;
 use App\Repository\TweetGroupRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -20,10 +22,15 @@ use Symfony\Component\Uid\Uuid;
 #[ORM\Entity(repositoryClass: TweetGroupRepository::class)]
 #[ApiResource(operations: [
     new Get(
-        uriTemplate: '/tweet-groups/{id}',
-        requirements: ['id' => '\d+'],
+        uriTemplate: '/tweet-groups/{uuid}',
+        uriVariables: [
+            "uuid" => new Link(
+                fromClass: TweetGroup::class,
+            )
+        ],
         status: 200,
         schemes: ['https'],
+        controller: TweetGroupController::class,
         openapiContext: ['summary' => 'Récupérer les données d\'un groupe de tweets'],
         normalizationContext: ['groups' => ['tweet_group:read']],
         security: 'is_granted("ROLE_ADMIN") or object.getWidgets().getModel().getOverlay().getUserOwner() == user',
@@ -75,6 +82,10 @@ class TweetGroup
     #[Groups(['tweet_group:read','widget:read','model:read','overlay:read', 'overlay:write'])]
     #[ApiProperty(security: 'is_granted("ROLE_ADMIN")')]
     private ?int $id = null;
+
+    #[ORM\Column(type: 'uuid')]
+    #[Groups(['tweet_group:read', 'tweet_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
+    private ?Uuid $uuid;
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['tweet_group:read', 'tweet_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
@@ -128,6 +139,18 @@ class TweetGroup
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getUuid(): ?Uuid
+    {
+        return $this->uuid;
+    }
+
+    public function setUuid(Uuid $uuid): self
+    {
+        $this->uuid = $uuid;
+
+        return $this;
     }
 
     public function getPseudo(): ?string

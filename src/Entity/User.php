@@ -102,7 +102,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 180, unique: true)]
     #[Groups(['user:read', 'user:write','overlay:read'])]
-    private ?string $uuid = null;
+    private ?string $uuid;
 
     #[ORM\Column]
     #[Groups(['user:read', 'user:write'])]
@@ -131,10 +131,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $token = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
-    private ?\DateTimeInterface $createdDate = null;
+    private ?\DateTimeInterface $createdDate;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $modifiedDate = null;
+    private ?\DateTimeInterface $modifiedDate;
 
     #[ORM\Column(length: 255)]
     private ?string $pseudo = null;

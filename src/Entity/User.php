@@ -6,10 +6,8 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
-use App\Controller\UserController;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -24,29 +22,9 @@ use Symfony\Component\Uid\Uuid;
 #[ApiResource(operations: [
     new Get(
         uriTemplate: '/users/{uuid}',
-        uriVariables: [
-            "uuid" => new Link(
-                fromClass: User::class,
-            )
-        ],
+        uriVariables: "uuid",
         status: 200,
         schemes: ['https'],
-        controller: UserController::class,
-        openapiContext: ['summary' => 'Récupérer les données d\'un utilisateur'],
-        normalizationContext: ['groups' => ['user:read']],
-        security: 'is_granted("ROLE_ADMIN") or object == user',
-        securityMessage: 'Vous n\'avez pas les droits pour accéder à cette ressource.',
-    ),
-    new Get(
-        uriTemplate: '/users/search/{uuid}',
-        uriVariables: [
-            "uuid" => new Link(
-                fromClass: User::class,
-            )
-        ],
-        status: 200,
-        schemes: ['https'],
-        controller: UserController::class,
         openapiContext: ['summary' => 'Récupérer les données d\'un utilisateur'],
         normalizationContext: ['groups' => ['user:read']],
         security: 'is_granted("ROLE_ADMIN") or object == user',
@@ -72,8 +50,8 @@ use Symfony\Component\Uid\Uuid;
         securityMessage: 'Seulement les administrateurs peuvent ajouter des utilisateurs sans inscription'
     ),
     new Put(
-        uriTemplate: '/users/{id}',
-        requirements: ['id' => '\d+'],
+        uriTemplate: '/users/{uuid}',
+        uriVariables: "uuid",
         status: 200,
         schemes: ['https'],
         openapiContext: ['summary' => 'Modifier un utilisateur'],
@@ -83,8 +61,8 @@ use Symfony\Component\Uid\Uuid;
         securityMessage: 'Vous ne pouvez pas modifier les données d\'un autre utilisateur',
     ),
     new Delete(
-        uriTemplate: '/users/{id}',
-        requirements: ['id' => '\d+'],
+        uriTemplate: '/users/{uuid}',
+        uriVariables: "uuid",
         status: 204,
         schemes: ['https'],
         openapiContext: ['summary' => 'Supprimer un utilisateur'],

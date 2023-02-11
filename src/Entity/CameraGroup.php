@@ -6,8 +6,10 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use App\Controller\CameraGroupController;
 use App\Repository\CameraGroupRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -18,10 +20,15 @@ use Symfony\Component\Uid\Uuid;
 #[ORM\Entity(repositoryClass: CameraGroupRepository::class)]
 #[ApiResource(operations: [
     new Get(
-        uriTemplate: '/camera-groups/{id}',
-        requirements: ['id' => '\d+'],
+        uriTemplate: '/camera-groups/{uuid}',
+        uriVariables: [
+            "uuid" => new Link(
+                fromClass: CameraGroup::class,
+            )
+        ],
         status: 200,
         schemes: ['https'],
+        controller: CameraGroupController::class,
         openapiContext: ['summary' => 'Récupérer les données d\'un groupe de camera'],
         normalizationContext: ['groups' => ['camera_group:read']],
         security: 'is_granted("ROLE_ADMIN") or object.getWidgets().getModel().getOverlay().getUserOwner() == user',

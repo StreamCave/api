@@ -7,8 +7,10 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use App\Controller\PollGroupController;
 use App\Repository\PollGroupRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -20,10 +22,15 @@ use Symfony\Component\Uid\Uuid;
 #[ORM\Entity(repositoryClass: PollGroupRepository::class)]
 #[ApiResource(operations: [
     new Get(
-        uriTemplate: '/poll-groups/{id}',
-        requirements: ['id' => '\d+'],
+        uriTemplate: '/poll-groups/{uuid}',
+        uriVariables: [
+            "uuid" => new Link(
+                fromClass: PollGroup::class,
+            )
+        ],
         status: 200,
         schemes: ['https'],
+        controller: PollGroupController::class,
         openapiContext: ['summary' => 'Récupérer les données d\'un groupe de sondages'],
         normalizationContext: ['groups' => ['poll_group:read']],
         security: 'is_granted("ROLE_ADMIN") or object.getWidgets().getModel().getOverlay().getUserOwner() == user',
@@ -79,7 +86,7 @@ class PollGroup
     #[ORM\Column(type: Types::GUID, unique: true)]
     #[Groups(['poll_group:read', 'poll_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     #[ApiProperty(security: 'is_granted("ROLE_ADMIN")')]
-    private ?string $uuid = null;
+    private ?string $uuid;
 
     #[ORM\Column(type: Types::TEXT)]
     #[Groups(['poll_group:read', 'poll_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
@@ -103,10 +110,10 @@ class PollGroup
     private Collection $widgets;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
-    private ?\DateTimeInterface $createdDate = null;
+    private ?\DateTimeInterface $createdDate;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $modifiedDate = null;
+    private ?\DateTimeInterface $modifiedDate;
 
     public function __construct()
     {

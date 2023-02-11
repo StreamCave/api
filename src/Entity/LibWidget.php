@@ -6,8 +6,10 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use App\Controller\LibWidgetController;
 use App\Repository\LibWidgetRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -16,10 +18,15 @@ use Symfony\Component\Uid\Uuid;
 #[ORM\Entity(repositoryClass: LibWidgetRepository::class)]
 #[ApiResource(operations: [
     new Get(
-        uriTemplate: '/libwidgets/{id}',
-        requirements: ['id' => '\d+'],
+        uriTemplate: '/libwidgets/{uuid}',
+        uriVariables: [
+            "uuid" => new Link(
+                fromClass: LibWidget::class,
+            )
+        ],
         status: 200,
         schemes: ['https'],
+        controller: LibWidgetController::class,
         openapiContext: ['summary' => 'Récupérer les données d\'un libWidget'],
         normalizationContext: ['groups' => ['libwidgets:read']],
         securityMessage: 'Vous n\'avez pas accès à ces données',

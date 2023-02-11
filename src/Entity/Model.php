@@ -7,8 +7,10 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use App\Controller\ModelController;
 use App\Repository\ModelRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -20,10 +22,15 @@ use Symfony\Component\Uid\Uuid;
 #[ORM\Entity(repositoryClass: ModelRepository::class)]
 #[ApiResource(operations: [
     new Get(
-        uriTemplate: '/models/{id}',
-        requirements: ['id' => '\d+'],
+        uriTemplate: '/models/{uuid}',
+        uriVariables: [
+            "uuid" => new Link(
+                fromClass: Model::class,
+            )
+        ],
         status: 200,
         schemes: ['https'],
+        controller: ModelController::class,
         openapiContext: ['summary' => 'Récupérer les données d\'un modèle'],
         normalizationContext: ['groups' => ['model:read']],
         security: 'is_granted("ROLE_ADMIN") or object.getOverlay().getUserOwner() == user',
@@ -79,7 +86,7 @@ class Model
     #[ORM\Column(type: Types::GUID, unique: true)]
     #[Groups(['model:read', 'model:write', 'overlay:read'])]
     #[ApiProperty(security: 'is_granted("ROLE_ADMIN")')]
-    private ?string $uuid = null;
+    private ?string $uuid;
 
     #[ORM\Column(length: 255)]
     #[Groups(['model:read', 'model:write', 'overlay:read', 'overlay:write'])]
@@ -107,10 +114,10 @@ class Model
     private Collection $widgets;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
-    private ?\DateTimeInterface $createdDate = null;
+    private ?\DateTimeInterface $createdDate;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $modifiedDate = null;
+    private ?\DateTimeInterface $modifiedDate;
 
     #[ORM\OneToMany(mappedBy: 'Model', targetEntity: Overlay::class)]
     private Collection $overlays;

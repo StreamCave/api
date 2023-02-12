@@ -48,7 +48,7 @@ use Symfony\Component\Uid\Uuid;
     ),
     new Put(
         uriTemplate: '/match-groups/{uuid}',
-        requirements: ['id' => '\d+'],
+        uriVariables: "uuid",
         status: 200,
         schemes: ['https'],
         openapiContext: ['summary' => 'Modifier un groupe de matchs'],
@@ -59,7 +59,7 @@ use Symfony\Component\Uid\Uuid;
     ),
     new Delete(
         uriTemplate: '/match-groups/{uuid}',
-        requirements: ['id' => '\d+'],
+        uriVariables: "uuid",
         status: 204,
         schemes: ['https'],
         openapiContext: ['summary' => 'Supprimer un groupe de matchs'],

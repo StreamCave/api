@@ -50,7 +50,7 @@ use Symfony\Component\Uid\Uuid;
     ),
     new Put(
         uriTemplate: '/overlays/{uuid}',
-        requirements: ['id' => '\d+'],
+        uriVariables: "uuid",
         status: 200,
         schemes: ['https'],
         openapiContext: ['summary' => 'Modifier un overlay'],
@@ -61,7 +61,7 @@ use Symfony\Component\Uid\Uuid;
     ),
     new Delete(
         uriTemplate: '/overlays/{uuid}',
-        requirements: ['id' => '\d+'],
+        uriVariables: "uuid",
         status: 204,
         schemes: ['https'],
         openapiContext: ['summary' => 'Supprimer un overlay'],

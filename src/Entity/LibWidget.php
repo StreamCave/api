@@ -84,7 +84,7 @@ class LibWidget
         return $this->id;
     }
 
-    public function getUuid(): ?Uuid
+    public function getUuid(): ?string
     {
         return $this->uuid;
     }

@@ -62,9 +62,9 @@ class LibWidget
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(type: 'uuid', unique: true)]
+    #[ORM\Column(length: 180, unique: true)]
     #[Groups(['libwidgets:read'])]
-    private ?Uuid $uuid;
+    private ?string $uuid;
 
     #[ORM\Column(length: 255)]
     #[Groups(['libwidgets:read', 'libwidgets:write'])]
@@ -89,7 +89,7 @@ class LibWidget
         return $this->uuid;
     }
 
-    public function setUuid(Uuid $uuid): self
+    public function setUuid(string $uuid): self
     {
         $this->uuid = $uuid;
 

@@ -121,6 +121,9 @@ class TweetGroup
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $modifiedDate = null;
 
+    #[ORM\Column]
+    private ?bool $visible = null;
+
     public function __construct()
     {
         $this->widgets = new ArrayCollection();
@@ -268,6 +271,18 @@ class TweetGroup
     public function setModifiedDate(\DateTimeInterface $modifiedDate): self
     {
         $this->modifiedDate = $modifiedDate;
+
+        return $this;
+    }
+
+    public function isVisible(): ?bool
+    {
+        return $this->visible;
+    }
+
+    public function setVisible(bool $visible): self
+    {
+        $this->visible = $visible;
 
         return $this;
     }

@@ -125,6 +125,7 @@ class GroupFixtures extends Fixture
         $group->setMediaType('image');
         $group->setMediaUrl('https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png');
         $group->setContent('Bienvenue sur la Louvard 2023 !');
+        $group->setVisible(false);
 
         $this->addReference('tweet-group-louvard', $group);
 

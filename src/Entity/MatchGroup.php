@@ -91,11 +91,19 @@ class MatchGroup
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['match_group:read', 'match_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
+    private ?string $scoreA = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['match_group:read', 'match_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $teamNameB = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['match_group:read', 'match_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $logoTeamB = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['match_group:read', 'match_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
+    private ?string $scoreB = null;
 
     #[ORM\Column(nullable: true)]
     #[Groups(['match_group:read', 'match_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
@@ -111,12 +119,6 @@ class MatchGroup
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $modifiedDate;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $scoreA = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $scoreB = null;
 
     public function __construct()
     {

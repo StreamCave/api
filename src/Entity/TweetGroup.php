@@ -124,6 +124,9 @@ class TweetGroup
     #[ORM\Column]
     private ?bool $visible = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $overlayId = null;
+
     public function __construct()
     {
         $this->widgets = new ArrayCollection();
@@ -283,6 +286,18 @@ class TweetGroup
     public function setVisible(bool $visible): self
     {
         $this->visible = $visible;
+
+        return $this;
+    }
+
+    public function getOverlayId(): ?string
+    {
+        return $this->overlayId;
+    }
+
+    public function setOverlayId(?string $overlayId): self
+    {
+        $this->overlayId = $overlayId;
 
         return $this;
     }

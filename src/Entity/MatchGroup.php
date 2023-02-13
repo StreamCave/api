@@ -89,6 +89,10 @@ class MatchGroup
     #[Groups(['match_group:read', 'match_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $logoTeamA = null;
 
+    #[ORM\Column(type: Types::ARRAY, nullable: true)]
+    #[Groups(['match_group:read', 'match_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
+    private array $playersTeamA = [];
+
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['match_group:read', 'match_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $scoreA = null;
@@ -100,6 +104,10 @@ class MatchGroup
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['match_group:read', 'match_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $logoTeamB = null;
+
+    #[ORM\Column(type: Types::ARRAY, nullable: true)]
+    #[Groups(['match_group:read', 'match_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
+    private array $playersTeamB = [];
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['match_group:read', 'match_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
@@ -114,17 +122,9 @@ class MatchGroup
     #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private Collection $widgets;
 
-    #[ORM\Column(type: Types::DATE_IMMUTABLE)]
-    private ?\DateTimeInterface $createdDate;
-
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $modifiedDate;
-
     public function __construct()
     {
         $this->widgets = new ArrayCollection();
-        $this->createdDate = new \DateTimeImmutable();
-        $this->modifiedDate = new \DateTime();
         $this->uuid = Uuid::v4();
     }
 
@@ -235,30 +235,6 @@ class MatchGroup
         return $this;
     }
 
-    public function getCreatedDate(): ?\DateTimeInterface
-    {
-        return $this->createdDate;
-    }
-
-    public function setCreatedDate(\DateTimeInterface $createdDate): self
-    {
-        $this->createdDate = $createdDate;
-
-        return $this;
-    }
-
-    public function getModifiedDate(): ?\DateTimeInterface
-    {
-        return $this->modifiedDate;
-    }
-
-    public function setModifiedDate(\DateTimeInterface $modifiedDate): self
-    {
-        $this->modifiedDate = $modifiedDate;
-
-        return $this;
-    }
-
     public function getScoreA(): ?string
     {
         return $this->scoreA;
@@ -279,6 +255,30 @@ class MatchGroup
     public function setScoreB(?string $scoreB): self
     {
         $this->scoreB = $scoreB;
+
+        return $this;
+    }
+
+    public function getPlayersTeamA(): array
+    {
+        return $this->playersTeamA;
+    }
+
+    public function setPlayersTeamA(?array $playersTeamA): self
+    {
+        $this->playersTeamA = $playersTeamA;
+
+        return $this;
+    }
+
+    public function getPlayersTeamB(): array
+    {
+        return $this->playersTeamB;
+    }
+
+    public function setPlayersTeamB(?array $playersTeamB): self
+    {
+        $this->playersTeamB = $playersTeamB;
 
         return $this;
     }

@@ -19,10 +19,13 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $this->setPoll($manager);
         $this->setPopup($manager);
         $this->setTweets($manager);
-        $this->setCameras($manager);
+        $this->setCamerasTeamA($manager);
+        $this->setCamerasTeamB($manager);
+        $this->setMaps($manager);
+        $this->setPlanning($manager);
     }
 
-    public function setTopBar(ObjectManager $manager): void
+    private function setTopBar(ObjectManager $manager): void
     {
         $widget = new Widget();
         $widget->setUuid(Uuid::v5(Uuid::v6(), 'TopBar'));
@@ -37,7 +40,7 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $manager->flush();
     }
 
-    public function setBottomBar(ObjectManager $manager): void
+    private function setBottomBar(ObjectManager $manager): void
     {
         $widget = new Widget();
         $widget->setUuid(Uuid::v5(Uuid::v6(), 'BottomBar'));
@@ -52,7 +55,7 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $manager->flush();
     }
 
-    public function setNextMatch(ObjectManager $manager): void
+    private function setNextMatch(ObjectManager $manager): void
     {
         $widget = new Widget();
         $widget->setUuid(Uuid::v5(Uuid::v6(), 'NextMatch'));
@@ -66,7 +69,7 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $manager->flush();
     }
 
-    public function setCurrentMatch(ObjectManager $manager): void
+    private function setCurrentMatch(ObjectManager $manager): void
     {
         $widget = new Widget();
         $widget->setUuid(Uuid::v5(Uuid::v6(), 'CurrentMatch'));
@@ -80,7 +83,7 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $manager->flush();
     }
 
-    public function setPoll(ObjectManager $manager): void
+    private function setPoll(ObjectManager $manager): void
     {
         $widget = new Widget();
         $widget->setUuid(Uuid::v5(Uuid::v6(), 'Poll'));
@@ -94,7 +97,7 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $manager->flush();
     }
 
-    public function setPopup(ObjectManager $manager): void
+    private function setPopup(ObjectManager $manager): void
     {
         $widget = new Widget();
         $widget->setUuid(Uuid::v5(Uuid::v6(), 'Popup'));
@@ -108,7 +111,7 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $manager->flush();
     }
 
-    public function setTweets(ObjectManager $manager): void
+    private function setTweets(ObjectManager $manager): void
     {
         $widget = new Widget();
         $widget->setUuid(Uuid::v5(Uuid::v6(), 'Tweets'));
@@ -122,23 +125,73 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $manager->flush();
     }
 
-    public function setCameras(ObjectManager $manager): void
+    private function setCamerasTeamA(ObjectManager $manager): void
+    {
+        $players = ['Alpha', 'Bravo', 'Charlie', 'Delta', 'Echo'];
+        foreach ($players as $player) {
+            $widget = new Widget();
+            $widget->setUuid(Uuid::v5(Uuid::v6(), 'CameraTeamA' . $player));
+            $widget->setName('CameraTeamA' . $player);
+            $widget->setDescription('Camera de ' . $player . ' de l\'équipe A.');
+            $widget->setVisible(false);
+            $widget->addCameraGroup($this->getReference('camera-group-louvard-' . $player));
+            $widget->setModel($this->getReference('model-louvard'));
+
+            $manager->persist($widget);
+            $manager->flush();
+        }
+    }
+
+    private function setCamerasTeamB(ObjectManager $manager): void
+    {
+        $players = ['Foxtrot', 'Golf', 'Hotel', 'India', 'Juliett'];
+        foreach ($players as $player) {
+            $widget = new Widget();
+            $widget->setUuid(Uuid::v5(Uuid::v6(), 'CameraTeamB' . $player));
+            $widget->setName('CameraTeamB' . $player);
+            $widget->setDescription('Camera de ' . $player . ' de l\'équipe B.');
+            $widget->setVisible(false);
+            $widget->addCameraGroup($this->getReference('camera-group-louvard-' . $player));
+            $widget->setModel($this->getReference('model-louvard'));
+
+            $manager->persist($widget);
+            $manager->flush();
+        }
+    }
+
+    private function setMaps(ObjectManager $manager): void
     {
         $widget = new Widget();
-        $widget->setUuid(Uuid::v5(Uuid::v6(), 'Cameras'));
-        $widget->setName('Cameras');
-        $widget->setDescription('Cameras.');
+        $widget->setUuid(Uuid::v5(Uuid::v6(), 'Maps'));
+        $widget->setName('Maps');
+        $widget->setDescription('Cartes.');
         $widget->setVisible(false);
-        $widget->addCameraGroup($this->getReference('camera-group-louvard-alpha'));
-        $widget->addCameraGroup($this->getReference('camera-group-louvard-beta'));
+        $widget->addMapGroup($this->getReference('map-group-louvard-bo3-border'));
+        $widget->addMapGroup($this->getReference('map-group-louvard-bo3-oregon'));
+        $widget->addMapGroup($this->getReference('map-group-louvard-bo3-kafe'));
         $widget->setModel($this->getReference('model-louvard'));
 
         $manager->persist($widget);
         $manager->flush();
     }
 
+    private function setPlanning(ObjectManager $manager): void
+    {
+        $widget = new Widget();
+        $widget->setUuid(Uuid::v5(Uuid::v6(), 'Planning'));
+        $widget->setName('Planning');
+        $widget->setDescription('Planning.');
+        $widget->setVisible(false);
+        $widget->addPlanningGroup($this->getReference('planning-group-louvard-Alpha-vs-Delta'));
+        $widget->addPlanningGroup($this->getReference('planning-group-louvard-Beta-vs-Echo'));
+        $widget->addPlanningGroup($this->getReference('planning-group-louvard-Charlie-vs-Foxtrot'));
+        $widget->setModel($this->getReference('model-louvard'));
 
-    public function getDependencies()
+        $manager->persist($widget);
+        $manager->flush();
+    }
+
+    public function getDependencies(): array
     {
         return array(
             GroupFixtures::class,

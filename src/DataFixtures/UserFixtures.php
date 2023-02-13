@@ -16,7 +16,7 @@ class UserFixtures extends Fixture
         $this->setUsers($manager);
     }
 
-    public function  setSuperAdmin(ObjectManager $manager): void
+    private function  setSuperAdmin(ObjectManager $manager): void
     {
         $user = new User();
         $user->setUuid(Uuid::v6());
@@ -31,7 +31,7 @@ class UserFixtures extends Fixture
         $manager->flush();
     }
 
-    public function  setSuperAdmin2(ObjectManager $manager): void
+    private function  setSuperAdmin2(ObjectManager $manager): void
     {
         $user = new User();
         $user->setUuid(Uuid::v6());
@@ -46,7 +46,7 @@ class UserFixtures extends Fixture
         $manager->flush();
     }
 
-    public function  setUsers(ObjectManager $manager): void
+    private function  setUsers(ObjectManager $manager): void
     {
         $users = ["Alpha","Beta","Charlie","Delta"];
 

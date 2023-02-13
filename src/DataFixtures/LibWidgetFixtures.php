@@ -29,7 +29,7 @@ class LibWidgetFixtures extends Fixture
         $this->setVideoPub($manager);
     }
 
-    public function setTopbar(ObjectManager $manager): void
+    private function setTopbar(ObjectManager $manager): void
     {
         $libWidget = new LibWidget();
         $libWidget->setUuid(Uuid::v5(Uuid::v6(), "topbar"));
@@ -41,7 +41,7 @@ class LibWidgetFixtures extends Fixture
         $manager->persist($libWidget);
         $manager->flush();
     }
-    public function setBottombar(ObjectManager $manager): void
+    private function setBottombar(ObjectManager $manager): void
     {
         $libWidget = new LibWidget();
         $libWidget->setUuid(Uuid::v5(Uuid::v6(), "bottombar"));
@@ -53,7 +53,7 @@ class LibWidgetFixtures extends Fixture
         $manager->persist($libWidget);
         $manager->flush();
     }
-    public function setVersus(ObjectManager $manager): void
+    private function setVersus(ObjectManager $manager): void
     {
         $libWidget = new LibWidget();
         $libWidget->setUuid(Uuid::v5(Uuid::v6(), "versus"));
@@ -65,7 +65,7 @@ class LibWidgetFixtures extends Fixture
         $manager->persist($libWidget);
         $manager->flush();
     }
-    public function setNextMatch(ObjectManager $manager): void
+    private function setNextMatch(ObjectManager $manager): void
     {
         $libWidget = new LibWidget();
         $libWidget->setUuid(Uuid::v5(Uuid::v6(), "nextmatch"));
@@ -77,7 +77,7 @@ class LibWidgetFixtures extends Fixture
         $manager->persist($libWidget);
         $manager->flush();
     }
-    public function setPopup(ObjectManager $manager): void
+    private function setPopup(ObjectManager $manager): void
     {
         $libWidget = new LibWidget();
         $libWidget->setUuid(Uuid::v5(Uuid::v6(), "popup"));
@@ -89,7 +89,7 @@ class LibWidgetFixtures extends Fixture
         $manager->persist($libWidget);
         $manager->flush();
     }
-    public function setPoll(ObjectManager $manager): void
+    private function setPoll(ObjectManager $manager): void
     {
         $libWidget = new LibWidget();
         $libWidget->setUuid(Uuid::v5(Uuid::v6(), "poll"));
@@ -101,7 +101,7 @@ class LibWidgetFixtures extends Fixture
         $manager->persist($libWidget);
         $manager->flush();
     }
-    public function setCamera(ObjectManager $manager): void
+    private function setCamera(ObjectManager $manager): void
     {
         $libWidget = new LibWidget();
         $libWidget->setUuid(Uuid::v5(Uuid::v6(), "camera"));
@@ -113,7 +113,7 @@ class LibWidgetFixtures extends Fixture
         $manager->persist($libWidget);
         $manager->flush();
     }
-    public function setBracket(ObjectManager $manager): void
+    private function setBracket(ObjectManager $manager): void
     {
         $libWidget = new LibWidget();
         $libWidget->setUuid(Uuid::v5(Uuid::v6(), "bracket"));
@@ -125,7 +125,7 @@ class LibWidgetFixtures extends Fixture
         $manager->persist($libWidget);
         $manager->flush();
     }
-    public function setPlanning(ObjectManager $manager): void
+    private function setPlanning(ObjectManager $manager): void
     {
         $libWidget = new LibWidget();
         $libWidget->setUuid(Uuid::v5(Uuid::v6(), "planning"));
@@ -137,7 +137,7 @@ class LibWidgetFixtures extends Fixture
         $manager->persist($libWidget);
         $manager->flush();
     }
-    public function setTweet(ObjectManager $manager): void
+    private function setTweet(ObjectManager $manager): void
     {
         $libWidget = new LibWidget();
         $libWidget->setUuid(Uuid::v5(Uuid::v6(), "tweet"));
@@ -149,7 +149,7 @@ class LibWidgetFixtures extends Fixture
         $manager->persist($libWidget);
         $manager->flush();
     }
-    public function setImage(ObjectManager $manager): void
+    private function setImage(ObjectManager $manager): void
     {
         $libWidget = new LibWidget();
         $libWidget->setUuid(Uuid::v5(Uuid::v6(), "image"));
@@ -161,7 +161,7 @@ class LibWidgetFixtures extends Fixture
         $manager->persist($libWidget);
         $manager->flush();
     }
-    public function setVideo(ObjectManager $manager): void
+    private function setVideo(ObjectManager $manager): void
     {
         $libWidget = new LibWidget();
         $libWidget->setUuid(Uuid::v5(Uuid::v6(), "video"));
@@ -173,7 +173,7 @@ class LibWidgetFixtures extends Fixture
         $manager->persist($libWidget);
         $manager->flush();
     }
-    public function setBanMap(ObjectManager $manager): void
+    private function setBanMap(ObjectManager $manager): void
     {
         $libWidget = new LibWidget();
         $libWidget->setUuid(Uuid::v5(Uuid::v6(), "banmap"));
@@ -185,7 +185,7 @@ class LibWidgetFixtures extends Fixture
         $manager->persist($libWidget);
         $manager->flush();
     }
-    public function setTimer(ObjectManager $manager): void
+    private function setTimer(ObjectManager $manager): void
     {
         $libWidget = new LibWidget();
         $libWidget->setUuid(Uuid::v5(Uuid::v6(), "timer"));
@@ -197,7 +197,7 @@ class LibWidgetFixtures extends Fixture
         $manager->persist($libWidget);
         $manager->flush();
     }
-    public function setBannerPub(ObjectManager $manager): void
+    private function setBannerPub(ObjectManager $manager): void
     {
         $libWidget = new LibWidget();
         $libWidget->setUuid(Uuid::v5(Uuid::v6(), "bannerpub"));
@@ -209,7 +209,7 @@ class LibWidgetFixtures extends Fixture
         $manager->persist($libWidget);
         $manager->flush();
     }
-    public function setVideoPub(ObjectManager $manager): void
+    private function setVideoPub(ObjectManager $manager): void
     {
         $libWidget = new LibWidget();
         $libWidget->setUuid(Uuid::v5(Uuid::v6(), "videopub"));

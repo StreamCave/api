@@ -129,6 +129,14 @@ class Widget
     #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
     private Collection $cameraGroup;
 
+    #[ORM\ManyToMany(targetEntity: MapGroup::class, inversedBy: 'widgets', cascade: ['persist'])]
+    #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
+    private Collection $mapGroup;
+
+    #[ORM\ManyToMany(targetEntity: PlanningGroup::class, inversedBy: 'widgets', cascade: ['persist'])]
+    #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
+    private Collection $planningGroup;
+
     #[ORM\ManyToOne(cascade: ['persist'], inversedBy: 'widgets')]
     #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
     #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
@@ -146,6 +154,8 @@ class Widget
         $this->modifiedDate = new \DateTime();
         $this->uuid = Uuid::v4();
         $this->cameraGroup = new ArrayCollection();
+        $this->mapGroup = new ArrayCollection();
+        $this->planningGroup = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -273,6 +283,78 @@ class Widget
         return $this;
     }
 
+    /**
+     * @return Collection<int, cameraGroup>
+     */
+    public function getCameraGroup(): Collection
+    {
+        return $this->cameraGroup;
+    }
+
+    public function addCameraGroup(cameraGroup $cameraGroup): self
+    {
+        if (!$this->cameraGroup->contains($cameraGroup)) {
+            $this->cameraGroup->add($cameraGroup);
+        }
+
+        return $this;
+    }
+
+    public function removeCameraGroup(cameraGroup $cameraGroup): self
+    {
+        $this->cameraGroup->removeElement($cameraGroup);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, MapGroup>
+     */
+    public function getMapGroup(): Collection
+    {
+        return $this->mapGroup;
+    }
+
+    public function addMapGroup(MapGroup $mapGroup): self
+    {
+        if (!$this->mapGroup->contains($mapGroup)) {
+            $this->mapGroup->add($mapGroup);
+        }
+
+        return $this;
+    }
+
+    public function removeMapGroup(MapGroup $mapGroup): self
+    {
+        $this->mapGroup->removeElement($mapGroup);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PlanningGroup>
+     */
+    public function getPlanningGroup(): Collection
+    {
+        return $this->planningGroup;
+    }
+
+    public function addPlanningGroup(PlanningGroup $planningGroup): self
+    {
+        if (!$this->planningGroup->contains($planningGroup)) {
+            $this->planningGroup->add($planningGroup);
+        }
+
+        return $this;
+    }
+
+    public function removePlanningGroup(PlanningGroup $planningGroup): self
+    {
+        $this->planningGroup->removeElement($planningGroup);
+
+        return $this;
+    }
+
     public function getModel(): ?Model
     {
         return $this->model;
@@ -305,30 +387,6 @@ class Widget
     public function setModifiedDate(\DateTimeInterface $modifiedDate): self
     {
         $this->modifiedDate = $modifiedDate;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, cameraGroup>
-     */
-    public function getCameraGroup(): Collection
-    {
-        return $this->cameraGroup;
-    }
-
-    public function addCameraGroup(cameraGroup $cameraGroup): self
-    {
-        if (!$this->cameraGroup->contains($cameraGroup)) {
-            $this->cameraGroup->add($cameraGroup);
-        }
-
-        return $this;
-    }
-
-    public function removeCameraGroup(cameraGroup $cameraGroup): self
-    {
-        $this->cameraGroup->removeElement($cameraGroup);
 
         return $this;
     }

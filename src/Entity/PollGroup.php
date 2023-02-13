@@ -102,17 +102,9 @@ class PollGroup
     #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private Collection $widgets;
 
-    #[ORM\Column(type: Types::DATE_IMMUTABLE)]
-    private ?\DateTimeInterface $createdDate;
-
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $modifiedDate;
-
     public function __construct()
     {
         $this->widgets = new ArrayCollection();
-        $this->createdDate = new \DateTimeImmutable();
-        $this->modifiedDate = new \DateTime();
         $this->uuid = Uuid::v4();
     }
 
@@ -207,30 +199,6 @@ class PollGroup
                 $widget->setPollGroup(null);
             }
         }
-
-        return $this;
-    }
-
-    public function getCreatedDate(): ?\DateTimeInterface
-    {
-        return $this->createdDate;
-    }
-
-    public function setCreatedDate(\DateTimeInterface $createdDate): self
-    {
-        $this->createdDate = $createdDate;
-
-        return $this;
-    }
-
-    public function getModifiedDate(): ?\DateTimeInterface
-    {
-        return $this->modifiedDate;
-    }
-
-    public function setModifiedDate(\DateTimeInterface $modifiedDate): self
-    {
-        $this->modifiedDate = $modifiedDate;
 
         return $this;
     }

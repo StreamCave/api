@@ -45,6 +45,7 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
 
         foreach ($players as $key => $player) {
             $camera = new CameraGroup();
+            $camera->setUuid(Uuid::v5(Uuid::v6(), "Camera $player"));
             $camera->setName("Camera $player");
             $camera->setVisible(false);
             $camera->setMuet(true);

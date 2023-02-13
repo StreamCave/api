@@ -73,9 +73,9 @@ class CameraGroup
     #[Groups(['camera_group:read','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?int $id = null;
 
-    #[ORM\Column(type: 'uuid', unique: true)]
+    #[ORM\Column(length: 180, unique: true)]
     #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
-    private ?Uuid $uuid = null;
+    private ?string $uuid;
 
     #[ORM\Column(length: 255)]
     #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
@@ -120,12 +120,12 @@ class CameraGroup
         return $this->id;
     }
 
-    public function getUuid(): ?Uuid
+    public function getUuid(): ?string
     {
         return $this->uuid;
     }
 
-    public function setUuid(Uuid $uuid): self
+    public function setUuid(string $uuid): self
     {
         $this->uuid = $uuid;
 

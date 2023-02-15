@@ -30,7 +30,7 @@ use Symfony\Component\Uid\Uuid;
         securityMessage: 'Seulement les administrateurs peuvent accéder à cette ressource.',
     ),
     new GetCollection(
-        uriTemplate: '/tweet-groups/{overlayId}',
+        uriTemplate: '/tweet-groups/o/{overlayId}',
         uriVariables: "overlayId",
         status: 200,
         schemes: ['https'],
@@ -40,7 +40,7 @@ use Symfony\Component\Uid\Uuid;
         securityMessage: 'Seulement les administrateurs peuvent accéder à cette ressource.',
     ),
     new GetCollection(
-        uriTemplate: '/tweet-groups/{overlayId}/{visible}',
+        uriTemplate: '/tweet-groups/o/{overlayId}/{visible}',
         uriVariables: ['overlayId', 'visible'],
         status: 200,
         schemes: ['https'],

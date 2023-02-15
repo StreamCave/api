@@ -132,6 +132,7 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
         $group->setMediaUrl('https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png');
         $group->setContent('Bienvenue sur la Louvard 2023 !');
         $group->setVisible(false);
+        $group->setOverlayId($this->getReference('overlay-louvard')->getUuid());
 
         $this->addReference('tweet-group-louvard', $group);
 
@@ -185,6 +186,7 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
     {
         return [
             MapsFixtures::class,
+            OverlayFixtures::class
         ];
     }
 }

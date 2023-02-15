@@ -39,6 +39,17 @@ class TweetGroupRepository extends ServiceEntityRepository
         }
     }
 
+    public function findAllByOverlayUuid(string $uuid): array
+    {
+        return $this->createQueryBuilder('t')
+            ->setParameter('val', $uuid)
+            ->andWhere('t.overlayId = :val')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+
 //    /**
 //     * @return TweetGroup[] Returns an array of TweetGroup objects
 //     */

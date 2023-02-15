@@ -133,6 +133,7 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
         $group->setContent('Bienvenue sur la Louvard 2023 !');
         $group->setVisible(false);
         $group->setOverlayId($this->getReference('overlay-louvard')->getUuid());
+        $group->setHashtag('Louvard2023');
 
         $this->addReference('tweet-group-louvard', $group);
 

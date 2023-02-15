@@ -30,7 +30,7 @@ use Symfony\Component\Uid\Uuid;
         security: 'is_granted("ROLE_ADMIN")',
         securityMessage: 'Seulement les administrateurs peuvent accéder à cette ressource.',
     ),
-    new Get(
+    new GetCollection(
         uriTemplate: '/tweet-groups/overlayid/{overlayId}',
         uriVariables: "overlayId",
         status: 200,
@@ -138,6 +138,9 @@ class TweetGroup
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $overlayId = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $hashtag = null;
 
     public function __construct()
     {
@@ -310,6 +313,18 @@ class TweetGroup
     public function setOverlayId(?string $overlayId): self
     {
         $this->overlayId = $overlayId;
+
+        return $this;
+    }
+
+    public function getHashtag(): ?string
+    {
+        return $this->hashtag;
+    }
+
+    public function setHashtag(string $hashtag): self
+    {
+        $this->hashtag = $hashtag;
 
         return $this;
     }

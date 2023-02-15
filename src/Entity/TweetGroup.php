@@ -9,7 +9,6 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
-use App\Controller\TweetController;
 use App\Repository\TweetGroupRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -31,13 +30,22 @@ use Symfony\Component\Uid\Uuid;
         securityMessage: 'Seulement les administrateurs peuvent accéder à cette ressource.',
     ),
     new GetCollection(
-        uriTemplate: '/tweet-groups/overlayid/{overlayId}',
+        uriTemplate: '/tweet-groups/{overlayId}',
         uriVariables: "overlayId",
         status: 200,
         schemes: ['https'],
-        controller: TweetController::class,
         openapiContext: ['summary' => 'Récupérer les tweets d\'un groupe de tweets en fonction de l\'overlay'],
-        normalizationContext: ['groups' => ['tweet:read']],
+        normalizationContext: ['groups' => ['tweet_group:read']],
+        security: 'is_granted("ROLE_ADMIN")',
+        securityMessage: 'Seulement les administrateurs peuvent accéder à cette ressource.',
+    ),
+    new GetCollection(
+        uriTemplate: '/tweet-groups/{overlayId}/{visible}',
+        uriVariables: ['overlayId', 'visible'],
+        status: 200,
+        schemes: ['https'],
+        openapiContext: ['summary' => 'Récupérer les tweets d\'un groupe de tweets en fonction de l\'overlay'],
+        normalizationContext: ['groups' => ['tweet_group:read']],
         security: 'is_granted("ROLE_ADMIN")',
         securityMessage: 'Seulement les administrateurs peuvent accéder à cette ressource.',
     ),

@@ -101,11 +101,6 @@ class Model
     #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?int $price = null;
 
-    #[ORM\OneToMany(mappedBy: 'model', targetEntity: Widget::class)]
-    #[Groups(['model:read', 'overlay:read', 'overlay:write'])]
-    #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
-    private Collection $widgets;
-
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
     private ?\DateTimeInterface $createdDate;
 
@@ -117,7 +112,6 @@ class Model
 
     public function __construct()
     {
-        $this->widgets = new ArrayCollection();
         $this->createdDate = new \DateTimeImmutable();
         $this->modifiedDate = new \DateTime();
         $this->uuid = Uuid::v4();
@@ -185,36 +179,6 @@ class Model
     public function setPrice(int $price): self
     {
         $this->price = $price;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Widget>
-     */
-    public function getWidgets(): Collection
-    {
-        return $this->widgets;
-    }
-
-    public function addWidget(Widget $widget): self
-    {
-        if (!$this->widgets->contains($widget)) {
-            $this->widgets->add($widget);
-            $widget->setModel($this);
-        }
-
-        return $this;
-    }
-
-    public function removeWidget(Widget $widget): self
-    {
-        if ($this->widgets->removeElement($widget)) {
-            // set the owning side to null (unless already changed)
-            if ($widget->getModel() === $this) {
-                $widget->setModel(null);
-            }
-        }
 
         return $this;
     }

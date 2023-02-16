@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\AnswerGroup;
 use App\Entity\CameraGroup;
 use App\Entity\InfoGroup;
 use App\Entity\MapGroup;
@@ -39,8 +40,6 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
     private function setCameraGroup(ObjectManager $manager): void
     {
         $players = ['Alpha', 'Bravo', 'Charlie', 'Delta', 'Echo', 'Foxtrot', 'Golf', 'Hotel', 'India', 'Juliett'];
-        $positionX = [19.8, 22.0, 24.2, 26.4, 28.6, 30.8, 33.0, 35.2, 37.4, 39.6];
-        $positionY = [20.4, 21.4, 22.4, 23.4, 24.4, 25.4, 26.4, 27.4, 28.4, 29.4];
 
 
         foreach ($players as $key => $player) {
@@ -48,12 +47,9 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
             $camera->setUuid(Uuid::v5(Uuid::v6(), "Camera $player"));
             $camera->setName("Camera $player");
             $camera->setVisible(false);
-            $camera->setMuet(true);
-            $camera->setHeight("150");
-            $camera->setWidth("300");
-            $camera->setPositionX($positionX[$key]);
-            $camera->setPositionY($positionY[$key]);
-
+            $camera->setCamId("cam-$player");
+            $camera->setRoomName("Room $player");
+            $camera->setRoomPassword("password-$player");
             $this->addReference("camera-group-louvard-$player", $camera);
 
             $manager->persist($camera);
@@ -101,14 +97,32 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
         $group = new PollGroup();
         $group->setUuid(Uuid::v5(Uuid::v6(), 'Default Poll'));
         $group->setQuestion('Quel joueur est en attaque ?');
-        $group->setAnswers(['Ace', 'Castle', 'Pulse']);
-        $group->setGoodAnswer(['Ace']);
         $group->setTime(300);
+        $group->setChannel("sixquatre");
+        $group->setOverlayId($this->getReference('overlay-louvard')->getUuid());
 
         $this->addReference('poll-group-louvard', $group);
 
         $manager->persist($group);
         $manager->flush();
+    }
+
+    private function setAnswers(ObjectManager $manager): void
+    {
+        $group = $this->getReference('poll-group-louvard');
+        $answers = ['Yes', 'No'];
+
+        foreach ($answers as $key => $answer) {
+            $answer = new AnswerGroup();
+            $answer->setUuid(Uuid::v5(Uuid::v6(), $answer));
+            $answer->setAnswer($answer);
+            $answer->setPollGroup($group);
+            $answer->setVote("Yes");
+            $answer->setUsernameVoter("BRIETGAME");
+
+            $manager->persist($answer);
+            $manager->flush();
+        }
     }
 
     private function setPopupGroup(ObjectManager $manager): void

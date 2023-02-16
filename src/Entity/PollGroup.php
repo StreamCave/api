@@ -85,27 +85,32 @@ class PollGroup
     #[Groups(['poll_group:read', 'poll_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $question = null;
 
-    #[ORM\Column]
-    #[Groups(['poll_group:read', 'poll_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
-    private array $answers = [];
-
     #[ORM\Column(nullable: true)]
     #[Groups(['poll_group:read', 'poll_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?int $time = null;
 
-    #[ORM\Column]
-    #[Groups(['poll_group:read', 'poll_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
-    private array $goodAnswer = [];
-
     #[ORM\OneToMany(mappedBy: 'pollGroup', targetEntity: Widget::class)]
-    #[Groups(['poll_group:read'])]
+    #[Groups(['poll_group:read', 'poll_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private Collection $widgets;
+
+    #[ORM\OneToMany(mappedBy: 'pollGroup', targetEntity: AnswerGroup::class)]
+    #[Groups(['poll_group:read', 'poll_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
+    private Collection $answerGroups;
+
+    #[ORM\Column(length: 255)]
+    #[Groups(['poll_group:read', 'poll_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
+    private ?string $overlayId = null;
+
+    #[ORM\Column(length: 255)]
+    #[Groups(['poll_group:read', 'poll_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
+    private ?string $channel = null;
 
     public function __construct()
     {
         $this->widgets = new ArrayCollection();
         $this->uuid = Uuid::v4();
+        $this->answerGroups = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -137,18 +142,6 @@ class PollGroup
         return $this;
     }
 
-    public function getAnswers(): array
-    {
-        return $this->answers;
-    }
-
-    public function setAnswers(array $answers): self
-    {
-        $this->answers = $answers;
-
-        return $this;
-    }
-
     public function getTime(): ?int
     {
         return $this->time;
@@ -157,18 +150,6 @@ class PollGroup
     public function setTime(?int $time): self
     {
         $this->time = $time;
-
-        return $this;
-    }
-
-    public function getGoodAnswer(): array
-    {
-        return $this->goodAnswer;
-    }
-
-    public function setGoodAnswer(array $goodAnswer): self
-    {
-        $this->goodAnswer = $goodAnswer;
 
         return $this;
     }
@@ -199,6 +180,60 @@ class PollGroup
                 $widget->setPollGroup(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, AnswerGroup>
+     */
+    public function getAnswerGroups(): Collection
+    {
+        return $this->answerGroups;
+    }
+
+    public function addAnswerGroup(AnswerGroup $answerGroup): self
+    {
+        if (!$this->answerGroups->contains($answerGroup)) {
+            $this->answerGroups->add($answerGroup);
+            $answerGroup->setPollGroup($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAnswerGroup(AnswerGroup $answerGroup): self
+    {
+        if ($this->answerGroups->removeElement($answerGroup)) {
+            // set the owning side to null (unless already changed)
+            if ($answerGroup->getPollGroup() === $this) {
+                $answerGroup->setPollGroup(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getOverlayId(): ?string
+    {
+        return $this->overlayId;
+    }
+
+    public function setOverlayId(string $overlayId): self
+    {
+        $this->overlayId = $overlayId;
+
+        return $this;
+    }
+
+    public function getChannel(): ?string
+    {
+        return $this->channel;
+    }
+
+    public function setChannel(string $channel): self
+    {
+        $this->channel = $channel;
 
         return $this;
     }

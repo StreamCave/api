@@ -137,16 +137,15 @@ class Widget
     #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
     private Collection $planningGroup;
 
-    #[ORM\ManyToOne(cascade: ['persist'], inversedBy: 'widgets')]
-    #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
-    #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
-    private ?Model $model = null;
-
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
     private ?\DateTimeInterface $createdDate;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $modifiedDate;
+
+    #[ORM\ManyToOne(inversedBy: 'widgets')]
+    #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
+    private ?Overlay $overlay = null;
 
     public function __construct()
     {
@@ -355,18 +354,6 @@ class Widget
         return $this;
     }
 
-    public function getModel(): ?Model
-    {
-        return $this->model;
-    }
-
-    public function setModel(?Model $model): self
-    {
-        $this->model = $model;
-
-        return $this;
-    }
-
     public function getCreatedDate(): ?\DateTimeInterface
     {
         return $this->createdDate;
@@ -387,6 +374,18 @@ class Widget
     public function setModifiedDate(\DateTimeInterface $modifiedDate): self
     {
         $this->modifiedDate = $modifiedDate;
+
+        return $this;
+    }
+
+    public function getOverlay(): ?Overlay
+    {
+        return $this->overlay;
+    }
+
+    public function setOverlay(?Overlay $overlay): self
+    {
+        $this->overlay = $overlay;
 
         return $this;
     }

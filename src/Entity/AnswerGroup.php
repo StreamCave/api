@@ -11,6 +11,7 @@ use ApiPlatform\Metadata\Put;
 use App\Repository\AnswerGroupRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: AnswerGroupRepository::class)]
 #[ApiResource(operations: [
@@ -89,6 +90,11 @@ class AnswerGroup
     #[ORM\Column(length: 255)]
     #[Groups(['answer_group:read', 'answer_group:write','widget:read','model:read','overlay:read', 'overlay:write', 'poll_group:read'])]
     private ?string $usernameVoter = null;
+
+    public function __construct()
+    {
+        $this->uuid = Uuid::v4();
+    }
 
     public function getId(): ?int
     {

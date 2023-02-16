@@ -77,37 +77,28 @@ class CameraGroup
     #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $uuid;
 
-    #[ORM\Column(length: 255)]
-    #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
-    private ?string $name = null;
-
-    #[ORM\Column(length: 255)]
-    #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
-    private ?string $height = null;
-
-    #[ORM\Column(length: 255)]
-    #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
-    private ?string $width = null;
-
-    #[ORM\Column(nullable: true)]
-    #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
-    private ?float $positionX = null;
-
-    #[ORM\Column(nullable: true)]
-    #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
-    private ?float $positionY = null;
-
     #[ORM\Column]
     #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?bool $visible = null;
 
-    #[ORM\Column]
-    #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
-    private ?bool $muet = null;
-
     #[ORM\ManyToMany(targetEntity: Widget::class, mappedBy: 'cameraGroup')]
     #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private Collection $widgets;
+
+    #[ORM\Column(length: 255)]
+    #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
+    private ?string $camId = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
+    private ?string $roomName = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
+    private ?string $roomPassword = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $name = null;
 
     public function __construct()
     {
@@ -132,66 +123,6 @@ class CameraGroup
         return $this;
     }
 
-    public function getName(): ?string
-    {
-        return $this->name;
-    }
-
-    public function setName(string $name): self
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    public function getHeight(): ?string
-    {
-        return $this->height;
-    }
-
-    public function setHeight(string $height): self
-    {
-        $this->height = $height;
-
-        return $this;
-    }
-
-    public function getWidth(): ?string
-    {
-        return $this->width;
-    }
-
-    public function setWidth(string $width): self
-    {
-        $this->width = $width;
-
-        return $this;
-    }
-
-    public function getPositionX(): ?float
-    {
-        return $this->positionX;
-    }
-
-    public function setPositionX(?float $positionX): self
-    {
-        $this->positionX = $positionX;
-
-        return $this;
-    }
-
-    public function getPositionY(): ?float
-    {
-        return $this->positionY;
-    }
-
-    public function setPositionY(?float $positionY): self
-    {
-        $this->positionY = $positionY;
-
-        return $this;
-    }
-
     public function isVisible(): ?bool
     {
         return $this->visible;
@@ -200,18 +131,6 @@ class CameraGroup
     public function setVisible(bool $visible): self
     {
         $this->visible = $visible;
-
-        return $this;
-    }
-
-    public function isMuet(): ?bool
-    {
-        return $this->muet;
-    }
-
-    public function setMuet(bool $muet): self
-    {
-        $this->muet = $muet;
 
         return $this;
     }
@@ -239,6 +158,54 @@ class CameraGroup
         if ($this->widgets->removeElement($widget)) {
             $widget->removeCameraGroup($this);
         }
+
+        return $this;
+    }
+
+    public function getCamId(): ?string
+    {
+        return $this->camId;
+    }
+
+    public function setCamId(string $camId): self
+    {
+        $this->camId = $camId;
+
+        return $this;
+    }
+
+    public function getRoomName(): ?string
+    {
+        return $this->roomName;
+    }
+
+    public function setRoomName(?string $roomName): self
+    {
+        $this->roomName = $roomName;
+
+        return $this;
+    }
+
+    public function getRoomPassword(): ?string
+    {
+        return $this->roomPassword;
+    }
+
+    public function setRoomPassword(?string $roomPassword): self
+    {
+        $this->roomPassword = $roomPassword;
+
+        return $this;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(?string $name): self
+    {
+        $this->name = $name;
 
         return $this;
     }

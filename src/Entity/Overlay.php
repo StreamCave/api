@@ -105,9 +105,13 @@ class Overlay
     #[Groups(['overlay:read','overlay:write'])]
     private ?string $image = null;
 
-    #[Groups(['overlay:read','overlay:write'])]
     #[ORM\ManyToOne(inversedBy: 'overlays', cascade: ['persist'])]
+    #[Groups(['overlay:read','overlay:write'])]
     private ?Model $Model = null;
+
+    #[ORM\OneToMany(mappedBy: 'overlay', targetEntity: Widget::class)]
+    #[Groups(['overlay:read','overlay:write'])]
+    private Collection $widgets;
 
     public function __construct()
     {
@@ -115,6 +119,7 @@ class Overlay
         $this->createdDate = new \DateTimeImmutable();
         $this->modifiedDate = new \DateTime();
         $this->uuid = Uuid::v4();
+        $this->widgets = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -223,6 +228,36 @@ class Overlay
     public function setModel(?Model $Model): self
     {
         $this->Model = $Model;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Widget>
+     */
+    public function getWidgets(): Collection
+    {
+        return $this->widgets;
+    }
+
+    public function addWidget(Widget $widget): self
+    {
+        if (!$this->widgets->contains($widget)) {
+            $this->widgets->add($widget);
+            $widget->setOverlay($this);
+        }
+
+        return $this;
+    }
+
+    public function removeWidget(Widget $widget): self
+    {
+        if ($this->widgets->removeElement($widget)) {
+            // set the owning side to null (unless already changed)
+            if ($widget->getOverlay() === $this) {
+                $widget->setOverlay(null);
+            }
+        }
 
         return $this;
     }

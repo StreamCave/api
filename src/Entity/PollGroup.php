@@ -119,6 +119,7 @@ class PollGroup
     private ?bool $pollStarted = null;
 
     #[ORM\Column]
+    #[Groups(['poll_group:read', 'poll_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?bool $visible = null;
 
     public function __construct()

@@ -115,6 +115,7 @@ class PollGroup
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\Column]
+    #[Groups(['poll_group:read', 'poll_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?bool $pollStarted = null;
 
     public function __construct()

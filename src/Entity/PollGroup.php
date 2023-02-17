@@ -114,6 +114,9 @@ class PollGroup
     #[Groups(['poll_group:read', 'poll_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?\DateTimeImmutable $updatedAt = null;
 
+    #[ORM\Column]
+    private ?bool $pollStarted = null;
+
     public function __construct()
     {
         $this->widgets = new ArrayCollection();
@@ -268,6 +271,18 @@ class PollGroup
     public function setUpdatedAt(\DateTimeImmutable $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function isPollStarted(): ?bool
+    {
+        return $this->pollStarted;
+    }
+
+    public function setPollStarted(bool $pollStarted): self
+    {
+        $this->pollStarted = $pollStarted;
 
         return $this;
     }

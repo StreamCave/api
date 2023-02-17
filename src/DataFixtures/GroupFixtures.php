@@ -101,6 +101,7 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
         $group->setChannel("sixquatre");
         $group->setOverlayId($this->getReference('overlay-louvard')->getUuid());
         $group->setPollStarted(false);
+        $group->setVisible(false);
 
         $this->addReference('poll-group-louvard', $group);
 

@@ -118,6 +118,9 @@ class PollGroup
     #[Groups(['poll_group:read', 'poll_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?bool $pollStarted = null;
 
+    #[ORM\Column]
+    private ?bool $visible = null;
+
     public function __construct()
     {
         $this->widgets = new ArrayCollection();
@@ -284,6 +287,18 @@ class PollGroup
     public function setPollStarted(bool $pollStarted): self
     {
         $this->pollStarted = $pollStarted;
+
+        return $this;
+    }
+
+    public function isVisible(): ?bool
+    {
+        return $this->visible;
+    }
+
+    public function setVisible(bool $visible): self
+    {
+        $this->visible = $visible;
 
         return $this;
     }

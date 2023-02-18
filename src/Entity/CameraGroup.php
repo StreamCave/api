@@ -37,7 +37,7 @@ use Symfony\Component\Uid\Uuid;
         securityMessage: 'Seulement les administrateurs peuvent accéder à cette ressource.',
     ),
     new Post(
-        uriTemplate: '/match-groups/add',
+        uriTemplate: '/camera-groups/add',
         status: 201,
         schemes: ['https'],
         openapiContext: ['summary' => 'Ajouter un groupe de matchs'],
@@ -98,6 +98,7 @@ class CameraGroup
     private ?string $roomPassword = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $name = null;
 
     public function __construct()

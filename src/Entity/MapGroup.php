@@ -66,20 +66,20 @@ class MapGroup
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
-    #[Groups(['map_group:read', 'map_group:write'])]
+    #[Groups(['map_group:read','map_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $uuid;
 
     #[ORM\ManyToOne(inversedBy: 'mapGroups')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['map_group:read', 'map_group:write'])]
+    #[Groups(['map_group:read','map_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?LibMap $libMap = null;
 
     #[ORM\Column]
-    #[Groups(['map_group:read', 'map_group:write'])]
+    #[Groups(['map_group:read','map_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?bool $pick = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['map_group:read', 'map_group:write'])]
+    #[Groups(['map_group:read','map_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $winTeam = null;
 
     #[ORM\ManyToMany(targetEntity: Widget::class, mappedBy: 'mapGroup')]

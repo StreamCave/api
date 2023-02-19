@@ -167,7 +167,7 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
             $group = new MapGroup();
             $group->setUuid(Uuid::v5(Uuid::v6(), $map));
             $group->setLibMap($this->getReference('map-' . $map));
-            $group->setPick($isPick[$key]);
+            $group->setPickTeam("Alpha");
             $group->setWinTeam($winTeam[$key]);
             $this->addReference('map-group-louvard-bo3-' . $map, $group);
 

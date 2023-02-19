@@ -74,9 +74,9 @@ class MapGroup
     #[Groups(['map_group:read','map_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?LibMap $libMap = null;
 
-    #[ORM\Column]
+    #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['map_group:read','map_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
-    private ?bool $pick = null;
+    private ?string $pickTeam = null;
 
     #[ORM\Column(length: 255)]
     #[Groups(['map_group:read','map_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
@@ -167,6 +167,18 @@ class MapGroup
         if ($this->widgets->removeElement($widget)) {
             $widget->removeMapGroup($this);
         }
+
+        return $this;
+    }
+
+    public function getPickTeam(): ?string
+    {
+        return $this->pickTeam;
+    }
+
+    public function setPickTeam(?string $pickTeam): self
+    {
+        $this->pickTeam = $pickTeam;
 
         return $this;
     }

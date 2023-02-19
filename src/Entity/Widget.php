@@ -7,6 +7,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Repository\WidgetRepository;
@@ -47,6 +48,17 @@ use Symfony\Component\Uid\Uuid;
         denormalizationContext: ['groups' => ['widget:write']],
     ),
     new Put(
+        uriTemplate: '/widgets/{uuid}',
+        uriVariables: "uuid",
+        status: 200,
+        schemes: ['https'],
+        openapiContext: ['summary' => 'Modifier un widget'],
+        normalizationContext: ['groups' => ['widget:read']],
+        denormalizationContext: ['groups' => ['widget:write']],
+        security: 'is_granted("ROLE_ADMIN") or object.getModel().getOverlay().getUserOwner() == user or object.getModel().getOverlay().getUserAccess() == user',
+        securityMessage: 'Vous n\'avez pas accès à ce widget',
+    ),
+    new Patch(
         uriTemplate: '/widgets/{uuid}',
         uriVariables: "uuid",
         status: 200,

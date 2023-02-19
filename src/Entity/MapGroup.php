@@ -78,7 +78,7 @@ class MapGroup
     #[Groups(['map_group:read','map_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $pickTeam = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['map_group:read','map_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $winTeam = null;
 
@@ -119,19 +119,6 @@ class MapGroup
 
         return $this;
     }
-
-    public function isPick(): ?bool
-    {
-        return $this->pick;
-    }
-
-    public function setPick(bool $pick): self
-    {
-        $this->pick = $pick;
-
-        return $this;
-    }
-
     public function getWinTeam(): ?string
     {
         return $this->winTeam;

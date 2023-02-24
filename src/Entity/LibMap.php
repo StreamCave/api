@@ -67,19 +67,19 @@ class LibMap
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
-    #[Groups(['libmaps:read', 'libmaps:write', 'map_group:read', 'map_group:write'])]
+    #[Groups(['libmaps:read', 'libmaps:write', 'map_group:read', 'map_group:write','overlay:read', 'overlay:write'])]
     private ?string $uuid;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['libmaps:read', 'libmaps:write', 'map_group:read', 'map_group:write'])]
+    #[Groups(['libmaps:read', 'libmaps:write', 'map_group:read', 'map_group:write','overlay:read', 'overlay:write'])]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups(['libmaps:read', 'libmaps:write', 'map_group:read', 'map_group:write'])]
+    #[Groups(['libmaps:read', 'libmaps:write', 'map_group:read', 'map_group:write','overlay:read', 'overlay:write'])]
     private ?string $image = null;
 
     #[ORM\OneToMany(mappedBy: 'libMap', targetEntity: MapGroup::class)]
-    #[Groups(['libmaps:read', 'map_group:read'])]
+    #[Groups(['libmaps:read', 'map_group:read','overlay:read', 'overlay:write'])]
     private Collection $mapGroups;
 
     public function __construct()

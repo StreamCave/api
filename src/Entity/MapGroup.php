@@ -8,6 +8,7 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use App\Controller\DeleteMapGroupController;
 use App\Repository\MapGroupRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -54,6 +55,7 @@ use Symfony\Component\Uid\Uuid;
         uriVariables: "uuid",
         status: 204,
         schemes: ['https'],
+        controller: DeleteMapGroupController::class,
         openapiContext: ['summary' => 'Supprimer un MapGroup'],
     )
 ], schemes: ['https'], normalizationContext: ['groups' => ['map_group:read']], denormalizationContext: ['groups' => ['map_group:write']], openapiContext: ['summary' => 'MapGroup'])]
@@ -66,20 +68,20 @@ class MapGroup
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
-    #[Groups(['map_group:read', 'map_group:write'])]
+    #[Groups(['map_group:read','map_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $uuid;
 
     #[ORM\ManyToOne(inversedBy: 'mapGroups')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['map_group:read', 'map_group:write'])]
+    #[Groups(['map_group:read','map_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?LibMap $libMap = null;
 
-    #[ORM\Column]
-    #[Groups(['map_group:read', 'map_group:write'])]
-    private ?bool $pick = null;
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['map_group:read','map_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
+    private ?string $pickTeam = null;
 
-    #[ORM\Column(length: 255)]
-    #[Groups(['map_group:read', 'map_group:write'])]
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['map_group:read','map_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $winTeam = null;
 
     #[ORM\ManyToMany(targetEntity: Widget::class, mappedBy: 'mapGroup')]
@@ -119,19 +121,6 @@ class MapGroup
 
         return $this;
     }
-
-    public function isPick(): ?bool
-    {
-        return $this->pick;
-    }
-
-    public function setPick(bool $pick): self
-    {
-        $this->pick = $pick;
-
-        return $this;
-    }
-
     public function getWinTeam(): ?string
     {
         return $this->winTeam;
@@ -167,6 +156,18 @@ class MapGroup
         if ($this->widgets->removeElement($widget)) {
             $widget->removeMapGroup($this);
         }
+
+        return $this;
+    }
+
+    public function getPickTeam(): ?string
+    {
+        return $this->pickTeam;
+    }
+
+    public function setPickTeam(?string $pickTeam): self
+    {
+        $this->pickTeam = $pickTeam;
 
         return $this;
     }

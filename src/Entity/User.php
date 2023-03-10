@@ -8,6 +8,7 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use App\Controller\DeleteUserController;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -65,7 +66,10 @@ use Symfony\Component\Uid\Uuid;
         uriVariables: "uuid",
         status: 204,
         schemes: ['https'],
+        controller: DeleteUserController::class,
         openapiContext: ['summary' => 'Supprimer un utilisateur'],
+        normalizationContext: ['groups' => ['user:read']],
+        denormalizationContext: ['groups' => ['user:write']],
         security: 'is_granted("ROLE_ADMIN")',
         securityMessage: 'Vous n\'avez pas les droits pour supprimer un utilisateur',
     )

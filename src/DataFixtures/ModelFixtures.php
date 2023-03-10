@@ -20,6 +20,8 @@ class ModelFixtures extends Fixture
         $model->setName('Louvard');
         $model->setDescription('Ceci est le modèle Louvard.');
         $model->setPrice(0);
+        $model->setPreview("https://cdn.streamcave.tv/yunktisbanner.jpg");
+        $model->setTags(["R6", "RocketLeague", "CSGO"]);
 
         $this->addReference('model-louvard', $model);
 

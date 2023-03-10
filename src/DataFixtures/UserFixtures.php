@@ -19,7 +19,7 @@ class UserFixtures extends Fixture
     private function  setSuperAdmin(ObjectManager $manager): void
     {
         $user = new User();
-        $user->setUuid(Uuid::v6());
+        $user->setUuid(Uuid::v4());
         $user->setEmail($_ENV['ADMIN_EMAIL']);
         $user->setPseudo("ADMIN Alexis");
         $user->setPassword(password_hash($_ENV['ADMIN_PASSWORD'], PASSWORD_BCRYPT));
@@ -34,7 +34,7 @@ class UserFixtures extends Fixture
     private function  setSuperAdmin2(ObjectManager $manager): void
     {
         $user = new User();
-        $user->setUuid(Uuid::v6());
+        $user->setUuid(Uuid::v1());
         $user->setEmail($_ENV['ADMIN_2_EMAIL']);
         $user->setPseudo("ADMIN Jémérmy");
         $user->setPassword(password_hash($_ENV['ADMIN_2_PASSWORD'], PASSWORD_BCRYPT));
@@ -50,7 +50,7 @@ class UserFixtures extends Fixture
     {
         $users = ["Alpha","Beta","Charlie","Delta"];
 
-        foreach ($users as $item) {
+        foreach ($users as $key => $item) {
             $user = new User();
             $user->setUuid(Uuid::v6());
             $user->setEmail($item . '@streamcave.tv');

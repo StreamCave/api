@@ -112,6 +112,14 @@ class Model
     #[ORM\OneToMany(mappedBy: 'Model', targetEntity: Overlay::class, cascade: ['persist'])]
     private Collection $overlays;
 
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['model:read', 'model:write', 'overlay:read', 'overlay:write'])]
+    private ?string $preview = null;
+
+    #[ORM\Column(nullable: true)]
+    #[Groups(['model:read', 'model:write', 'overlay:read', 'overlay:write'])]
+    private array $tags = [];
+
     public function __construct()
     {
         $this->createdDate = new \DateTimeImmutable();
@@ -235,6 +243,30 @@ class Model
                 $overlay->setModel(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getPreview(): ?string
+    {
+        return $this->preview;
+    }
+
+    public function setPreview(?string $preview): self
+    {
+        $this->preview = $preview;
+
+        return $this;
+    }
+
+    public function getTags(): array
+    {
+        return $this->tags;
+    }
+
+    public function setTags(?array $tags): self
+    {
+        $this->tags = $tags;
 
         return $this;
     }

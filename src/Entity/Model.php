@@ -9,6 +9,7 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use App\Controller\DeleteModelController;
 use App\Repository\ModelRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -62,6 +63,7 @@ use Symfony\Component\Uid\Uuid;
         uriVariables: "uuid",
         status: 204,
         schemes: ['https'],
+        controller: DeleteModelController::class,
         openapiContext: ['summary' => 'Supprimer un modèle'],
         security: 'is_granted("ROLE_ADMIN") or object.getOverlay().getUserOwner() == user',
         securityMessage: 'Vous n\'avez pas accès à ce modèle',

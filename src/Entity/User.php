@@ -115,6 +115,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?\DateTimeInterface $modifiedDate;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['user:read', 'user:write','overlay:read'])]
     private ?string $pseudo = null;
 
     public function __construct()

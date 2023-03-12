@@ -94,10 +94,6 @@ class PollGroup
     #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private Collection $widgets;
 
-    #[ORM\OneToMany(mappedBy: 'pollGroup', targetEntity: AnswerGroup::class)]
-    #[Groups(['poll_group:read', 'poll_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
-    private Collection $answerGroups;
-
     #[ORM\Column(length: 255)]
     #[Groups(['poll_group:read', 'poll_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $overlayId = null;
@@ -122,11 +118,14 @@ class PollGroup
     #[Groups(['poll_group:read', 'poll_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?bool $visible = null;
 
+    #[ORM\Column(nullable: true)]
+    #[Groups(['poll_group:read', 'poll_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
+    private array $answers = [];
+
     public function __construct()
     {
         $this->widgets = new ArrayCollection();
         $this->uuid = Uuid::v4();
-        $this->answerGroups = new ArrayCollection();
         $this->createdAt = new \DateTimeImmutable();
         $this->updatedAt = new \DateTimeImmutable();
     }
@@ -202,36 +201,6 @@ class PollGroup
         return $this;
     }
 
-    /**
-     * @return Collection<int, AnswerGroup>
-     */
-    public function getAnswerGroups(): Collection
-    {
-        return $this->answerGroups;
-    }
-
-    public function addAnswerGroup(AnswerGroup $answerGroup): self
-    {
-        if (!$this->answerGroups->contains($answerGroup)) {
-            $this->answerGroups->add($answerGroup);
-            $answerGroup->setPollGroup($this);
-        }
-
-        return $this;
-    }
-
-    public function removeAnswerGroup(AnswerGroup $answerGroup): self
-    {
-        if ($this->answerGroups->removeElement($answerGroup)) {
-            // set the owning side to null (unless already changed)
-            if ($answerGroup->getPollGroup() === $this) {
-                $answerGroup->setPollGroup(null);
-            }
-        }
-
-        return $this;
-    }
-
     public function getOverlayId(): ?string
     {
         return $this->overlayId;
@@ -300,6 +269,18 @@ class PollGroup
     public function setVisible(bool $visible): self
     {
         $this->visible = $visible;
+
+        return $this;
+    }
+
+    public function getAnswers(): array
+    {
+        return $this->answers;
+    }
+
+    public function setAnswers(?array $answers): self
+    {
+        $this->answers = $answers;
 
         return $this;
     }

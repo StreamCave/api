@@ -28,7 +28,7 @@ use Symfony\Component\Uid\Uuid;
         schemes: ['https'],
         openapiContext: ['summary' => 'Récupérer les données d\'un overlay'],
         normalizationContext: ['groups' => ['overlay:read']],
-        security: 'is_granted("ROLE_ADMIN") or object.getUserOwner() == user or object.getUserAccess() == user is_granted("OVERLAY_EDIT", object)',
+        security: 'is_granted("ROLE_ADMIN") or object.getUserOwner() == user or object.getUserAccess() == user or is_granted("OVERLAY_EDIT", object)',
         securityMessage: 'Seulement les administrateurs peuvent accéder à cette ressource.',
     ),
     new GetCollection(

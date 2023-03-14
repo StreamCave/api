@@ -29,7 +29,7 @@ class DeleteMatchGroup extends AbstractController
 
         return $this->json([
             "statusCode" => 202,
-            "message" => "InfoGroup deleted",
+            "message" => "MatchGroup deleted",
         ]);
     }
 }

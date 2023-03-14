@@ -48,7 +48,7 @@ use Symfony\Component\Uid\Uuid;
         denormalizationContext: ['groups' => ['info_group:write']],
     ),
     new Put(
-        uriTemplate: '/info-groups/{uui}',
+        uriTemplate: '/info-groups/{uuid}',
         uriVariables: "uuid",
         status: 200,
         schemes: ['https'],

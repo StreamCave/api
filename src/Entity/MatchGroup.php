@@ -124,6 +124,9 @@ class MatchGroup
     #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private Collection $widgets;
 
+    #[ORM\Column(nullable: true)]
+    private ?bool $nextMatch = null;
+
     public function __construct()
     {
         $this->widgets = new ArrayCollection();
@@ -281,6 +284,18 @@ class MatchGroup
     public function setPlayersTeamB(?array $playersTeamB): self
     {
         $this->playersTeamB = $playersTeamB;
+
+        return $this;
+    }
+
+    public function isNextMatch(): ?bool
+    {
+        return $this->nextMatch;
+    }
+
+    public function setNextMatch(?bool $nextMatch): self
+    {
+        $this->nextMatch = $nextMatch;
 
         return $this;
     }

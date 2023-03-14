@@ -2,9 +2,7 @@
 
 namespace App\Controller;
 
-use App\Repository\MapGroupRepository;
 use App\Repository\OverlayRepository;
-use App\Repository\UserRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;

@@ -2,15 +2,12 @@
 
 namespace App\Controller;
 
-use App\Repository\MapGroupRepository;
-use App\Repository\OverlayRepository;
 use App\Repository\PollGroupRepository;
-use App\Repository\UserRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class DeletePollGroupController extends AbstractController
+class DeletePollGroup extends AbstractController
 {
     public function __construct(PollGroupRepository $pollGroupRepository, ManagerRegistry $doctrine)
     {

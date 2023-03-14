@@ -9,6 +9,7 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use App\Controller\DeleteMatchGroup;
 use App\Repository\MatchGroupRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -62,6 +63,7 @@ use Symfony\Component\Uid\Uuid;
         uriVariables: "uuid",
         status: 204,
         schemes: ['https'],
+        controller: DeleteMatchGroup::class,
         openapiContext: ['summary' => 'Supprimer un groupe de matchs'],
         security: 'is_granted("ROLE_ADMIN") or object.getWidgets().getModel().getOverlay().getUserOwner() == user',
         securityMessage: 'Vous n\'avez pas accès à ce groupe de matchs',

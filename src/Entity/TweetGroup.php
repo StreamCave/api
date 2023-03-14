@@ -9,6 +9,7 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use App\Controller\DeleteTweetGroup;
 use App\Repository\TweetGroupRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -82,6 +83,7 @@ use Symfony\Component\Uid\Uuid;
         uriVariables: "uuid",
         status: 204,
         schemes: ['https'],
+        controller: DeleteTweetGroup::class,
         openapiContext: ['summary' => 'Supprimer un groupe de tweets'],
         security: 'is_granted("ROLE_ADMIN") or object.getWidgets().getModel().getOverlay().getUserOwner() == user',
         securityMessage: 'Vous n\'avez pas accès à ce groupe de tweets',

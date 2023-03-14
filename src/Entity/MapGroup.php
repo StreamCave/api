@@ -8,7 +8,7 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
-use App\Controller\DeleteMapGroupController;
+use App\Controller\DeleteMapGroup;
 use App\Repository\MapGroupRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -55,7 +55,7 @@ use Symfony\Component\Uid\Uuid;
         uriVariables: "uuid",
         status: 204,
         schemes: ['https'],
-        controller: DeleteMapGroupController::class,
+        controller: DeleteMapGroup::class,
         openapiContext: ['summary' => 'Supprimer un MapGroup'],
     )
 ], schemes: ['https'], normalizationContext: ['groups' => ['map_group:read']], denormalizationContext: ['groups' => ['map_group:write']], openapiContext: ['summary' => 'MapGroup'])]

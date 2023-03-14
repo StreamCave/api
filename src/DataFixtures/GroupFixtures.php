@@ -85,6 +85,7 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
         $group->setPlayersTeamB(['Ash', 'Blackbeard', 'Capitao', 'Doc', 'Montagne']);
         $group->setScoreB("1");
         $group->setStartDate(new \DateTimeImmutable("2023-03-31 12:00:00"));
+        $group->setNextMatch(false);
 
         $manager->persist($group);
         $manager->flush();

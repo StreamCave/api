@@ -120,6 +120,10 @@ class Model
     #[Groups(['model:read', 'model:write', 'overlay:read', 'overlay:write'])]
     private array $tags = [];
 
+    #[Groups(['model:read', 'model:write', 'overlay:read', 'overlay:write'])]
+    #[ORM\Column(nullable: true)]
+    private array $rules = [];
+
     public function __construct()
     {
         $this->createdDate = new \DateTimeImmutable();
@@ -267,6 +271,18 @@ class Model
     public function setTags(?array $tags): self
     {
         $this->tags = $tags;
+
+        return $this;
+    }
+
+    public function getRules(): array
+    {
+        return $this->rules;
+    }
+
+    public function setRules(?array $rules): self
+    {
+        $this->rules = $rules;
 
         return $this;
     }

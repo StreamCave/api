@@ -14,8 +14,7 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
     {
         $this->setTopBar($manager);
         $this->setBottomBar($manager);
-        $this->setNextMatch($manager);
-        $this->setCurrentMatch($manager);
+        $this->setMatch($manager);
         $this->setPoll($manager);
         $this->setPopup($manager);
         $this->setTweets($manager);
@@ -55,26 +54,12 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $manager->flush();
     }
 
-    private function setNextMatch(ObjectManager $manager): void
+    private function setMatch(ObjectManager $manager): void
     {
         $widget = new Widget();
-        $widget->setUuid(Uuid::v5(Uuid::v6(), 'NextMatch'));
-        $widget->setName('NextMatch');
-        $widget->setDescription('Prochain match.');
-        $widget->setVisible(false);
-        $widget->setMatchGroup($this->getReference('match-group-louvard'));
-        $widget->setOverlay($this->getReference('overlay-louvard'));
-
-        $manager->persist($widget);
-        $manager->flush();
-    }
-
-    private function setCurrentMatch(ObjectManager $manager): void
-    {
-        $widget = new Widget();
-        $widget->setUuid(Uuid::v5(Uuid::v6(), 'CurrentMatch'));
-        $widget->setName('CurrentMatch');
-        $widget->setDescription('Match en cours.');
+        $widget->setUuid(Uuid::v5(Uuid::v6(), 'Match'));
+        $widget->setName('Match');
+        $widget->setDescription('Match.');
         $widget->setVisible(false);
         $widget->setMatchGroup($this->getReference('match-group-louvard'));
         $widget->setOverlay($this->getReference('overlay-louvard'));

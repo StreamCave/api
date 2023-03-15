@@ -119,14 +119,6 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $widget->setVisible(false);
         $widget->addCameraGroup($this->getReference('camera-group-' . self::MODEL .  '-' . $players[0]));
         $widget->addCameraGroup($this->getReference('camera-group-' . self::MODEL .  '-' . $players[1]));
-        $widget->addCameraGroup($this->getReference('camera-group-' . self::MODEL .  '-' . $players[2]));
-        $widget->addCameraGroup($this->getReference('camera-group-' . self::MODEL .  '-' . $players[3]));
-        $widget->addCameraGroup($this->getReference('camera-group-' . self::MODEL .  '-' . $players[4]));
-        $widget->addCameraGroup($this->getReference('camera-group-' . self::MODEL .  '-' . $players[5]));
-        $widget->addCameraGroup($this->getReference('camera-group-' . self::MODEL .  '-' . $players[6]));
-        $widget->addCameraGroup($this->getReference('camera-group-' . self::MODEL .  '-' . $players[7]));
-        $widget->addCameraGroup($this->getReference('camera-group-' . self::MODEL .  '-' . $players[8]));
-        $widget->addCameraGroup($this->getReference('camera-group-' . self::MODEL .  '-' . $players[9]));
         $widget->setOverlay($this->getReference('overlay-' . self::MODEL));
 
         $manager->persist($widget);

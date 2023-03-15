@@ -47,9 +47,7 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
             $camera->setUuid(Uuid::v5(Uuid::v6(), "Camera $player"));
             $camera->setName("Camera $player");
             $camera->setVisible(false);
-            $camera->setCamId("cam-$player");
-            $camera->setRoomName("Room $player");
-            $camera->setRoomPassword("password-$player");
+            $camera->setSocketId("socket-$player");
             $this->addReference("camera-group-louvard-$player", $camera);
 
             $manager->persist($camera);

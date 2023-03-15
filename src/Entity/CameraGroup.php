@@ -92,7 +92,12 @@ class CameraGroup
     private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $socketId = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
+    private ?string $team = null;
 
     public function __construct()
     {
@@ -176,6 +181,18 @@ class CameraGroup
     public function setSocketId(?string $socketId): self
     {
         $this->socketId = $socketId;
+
+        return $this;
+    }
+
+    public function getTeam(): ?string
+    {
+        return $this->team;
+    }
+
+    public function setTeam(?string $team): self
+    {
+        $this->team = $team;
 
         return $this;
     }

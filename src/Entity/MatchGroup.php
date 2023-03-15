@@ -124,13 +124,12 @@ class MatchGroup
     #[Groups(['match_group:read', 'match_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?bool $nextMatch = null;
 
-    #[ORM\OneToMany(mappedBy: 'matchGroup', targetEntity: Widget::class)]
-    #[Groups(['match_group:read', 'match_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
-    private Collection $widgets;
-
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['match_group:read', 'match_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $overlayId = null;
+
+    #[ORM\ManyToMany(targetEntity: Widget::class, mappedBy: 'matchGroup')]
+    private Collection $widgets;
 
     public function __construct()
     {
@@ -275,6 +274,18 @@ class MatchGroup
         return $this;
     }
 
+    public function getOverlayId(): ?string
+    {
+        return $this->overlayId;
+    }
+
+    public function setOverlayId(?string $overlayId): self
+    {
+        $this->overlayId = $overlayId;
+
+        return $this;
+    }
+
     /**
      * @return Collection<int, Widget>
      */
@@ -287,7 +298,7 @@ class MatchGroup
     {
         if (!$this->widgets->contains($widget)) {
             $this->widgets->add($widget);
-            $widget->setMatchGroup($this);
+            $widget->addMatchGroup($this);
         }
 
         return $this;
@@ -296,23 +307,8 @@ class MatchGroup
     public function removeWidget(Widget $widget): self
     {
         if ($this->widgets->removeElement($widget)) {
-            // set the owning side to null (unless already changed)
-            if ($widget->getMatchGroup() === $this) {
-                $widget->setMatchGroup(null);
-            }
+            $widget->removeMatchGroup($this);
         }
-
-        return $this;
-    }
-
-    public function getOverlayId(): ?string
-    {
-        return $this->overlayId;
-    }
-
-    public function setOverlayId(?string $overlayId): self
-    {
-        $this->overlayId = $overlayId;
 
         return $this;
     }

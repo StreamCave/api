@@ -142,10 +142,6 @@ class Widget
     #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
     private Collection $mapGroup;
 
-    #[ORM\ManyToOne(inversedBy: 'widgets')]
-    #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
-    private ?MatchGroup $matchGroup = null;
-
     #[ORM\ManyToMany(targetEntity: PlanningGroup::class, inversedBy: 'widgets', cascade: ['persist'])]
     #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
     private Collection $planningGroup;
@@ -160,6 +156,9 @@ class Widget
     #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
     private ?Overlay $overlay = null;
 
+    #[ORM\ManyToMany(targetEntity: MatchGroup::class, inversedBy: 'widgets')]
+    private Collection $matchGroup;
+
     public function __construct()
     {
         $this->createdDate = new \DateTimeImmutable();
@@ -168,6 +167,7 @@ class Widget
         $this->cameraGroup = new ArrayCollection();
         $this->mapGroup = new ArrayCollection();
         $this->planningGroup = new ArrayCollection();
+        $this->matchGroup = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -391,14 +391,26 @@ class Widget
         return $this;
     }
 
-    public function getMatchGroup(): ?MatchGroup
+    /**
+     * @return Collection<int, MatchGroup>
+     */
+    public function getMatchGroup(): Collection
     {
         return $this->matchGroup;
     }
 
-    public function setMatchGroup(?MatchGroup $matchGroup): self
+    public function addMatchGroup(MatchGroup $matchGroup): self
     {
-        $this->matchGroup = $matchGroup;
+        if (!$this->matchGroup->contains($matchGroup)) {
+            $this->matchGroup->add($matchGroup);
+        }
+
+        return $this;
+    }
+
+    public function removeMatchGroup(MatchGroup $matchGroup): self
+    {
+        $this->matchGroup->removeElement($matchGroup);
 
         return $this;
     }

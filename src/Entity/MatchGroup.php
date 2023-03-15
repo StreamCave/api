@@ -125,6 +125,7 @@ class MatchGroup
     private Collection $widgets;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['match_group:read', 'match_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?bool $nextMatch = null;
 
     public function __construct()

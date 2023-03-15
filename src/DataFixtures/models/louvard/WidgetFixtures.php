@@ -1,15 +1,18 @@
 <?php
 
-namespace App\DataFixtures;
+namespace App\DataFixtures\models\louvard;
 
+use App\DataFixtures\OverlayFixtures;
+use App\Entity\Widget;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
-use App\Entity\Widget;
 use Symfony\Component\Uid\Uuid;
 
 class WidgetFixtures extends Fixture implements DependentFixtureInterface
 {
+    private const MODEL = 'louvard';
+
     public function load(ObjectManager $manager): void
     {
         $this->setTopBar($manager);
@@ -30,8 +33,8 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $widget->setName('TopBar');
         $widget->setDescription('Barre en haut de page.');
         $widget->setVisible(false);
-        $widget->setInfoGroup($this->getReference('info-group-louvard'));
-        $widget->setOverlay($this->getReference('overlay-louvard'));
+        $widget->setInfoGroup($this->getReference('info-group-' . self::MODEL));
+        $widget->setOverlay($this->getReference('overlay-' . self::MODEL));
 
         $manager->persist($widget);
         $manager->flush();
@@ -44,8 +47,8 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $widget->setName('BottomBar');
         $widget->setDescription('Barre en bas de page.');
         $widget->setVisible(false);
-        $widget->setInfoGroup($this->getReference('info-group-louvard'));
-        $widget->setOverlay($this->getReference('overlay-louvard'));
+        $widget->setInfoGroup($this->getReference('info-group-' . self::MODEL));
+        $widget->setOverlay($this->getReference('overlay-' . self::MODEL));
 
         $manager->persist($widget);
         $manager->flush();
@@ -58,8 +61,8 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $widget->setName('Match');
         $widget->setDescription('Match.');
         $widget->setVisible(false);
-        $widget->setMatchGroup($this->getReference('match-group-louvard'));
-        $widget->setOverlay($this->getReference('overlay-louvard'));
+        $widget->setMatchGroup($this->getReference('match-group-' . self::MODEL));
+        $widget->setOverlay($this->getReference('overlay-' . self::MODEL));
 
         $manager->persist($widget);
         $manager->flush();
@@ -72,8 +75,8 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $widget->setName('Poll');
         $widget->setDescription('Sondage.');
         $widget->setVisible(false);
-        $widget->setPollGroup($this->getReference('poll-group-louvard'));
-        $widget->setOverlay($this->getReference('overlay-louvard'));
+        $widget->setPollGroup($this->getReference('poll-group-' . self::MODEL));
+        $widget->setOverlay($this->getReference('overlay-' . self::MODEL));
 
         $manager->persist($widget);
         $manager->flush();
@@ -86,8 +89,8 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $widget->setName('Popup');
         $widget->setDescription('Popup.');
         $widget->setVisible(false);
-        $widget->setPopupGroup($this->getReference('popup-group-louvard'));
-        $widget->setOverlay($this->getReference('overlay-louvard'));
+        $widget->setPopupGroup($this->getReference('popup-group-' . self::MODEL));
+        $widget->setOverlay($this->getReference('overlay-' . self::MODEL));
 
         $manager->persist($widget);
         $manager->flush();
@@ -100,8 +103,8 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $widget->setName('Tweets');
         $widget->setDescription('Tweets.');
         $widget->setVisible(false);
-        $widget->setTweetGroup($this->getReference('tweet-group-louvard'));
-        $widget->setOverlay($this->getReference('overlay-louvard'));
+        $widget->setTweetGroup($this->getReference('tweet-group-' . self::MODEL));
+        $widget->setOverlay($this->getReference('overlay-' . self::MODEL));
 
         $manager->persist($widget);
         $manager->flush();
@@ -114,17 +117,17 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $widget->setName('Cameras');
         $widget->setDescription('Cameras.');
         $widget->setVisible(false);
-        $widget->addCameraGroup($this->getReference('camera-group-louvard-' . $players[0]));
-        $widget->addCameraGroup($this->getReference('camera-group-louvard-' . $players[1]));
-        $widget->addCameraGroup($this->getReference('camera-group-louvard-' . $players[2]));
-        $widget->addCameraGroup($this->getReference('camera-group-louvard-' . $players[3]));
-        $widget->addCameraGroup($this->getReference('camera-group-louvard-' . $players[4]));
-        $widget->addCameraGroup($this->getReference('camera-group-louvard-' . $players[5]));
-        $widget->addCameraGroup($this->getReference('camera-group-louvard-' . $players[6]));
-        $widget->addCameraGroup($this->getReference('camera-group-louvard-' . $players[7]));
-        $widget->addCameraGroup($this->getReference('camera-group-louvard-' . $players[8]));
-        $widget->addCameraGroup($this->getReference('camera-group-louvard-' . $players[9]));
-        $widget->setOverlay($this->getReference('overlay-louvard'));
+        $widget->addCameraGroup($this->getReference('camera-group-' . self::MODEL .  '-' . $players[0]));
+        $widget->addCameraGroup($this->getReference('camera-group-' . self::MODEL .  '-' . $players[1]));
+        $widget->addCameraGroup($this->getReference('camera-group-' . self::MODEL .  '-' . $players[2]));
+        $widget->addCameraGroup($this->getReference('camera-group-' . self::MODEL .  '-' . $players[3]));
+        $widget->addCameraGroup($this->getReference('camera-group-' . self::MODEL .  '-' . $players[4]));
+        $widget->addCameraGroup($this->getReference('camera-group-' . self::MODEL .  '-' . $players[5]));
+        $widget->addCameraGroup($this->getReference('camera-group-' . self::MODEL .  '-' . $players[6]));
+        $widget->addCameraGroup($this->getReference('camera-group-' . self::MODEL .  '-' . $players[7]));
+        $widget->addCameraGroup($this->getReference('camera-group-' . self::MODEL .  '-' . $players[8]));
+        $widget->addCameraGroup($this->getReference('camera-group-' . self::MODEL .  '-' . $players[9]));
+        $widget->setOverlay($this->getReference('overlay-' . self::MODEL));
 
         $manager->persist($widget);
         $manager->flush();
@@ -137,10 +140,10 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $widget->setName('Maps');
         $widget->setDescription('Cartes.');
         $widget->setVisible(false);
-        $widget->addMapGroup($this->getReference('map-group-louvard-bo3-border'));
-        $widget->addMapGroup($this->getReference('map-group-louvard-bo3-oregon'));
-        $widget->addMapGroup($this->getReference('map-group-louvard-bo3-kafe'));
-        $widget->setOverlay($this->getReference('overlay-louvard'));
+        $widget->addMapGroup($this->getReference('map-group-' . self::MODEL .  '-bo3-border'));
+        $widget->addMapGroup($this->getReference('map-group-' . self::MODEL .  '-bo3-oregon'));
+        $widget->addMapGroup($this->getReference('map-group-' . self::MODEL .  '-bo3-kafe'));
+        $widget->setOverlay($this->getReference('overlay-' . self::MODEL));
 
         $manager->persist($widget);
         $manager->flush();
@@ -153,10 +156,10 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $widget->setName('Planning');
         $widget->setDescription('Planning.');
         $widget->setVisible(false);
-        $widget->addPlanningGroup($this->getReference('planning-group-louvard-Alpha-vs-Delta'));
-        $widget->addPlanningGroup($this->getReference('planning-group-louvard-Beta-vs-Echo'));
-        $widget->addPlanningGroup($this->getReference('planning-group-louvard-Charlie-vs-Foxtrot'));
-        $widget->setOverlay($this->getReference('overlay-louvard'));
+        $widget->addPlanningGroup($this->getReference('planning-group-' . self::MODEL .  '-Alpha-vs-Delta'));
+        $widget->addPlanningGroup($this->getReference('planning-group-' . self::MODEL .  '-Beta-vs-Echo'));
+        $widget->addPlanningGroup($this->getReference('planning-group-' . self::MODEL .  '-Charlie-vs-Foxtrot'));
+        $widget->setOverlay($this->getReference('overlay-' . self::MODEL));
 
         $manager->persist($widget);
         $manager->flush();

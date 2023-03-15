@@ -87,21 +87,12 @@ class CameraGroup
     #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private Collection $widgets;
 
-    #[ORM\Column(length: 255)]
-    #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
-    private ?string $camId = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
-    private ?string $roomName = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
-    private ?string $roomPassword = null;
-
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $name = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $socketId = null;
 
     public function __construct()
     {
@@ -165,42 +156,6 @@ class CameraGroup
         return $this;
     }
 
-    public function getCamId(): ?string
-    {
-        return $this->camId;
-    }
-
-    public function setCamId(string $camId): self
-    {
-        $this->camId = $camId;
-
-        return $this;
-    }
-
-    public function getRoomName(): ?string
-    {
-        return $this->roomName;
-    }
-
-    public function setRoomName(?string $roomName): self
-    {
-        $this->roomName = $roomName;
-
-        return $this;
-    }
-
-    public function getRoomPassword(): ?string
-    {
-        return $this->roomPassword;
-    }
-
-    public function setRoomPassword(?string $roomPassword): self
-    {
-        $this->roomPassword = $roomPassword;
-
-        return $this;
-    }
-
     public function getName(): ?string
     {
         return $this->name;
@@ -209,6 +164,18 @@ class CameraGroup
     public function setName(?string $name): self
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function getSocketId(): ?string
+    {
+        return $this->socketId;
+    }
+
+    public function setSocketId(?string $socketId): self
+    {
+        $this->socketId = $socketId;
 
         return $this;
     }

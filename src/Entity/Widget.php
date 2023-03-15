@@ -142,13 +142,13 @@ class Widget
     #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
     private Collection $mapGroup;
 
+    #[ORM\ManyToOne(inversedBy: 'widgets')]
+    #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
+    private ?MatchGroup $matchGroup = null;
+
     #[ORM\ManyToMany(targetEntity: PlanningGroup::class, inversedBy: 'widgets', cascade: ['persist'])]
     #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
     private Collection $planningGroup;
-
-    #[ORM\OneToMany(mappedBy: 'widget', targetEntity: MatchGroup::class)]
-    #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
-    private Collection $matchGroup;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
     private ?\DateTimeInterface $createdDate;
@@ -168,7 +168,6 @@ class Widget
         $this->cameraGroup = new ArrayCollection();
         $this->mapGroup = new ArrayCollection();
         $this->planningGroup = new ArrayCollection();
-        $this->matchGroup = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -392,32 +391,14 @@ class Widget
         return $this;
     }
 
-    /**
-     * @return Collection<int, MatchGroup>
-     */
-    public function getMatchGroup(): Collection
+    public function getMatchGroup(): ?MatchGroup
     {
         return $this->matchGroup;
     }
 
-    public function addMatchGroup(MatchGroup $matchGroup): self
+    public function setMatchGroup(?MatchGroup $matchGroup): self
     {
-        if (!$this->matchGroup->contains($matchGroup)) {
-            $this->matchGroup->add($matchGroup);
-            $matchGroup->setWidget($this);
-        }
-
-        return $this;
-    }
-
-    public function removeMatchGroup(MatchGroup $matchGroup): self
-    {
-        if ($this->matchGroup->removeElement($matchGroup)) {
-            // set the owning side to null (unless already changed)
-            if ($matchGroup->getWidget() === $this) {
-                $matchGroup->setWidget(null);
-            }
-        }
+        $this->matchGroup = $matchGroup;
 
         return $this;
     }

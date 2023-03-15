@@ -124,13 +124,18 @@ class MatchGroup
     #[Groups(['match_group:read', 'match_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?bool $nextMatch = null;
 
-    #[ORM\ManyToOne(inversedBy: 'matchGroup')]
+    #[ORM\OneToMany(mappedBy: 'matchGroup', targetEntity: Widget::class)]
     #[Groups(['match_group:read', 'match_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
-    private ?Widget $widget = null;
+    private Collection $widgets;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['match_group:read', 'match_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
+    private ?string $overlayId = null;
 
     public function __construct()
     {
         $this->uuid = Uuid::v4();
+        $this->widgets = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -270,14 +275,44 @@ class MatchGroup
         return $this;
     }
 
-    public function getWidget(): ?Widget
+    /**
+     * @return Collection<int, Widget>
+     */
+    public function getWidgets(): Collection
     {
-        return $this->widget;
+        return $this->widgets;
     }
 
-    public function setWidget(?Widget $widget): self
+    public function addWidget(Widget $widget): self
     {
-        $this->widget = $widget;
+        if (!$this->widgets->contains($widget)) {
+            $this->widgets->add($widget);
+            $widget->setMatchGroup($this);
+        }
+
+        return $this;
+    }
+
+    public function removeWidget(Widget $widget): self
+    {
+        if ($this->widgets->removeElement($widget)) {
+            // set the owning side to null (unless already changed)
+            if ($widget->getMatchGroup() === $this) {
+                $widget->setMatchGroup(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getOverlayId(): ?string
+    {
+        return $this->overlayId;
+    }
+
+    public function setOverlayId(?string $overlayId): self
+    {
+        $this->overlayId = $overlayId;
 
         return $this;
     }

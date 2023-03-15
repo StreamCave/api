@@ -28,7 +28,7 @@ class DeletePlanningGroup extends AbstractController
         $this->doctrine->getManager()->flush();
 
         return $this->json([
-            "statusCode" => 202,
+            "statusCode" => 200,
             "message" => "PlanningGroup deleted",
         ]);
     }

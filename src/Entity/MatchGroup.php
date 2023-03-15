@@ -119,18 +119,17 @@ class MatchGroup
     #[Groups(['match_group:read', 'match_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?\DateTimeImmutable $startDate = null;
 
-    #[ORM\OneToMany(mappedBy: 'matchGroup', targetEntity: Widget::class)]
-    #[Groups(['match_group:read', 'match_group:write'])]
-    #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
-    private Collection $widgets;
 
     #[ORM\Column(nullable: true)]
     #[Groups(['match_group:read', 'match_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?bool $nextMatch = null;
 
+    #[ORM\ManyToOne(inversedBy: 'matchGroup')]
+    #[Groups(['match_group:read', 'match_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
+    private ?Widget $widget = null;
+
     public function __construct()
     {
-        $this->widgets = new ArrayCollection();
         $this->uuid = Uuid::v4();
     }
 
@@ -211,36 +210,6 @@ class MatchGroup
         return $this;
     }
 
-    /**
-     * @return Collection<int, Widget>
-     */
-    public function getWidgets(): Collection
-    {
-        return $this->widgets;
-    }
-
-    public function addWidget(Widget $widget): self
-    {
-        if (!$this->widgets->contains($widget)) {
-            $this->widgets->add($widget);
-            $widget->setMatchGroup($this);
-        }
-
-        return $this;
-    }
-
-    public function removeWidget(Widget $widget): self
-    {
-        if ($this->widgets->removeElement($widget)) {
-            // set the owning side to null (unless already changed)
-            if ($widget->getMatchGroup() === $this) {
-                $widget->setMatchGroup(null);
-            }
-        }
-
-        return $this;
-    }
-
     public function getScoreA(): ?string
     {
         return $this->scoreA;
@@ -297,6 +266,18 @@ class MatchGroup
     public function setNextMatch(?bool $nextMatch): self
     {
         $this->nextMatch = $nextMatch;
+
+        return $this;
+    }
+
+    public function getWidget(): ?Widget
+    {
+        return $this->widget;
+    }
+
+    public function setWidget(?Widget $widget): self
+    {
+        $this->widget = $widget;
 
         return $this;
     }

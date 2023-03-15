@@ -31,7 +31,6 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $widget->setDescription('Barre en haut de page.');
         $widget->setVisible(false);
         $widget->setInfoGroup($this->getReference('info-group-louvard'));
-        $widget->setMatchGroup($this->getReference('match-group-louvard'));
         $widget->setOverlay($this->getReference('overlay-louvard'));
 
         $manager->persist($widget);
@@ -46,7 +45,6 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $widget->setDescription('Barre en bas de page.');
         $widget->setVisible(false);
         $widget->setInfoGroup($this->getReference('info-group-louvard'));
-        $widget->setMatchGroup($this->getReference('match-group-louvard'));
         $widget->setOverlay($this->getReference('overlay-louvard'));
 
         $manager->persist($widget);
@@ -60,7 +58,7 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $widget->setName('Match');
         $widget->setDescription('Match.');
         $widget->setVisible(false);
-        $widget->setMatchGroup($this->getReference('match-group-louvard'));
+        $widget->addMatchGroup($this->getReference('match-group-louvard'));
         $widget->setOverlay($this->getReference('overlay-louvard'));
 
         $manager->persist($widget);

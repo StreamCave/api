@@ -30,7 +30,7 @@ api_platform:
   description: 'Une API pour StreamCave et développée par StreamCave'
 
   # The version of the API.
-  version: '2.1.0'
+  version: '2.2.0'
 
   openapi:
     # The contact information for the exposed API.

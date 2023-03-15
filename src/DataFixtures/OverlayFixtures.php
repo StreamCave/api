@@ -13,6 +13,8 @@ class OverlayFixtures extends Fixture implements DependentFixtureInterface
     public function load(ObjectManager $manager): void
     {
         $this->setupLouvard($manager);
+        $this->setupFlowUp($manager);
+        $this->setupHER6S($manager);
     }
 
     private function setupLouvard(ObjectManager $manager): void
@@ -27,6 +29,36 @@ class OverlayFixtures extends Fixture implements DependentFixtureInterface
         $overlay->addUserAccess($this->getReference('default-user-Beta'));
 
         $this->addReference('overlay-louvard', $overlay);
+
+        $manager->persist($overlay);
+        $manager->flush();
+    }
+
+    private function setupFlowUp(ObjectManager $manager): void
+    {
+        $overlay = new Overlay();
+        $overlay->setUuid(Uuid::v5(Uuid::v6(), 'FlowUp'));
+        $overlay->setName('FlowUp');
+        $overlay->setModel($this->getReference('model-flowup'));
+        $overlay->setUserOwner($this->getReference('default-admin-user-2'));
+        $overlay->addUserAccess($this->getReference('default-admin-user'));
+
+        $this->addReference('overlay-flowup', $overlay);
+
+        $manager->persist($overlay);
+        $manager->flush();
+    }
+
+    private function setupHER6S(ObjectManager $manager): void
+    {
+        $overlay = new Overlay();
+        $overlay->setUuid(Uuid::v5(Uuid::v6(), 'HER6S'));
+        $overlay->setName('HER6S');
+        $overlay->setModel($this->getReference('model-her6s'));
+        $overlay->setUserOwner($this->getReference('default-admin-user-2'));
+        $overlay->addUserAccess($this->getReference('default-admin-user'));
+
+        $this->addReference('overlay-her6s', $overlay);
 
         $manager->persist($overlay);
         $manager->flush();

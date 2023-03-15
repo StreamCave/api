@@ -1,7 +1,9 @@
 <?php
 
-namespace App\DataFixtures;
+namespace App\DataFixtures\models\flowup;
 
+use App\DataFixtures\MapsFixtures;
+use App\DataFixtures\OverlayFixtures;
 use App\Entity\AnswerGroup;
 use App\Entity\CameraGroup;
 use App\Entity\InfoGroup;
@@ -19,6 +21,7 @@ use Symfony\Component\Uid\Uuid;
 
 class GroupFixtures extends Fixture implements DependentFixtureInterface
 {
+    private const MODEL = 'flowup';
 
     public function __construct(LibMapRepository $libMapRepository)
     {
@@ -41,14 +44,13 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
     {
         $players = ['Alpha', 'Bravo', 'Charlie', 'Delta', 'Echo', 'Foxtrot', 'Golf', 'Hotel', 'India', 'Juliett'];
 
-
         foreach ($players as $key => $player) {
             $camera = new CameraGroup();
             $camera->setUuid(Uuid::v5(Uuid::v6(), "Camera $player"));
             $camera->setName("Camera $player");
             $camera->setVisible(false);
             $camera->setSocketId("socket-$player");
-            $this->addReference("camera-group-louvard-$player", $camera);
+            $this->addReference("camera-group-" . self::MODEL . "-$player", $camera);
 
             $manager->persist($camera);
             $manager->flush();
@@ -58,13 +60,13 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
     private function setInfoGroup(ObjectManager $manager): void
     {
         $group = new InfoGroup();
-        $group->setUuid(Uuid::v5(Uuid::v6(), 'Info Louvard'));
-        $group->setTitre('Louvard 2023');
-        $group->setLogo('https://cdn.streamcave.tv/louvard/logo.svg');
-        $group->setDescription('Groupe info de la Louvard 2023');
-        $group->setTextScroll(['Bienvenue sur la Louvard 2023 !', 'Sixquatre assure le Cast de ce tournoi R6 en compagnie de StreamCave.', 'Un grand merci aux belges de nous accueillir !', 'Bonne chance à tous !']);
+        $group->setUuid(Uuid::v5(Uuid::v6(), 'Info FlowUp'));
+        $group->setTitre('#SaltyDuels');
+        $group->setLogo('https://cdn.streamcave.tv/models/flowup/FlowUpSigneWhite.svg');
+        $group->setDescription('Groupe info des Salty Duels');
+        $group->setTextScroll(['Bienvenue sur les SaltyDuels by FlowUp !', 'Sixquatre assure le Cast de ce tournoi R6 en compagnie de StreamCave et de FlowUp.', 'Bonne chance à tous !']);
 
-        $this->addReference('info-group-louvard', $group);
+        $this->addReference('info-group-' . self::MODEL, $group);
 
         $manager->persist($group);
         $manager->flush();
@@ -73,7 +75,7 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
     private function setMatchGroup(ObjectManager $manager): void
     {
         $group = new MatchGroup();
-        $group->setUuid(Uuid::v5(Uuid::v6(), 'Default Match Louvard'));
+        $group->setUuid(Uuid::v5(Uuid::v6(), 'Default Match FlowUp'));
         $group->setTeamNameA('Alpha');
         $group->setLogoTeamA('https://cdn.streamcave.tv/teams/alpha.png');
         $group->setPlayersTeamA(['Ace', 'Castle', 'Pulse', 'Thatcher', 'Thermite']);
@@ -84,11 +86,11 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
         $group->setScoreB("1");
         $group->setStartDate(new \DateTimeImmutable("2023-03-31 12:00:00"));
         $group->setNextMatch(false);
-        $group->setOverlayId($this->getReference('overlay-louvard')->getUuid());
+        $group->setOverlayId($this->getReference('overlay-' . self::MODEL)->getUuid());
 
         $manager->persist($group);
         $manager->flush();
-        $this->addReference('match-group-louvard', $group);
+        $this->addReference('match-group-' . self::MODEL, $group);
 
     }
 
@@ -99,12 +101,12 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
         $group->setQuestion('Quel joueur est en attaque ?');
         $group->setTime(300);
         $group->setChannel("sixquatre");
-        $group->setOverlayId($this->getReference('overlay-louvard')->getUuid());
+        $group->setOverlayId($this->getReference('overlay-' . self::MODEL)->getUuid());
         $group->setPollStarted(false);
         $group->setVisible(false);
         $group->setChoices(['Alpha', 'Bravo', 'Charlie', 'Delta', 'Echo', 'Foxtrot', 'Golf', 'Hotel', 'India', 'Juliett']);
 
-        $this->addReference('poll-group-louvard', $group);
+        $this->addReference('poll-group-' . self::MODEL, $group);
 
         $manager->persist($group);
         $manager->flush();
@@ -112,7 +114,7 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
 
     private function setAnswers(ObjectManager $manager): void
     {
-        $group = $this->getReference('poll-group-louvard');
+        $group = $this->getReference('poll-group-' . self::MODEL);
         $answers = ['Yes', 'No'];
 
         foreach ($answers as $key => $answer) {
@@ -132,9 +134,9 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
     {
         $group = new PopupGroup();
         $group->setUuid(Uuid::v5(Uuid::v6(), 'Default Popup'));
-        $group->setContent('Bienvenue en cettre première édition de la Louvard 2023 !');
+        $group->setContent('Bienvenue en cettre première édition de 2023 !');
 
-        $this->addReference('popup-group-louvard', $group);
+        $this->addReference('popup-group-' . self::MODEL, $group);
 
         $manager->persist($group);
         $manager->flush();
@@ -147,12 +149,12 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
         $group->setAt('brietgame');
         $group->setMediaType('image');
         $group->setMediaUrl('https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png');
-        $group->setContent('Bienvenue sur la Louvard 2023 !');
+        $group->setContent('Bienvenue sur les SaltyDuels by FlowUp !');
         $group->setVisible(false);
-        $group->setOverlayId($this->getReference('overlay-louvard')->getUuid());
-        $group->setHashtag('Louvard2023');
+        $group->setOverlayId($this->getReference('overlay-' . self::MODEL)->getUuid());
+        $group->setHashtag('saltyduels');
 
-        $this->addReference('tweet-group-louvard', $group);
+        $this->addReference('tweet-group-' . self::MODEL, $group);
 
         $manager->persist($group);
         $manager->flush();
@@ -170,7 +172,7 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
             $group->setLibMap($this->getReference('map-' . $map));
             $group->setPickTeam("Alpha");
             $group->setWinTeam($winTeam[$key]);
-            $this->addReference('map-group-louvard-bo3-' . $map, $group);
+            $this->addReference('map-group-' . self::MODEL . '-bo3-' . $map, $group);
 
             $manager->persist($group);
             $manager->flush();
@@ -187,13 +189,13 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
 
         foreach ($dates as $key => $date) {
             $group = new PlanningGroup();
-            $group->setUuid(Uuid::v5(Uuid::v6(), 'Planning Louvard ' . $teamA[$key] . ' vs ' . $teamB[$key]));
+            $group->setUuid(Uuid::v5(Uuid::v6(), 'Planning Flowup ' . $teamA[$key] . ' vs ' . $teamB[$key]));
             $group->setTeamA($teamA[$key]);
             $group->setLogoA($logoA[$key]);
             $group->setTeamB($teamB[$key]);
             $group->setLogoB($logoB[$key]);
             $group->setStartDate($date);
-            $this->addReference('planning-group-louvard-' . $teamA[$key] . '-vs-' . $teamB[$key], $group);
+            $this->addReference('planning-group-' . self::MODEL . '-' . $teamA[$key] . '-vs-' . $teamB[$key], $group);
 
             $manager->persist($group);
             $manager->flush();

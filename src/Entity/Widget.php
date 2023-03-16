@@ -146,6 +146,10 @@ class Widget
     #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
     private Collection $planningGroup;
 
+    #[ORM\ManyToMany(targetEntity: MatchGroup::class, inversedBy: 'widgets')]
+    #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
+    private Collection $matchGroup;
+
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
     private ?\DateTimeInterface $createdDate;
 
@@ -155,9 +159,6 @@ class Widget
     #[ORM\ManyToOne(inversedBy: 'widgets')]
     #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
     private ?Overlay $overlay = null;
-
-    #[ORM\ManyToMany(targetEntity: MatchGroup::class, inversedBy: 'widgets')]
-    private Collection $matchGroup;
 
     public function __construct()
     {

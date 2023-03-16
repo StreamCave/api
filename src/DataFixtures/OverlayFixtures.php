@@ -15,6 +15,7 @@ class OverlayFixtures extends Fixture implements DependentFixtureInterface
         $this->setupLouvard($manager);
         $this->setupFlowUp($manager);
         $this->setupHER6S($manager);
+        $this->setupRoadToLan($manager);
     }
 
     private function setupLouvard(ObjectManager $manager): void
@@ -59,6 +60,21 @@ class OverlayFixtures extends Fixture implements DependentFixtureInterface
         $overlay->addUserAccess($this->getReference('default-admin-user'));
 
         $this->addReference('overlay-her6s', $overlay);
+
+        $manager->persist($overlay);
+        $manager->flush();
+    }
+
+    private function setupRoadToLan(ObjectManager $manager): void
+    {
+        $overlay = new Overlay();
+        $overlay->setUuid(Uuid::v5(Uuid::v6(), 'RoadToLan'));
+        $overlay->setName('RoadToLan');
+        $overlay->setModel($this->getReference('model-roadtolan'));
+        $overlay->setUserOwner($this->getReference('default-admin-user-2'));
+        $overlay->addUserAccess($this->getReference('default-admin-user'));
+
+        $this->addReference('overlay-roadtolan', $overlay);
 
         $manager->persist($overlay);
         $manager->flush();

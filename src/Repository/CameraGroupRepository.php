@@ -39,6 +39,20 @@ class CameraGroupRepository extends ServiceEntityRepository
         }
     }
 
+    public function findAllByTeamAndOverlay($team, $overlayId): array
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.team = :team')
+            ->innerJoin('c.widgets', 'w')
+            ->innerJoin('w.overlay', 'o')
+            ->andWhere('o.id = :overlayId')
+            ->setParameter('team', $team)
+            ->setParameter('overlayId', $overlayId)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
 //    /**
 //     * @return CameraGroup[] Returns an array of CameraGroup objects
 //     */

@@ -6,9 +6,11 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Controller\DeleteCameraGroup;
+use App\Controller\EditCameraVisibleByTeam;
 use App\Repository\CameraGroupRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -51,6 +53,18 @@ use Symfony\Component\Uid\Uuid;
         status: 200,
         schemes: ['https'],
         openapiContext: ['summary' => 'Modifier un groupe de camera'],
+        normalizationContext: ['groups' => ['camera_group:read']],
+        denormalizationContext: ['groups' => ['camera_group:write']],
+        security: 'is_granted("ROLE_ADMIN") or object.getWidgets().getModel().getOverlay().getUserOwner() == user',
+        securityMessage: 'Vous n\'avez pas accès à ce groupe de camera',
+    ),
+    new Put(
+        uriTemplate: "/camera-groups/team/{team}/overlay/{overlayId}",
+        defaults: ['_api_receive' => false],
+        status: 200,
+        schemes: ['https'],
+        controller: EditCameraVisibleByTeam::class,
+        openapiContext: ['summary' => 'Modifier la visibilité d\'une camera par équipe'],
         normalizationContext: ['groups' => ['camera_group:read']],
         denormalizationContext: ['groups' => ['camera_group:write']],
         security: 'is_granted("ROLE_ADMIN") or object.getWidgets().getModel().getOverlay().getUserOwner() == user',

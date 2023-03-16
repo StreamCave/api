@@ -55,13 +55,13 @@ class ModelFixtures extends Fixture
         $model->setRules([
             "Maps" => [
                 "min" => 1,
-                "max" => 5,
+                "max" => 3,
                 "inTopbar" => true,
                 "inBottombar" => true,
             ],
             "Cameras" => [
                 "numberOfGroup" => 2,
-                "maxPerGroup" => 5,
+                "maxPerGroup" => 1,
                 "minPerGroup" => 1,
             ]
         ]);

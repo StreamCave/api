@@ -14,6 +14,7 @@ class ModelFixtures extends Fixture
         $this->modelLouvard($manager);
         $this->modelFlowUp($manager);
         $this->modelHER6S($manager);
+        $this->modelRoadToLan($manager);
     }
 
     private function modelLouvard(ObjectManager $manager) {
@@ -97,6 +98,35 @@ class ModelFixtures extends Fixture
         $model->setTags(["R6"]);
 
         $this->addReference('model-her6s', $model);
+
+        $manager->persist($model);
+        $manager->flush();
+    }
+
+    private function modelRoadToLan(ObjectManager $manager): void
+    {
+        $model = new Model();
+        $model->setUuid(Uuid::v5(Uuid::v6(), 'RoadToLan'));
+        $model->setName('RoadToLan');
+        $model->setDescription('Ceci est le modèle RoadToLan.');
+        $model->setPrice(0);
+        $model->setPreview("https://cdn.streamcave.tv/models/roadtolan/preview.jpg");
+        $model->setRules([
+            "Maps" => [
+                "min" => 1,
+                "max" => 3,
+                "inTopbar" => true,
+                "inBottombar" => true,
+            ],
+            "Cameras" => [
+                "numberOfGroup" => 2,
+                "maxPerGroup" => 5,
+                "minPerGroup" => 1,
+            ]
+        ]);
+        $model->setTags(["R6"]);
+
+        $this->addReference('model-roadtolan', $model);
 
         $manager->persist($model);
         $manager->flush();

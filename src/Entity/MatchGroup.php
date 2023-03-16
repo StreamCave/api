@@ -10,6 +10,7 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Controller\DeleteMatchGroup;
+use App\Controller\GetMatchGroupByOverlay;
 use App\Repository\MatchGroupRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -38,6 +39,18 @@ use Symfony\Component\Uid\Uuid;
         normalizationContext: ['groups' => ['match_group:read']],
         security: 'is_granted("ROLE_ADMIN")',
         securityMessage: 'Seulement les administrateurs peuvent accéder à cette ressource.',
+    ),
+    new Get(
+        uriTemplate: '/match-groups/overlays/{overlayuuid}',
+        uriVariables: "overlayuuid",
+        defaults: ['_api_receive' => false],
+        status: 200,
+        schemes: ['https'],
+        controller: GetMatchGroupByOverlay::class,
+        openapiContext: ['summary' => 'Récupérer les données de tous les groupes de matchs d\'un overlay'],
+        normalizationContext: ['groups' => ['match_group:read']],
+        security: 'is_granted("ROLE_ADMIN") or object.getWidgets().getModel().getOverlay().getUserOwner() == user',
+        securityMessage: 'Vous n\'avez pas accès à ce groupe de matchs',
     ),
     new Post(
         uriTemplate: '/match-groups/add',

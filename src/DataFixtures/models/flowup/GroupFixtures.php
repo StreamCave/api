@@ -87,10 +87,10 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
         $group->setStartDate(new \DateTimeImmutable("2023-03-31 12:00:00"));
         $group->setNextMatch(false);
         $group->setOverlayId($this->getReference('overlay-' . self::MODEL)->getUuid());
+        $this->addReference('match-group-' . self::MODEL, $group);
 
         $manager->persist($group);
         $manager->flush();
-        $this->addReference('match-group-' . self::MODEL, $group);
 
     }
 

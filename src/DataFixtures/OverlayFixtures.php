@@ -43,6 +43,7 @@ class OverlayFixtures extends Fixture implements DependentFixtureInterface
         $overlay->setModel($this->getReference('model-flowup'));
         $overlay->setUserOwner($this->getReference('default-admin-user-2'));
         $overlay->addUserAccess($this->getReference('default-admin-user'));
+        $overlay->addUserAccess($this->getReference('default-admin-user-3'));
 
         $this->addReference('overlay-flowup', $overlay);
 

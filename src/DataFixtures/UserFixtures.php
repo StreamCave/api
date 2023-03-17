@@ -13,6 +13,7 @@ class UserFixtures extends Fixture
     {
         $this->setSuperAdmin($manager);
         $this->setSuperAdmin2($manager);
+        $this->setSuperAdmin3($manager);
         $this->setUsers($manager);
     }
 
@@ -41,6 +42,21 @@ class UserFixtures extends Fixture
         $user->setRoles(['ROLE_ADMIN', 'ROLE_USER']);
 
         $this->addReference('default-admin-user-2', $user);
+
+        $manager->persist($user);
+        $manager->flush();
+    }
+
+    private function setSuperAdmin3(ObjectManager $manager): void
+    {
+        $user = new User();
+        $user->setUuid(Uuid::v1());
+        $user->setEmail($_ENV['ADMIN_3_EMAIL']);
+        $user->setPseudo("ADMIN Lilian");
+        $user->setPassword(password_hash($_ENV['ADMIN_3_PASSWORD'], PASSWORD_BCRYPT));
+        $user->setRoles(['ROLE_ADMIN', 'ROLE_USER']);
+
+        $this->addReference('default-admin-user-3', $user);
 
         $manager->persist($user);
         $manager->flush();

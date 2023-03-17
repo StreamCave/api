@@ -137,6 +137,10 @@ class MatchGroup
     #[Groups(['match_group:read', 'match_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?bool $nextMatch = null;
 
+    #[ORM\Column(nullable: true)]
+    #[Groups(['match_group:read', 'match_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
+    private ?bool $visible = null;
+
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['match_group:read', 'match_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $overlayId = null;
@@ -322,6 +326,18 @@ class MatchGroup
         if ($this->widgets->removeElement($widget)) {
             $widget->removeMatchGroup($this);
         }
+
+        return $this;
+    }
+
+    public function isVisible(): ?bool
+    {
+        return $this->visible;
+    }
+
+    public function setVisible(?bool $visible): self
+    {
+        $this->visible = $visible;
 
         return $this;
     }

@@ -61,8 +61,8 @@ class ModelFixtures extends Fixture
                 "inBottombar" => true,
             ],
             "Cameras" => [
-                "numberOfGroup" => 2,
-                "maxPerGroup" => 1,
+                "numberOfGroup" => 1,
+                "maxPerGroup" => 2,
                 "minPerGroup" => 1,
             ]
         ]);

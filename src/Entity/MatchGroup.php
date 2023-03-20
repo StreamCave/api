@@ -148,6 +148,9 @@ class MatchGroup
     #[ORM\ManyToMany(targetEntity: Widget::class, mappedBy: 'matchGroup')]
     private Collection $widgets;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $rounds = null;
+
     public function __construct()
     {
         $this->uuid = Uuid::v4();
@@ -338,6 +341,18 @@ class MatchGroup
     public function setVisible(?bool $visible): self
     {
         $this->visible = $visible;
+
+        return $this;
+    }
+
+    public function getRounds(): ?string
+    {
+        return $this->rounds;
+    }
+
+    public function setRounds(?string $rounds): self
+    {
+        $this->rounds = $rounds;
 
         return $this;
     }

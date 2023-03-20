@@ -85,6 +85,7 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
         $group->setLogoTeamB('https://cdn.streamcave.tv/teams/beta.png');
         $group->setPlayersTeamB(['Ash', 'Blackbeard', 'Capitao', 'Doc', 'Montagne']);
         $group->setScoreB("1");
+        $group->setRounds("BO1");
         $group->setStartDate(new \DateTimeImmutable("2023-03-31 12:00:00"));
         $group->setNextMatch(false);
         $group->setOverlayId($this->getReference('overlay-' . self::MODEL)->getUuid());

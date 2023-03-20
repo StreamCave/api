@@ -50,6 +50,7 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
             $camera->setName("Camera $player");
             $camera->setVisible(false);
             $camera->setSocketId("socket-$player");
+            $camera->setTeam($key < 5 ? 'Alpha' : 'Beta');
             $this->addReference("camera-group-" . self::MODEL . "-$player", $camera);
 
             $manager->persist($camera);

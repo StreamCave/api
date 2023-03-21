@@ -149,6 +149,7 @@ class MatchGroup
     private Collection $widgets;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['match_group:read', 'match_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $rounds = null;
 
     public function __construct()

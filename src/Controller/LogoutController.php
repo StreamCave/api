@@ -6,6 +6,7 @@ use App\Repository\UserRepository;
 use App\Service\TokenService;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
@@ -35,10 +36,8 @@ class LogoutController extends AbstractController
         $em->flush();
 
         $response = new JsonResponse([ 'message' => 'Logged Out' ], 200);
-//        $response->headers->clearCookie('refresh_token');
         if (isset($_COOKIE['refresh_token'])) {
             unset($_COOKIE['refresh_token']);
-//            setcookie('refresh_token', null, -1, '/');
         }
         return $response;
     }

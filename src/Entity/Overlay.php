@@ -11,6 +11,7 @@ use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Controller\CreateOverlayController;
 use App\Controller\DeleteOverlayController;
+use App\Controller\GetAllOverlaysController;
 use App\Repository\OverlayRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -28,17 +29,21 @@ use Symfony\Component\Uid\Uuid;
         schemes: ['https'],
         openapiContext: ['summary' => 'Récupérer les données d\'un overlay'],
         normalizationContext: ['groups' => ['overlay:read']],
-        security: 'is_granted("ROLE_ADMIN") or object.getUserOwner() == user or object.getUserAccess() == user or is_granted("OVERLAY_EDIT", object)',
+        security: 'object.getUserOwner() == user or object.getUserAccess() == user or is_granted("OVERLAY_EDIT", object)',
         securityMessage: 'Seulement les administrateurs peuvent accéder à cette ressource.',
+        securityPostDenormalize: 'object.getUserOwner() == user or is_granted("OVERLAY_EDIT", object)',
+        securityPostDenormalizeMessage: 'Vous n\'avez pas accès à cet overlay',
+        securityPostValidation: 'object.getUserOwner() == user or is_granted("OVERLAY_EDIT", object)',
+        securityPostValidationMessage: 'Vous n\'avez pas accès à cet overlay',
     ),
     new GetCollection(
-        uriTemplate: '/overlays',
+        uriTemplate: '/allOverlays/{uuid}',
+        uriVariables: "uuid",
         status: 200,
         schemes: ['https'],
+        controller: GetAllOverlaysController::class,
         openapiContext: ['summary' => 'Récupérer les données de tous les overlays'],
-        normalizationContext: ['groups' => ['overlay:read']],
-        security: 'is_granted("ROLE_ADMIN")',
-        securityMessage: 'Seulement les administrateurs peuvent accéder à cette ressource.',
+        normalizationContext: ['groups' => ['overlay:read']]
     ),
     new Post(
         uriTemplate: '/overlays/add',
@@ -57,8 +62,12 @@ use Symfony\Component\Uid\Uuid;
         openapiContext: ['summary' => 'Modifier un overlay'],
         normalizationContext: ['groups' => ['overlay:read']],
         denormalizationContext: ['groups' => ['overlay:write']],
-        security: 'is_granted("ROLE_ADMIN") or object.getUserOwner() == user or is_granted("OVERLAY_EDIT", object)',
+        security: 'object.getUserOwner() == user or is_granted("OVERLAY_EDIT", object)',
         securityMessage: 'Vous n\'avez pas accès à cet overlay',
+        securityPostDenormalize: 'object.getUserOwner() == user or is_granted("OVERLAY_EDIT", object)',
+        securityPostDenormalizeMessage: 'Vous n\'avez pas accès à cet overlay',
+        securityPostValidation: 'object.getUserOwner() == user or is_granted("OVERLAY_EDIT", object)',
+        securityPostValidationMessage: 'Vous n\'avez pas accès à cet overlay',
     ),
     new Delete(
         uriTemplate: '/overlays/{uuid}',
@@ -67,8 +76,12 @@ use Symfony\Component\Uid\Uuid;
         schemes: ['https'],
         controller: DeleteOverlayController::class,
         openapiContext: ['summary' => 'Supprimer un overlay'],
-        security: 'is_granted("ROLE_ADMIN") or object.getUserOwner() == user',
+        security: 'object.getUserOwner() == user',
         securityMessage: 'Vous n\'avez pas accès à cet overlay',
+        securityPostDenormalize: 'object.getUserOwner() == user',
+        securityPostDenormalizeMessage: 'Vous n\'avez pas accès à cet overlay',
+        securityPostValidation: 'object.getUserOwner() == user',
+        securityPostValidationMessage: 'Vous n\'avez pas accès à cet overlay',
     )
 ], schemes: ['https'], normalizationContext: ['groups' => ['overlay:read']], denormalizationContext: ['groups' => ['overlay:write']], openapiContext: ['summary' => 'Overlay'])]
 class Overlay

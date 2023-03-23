@@ -39,6 +39,19 @@ class OverlayRepository extends ServiceEntityRepository
         }
     }
 
+    public function findAllAccess($uuid): array
+    {
+        return $this->createQueryBuilder('o')
+            ->innerJoin('o.userAccess', 'ua')
+            ->innerJoin('o.userOwner', 'uo')
+            ->orWhere('ua.uuid = :uuid')
+            ->orWhere('uo.uuid = :uuid')
+            ->setParameter('uuid', $uuid)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
 //    /**
 //     * @return Overlay[] Returns an array of Overlay objects
 //     */

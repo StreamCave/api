@@ -35,7 +35,11 @@ class LogoutController extends AbstractController
         $em->flush();
 
         $response = new JsonResponse([ 'message' => 'Logged Out' ], 200);
-        $response->headers->clearCookie('refresh_token');
+//        $response->headers->clearCookie('refresh_token');
+        if (isset($_COOKIE['refresh_token'])) {
+            unset($_COOKIE['refresh_token']);
+//            setcookie('refresh_token', null, -1, '/');
+        }
         return $response;
     }
 }

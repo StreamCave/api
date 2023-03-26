@@ -39,6 +39,7 @@ class JWTCreatedListener {
         $payload['pseudo'] = $user->getPseudo();
         $payload['roles'] = $user->getRoles();
         $payload['ip'] = $request->getClientIp();
+        $payload['uuid'] = $user->getUuid();
         $payload['userId'] = $user->getId();
         $payload['exp'] = $expiration->getTimestamp();
 

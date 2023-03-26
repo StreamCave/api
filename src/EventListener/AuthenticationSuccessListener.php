@@ -54,7 +54,7 @@ class AuthenticationSuccessListener
                 true,
                 true,
                 false,
-                'strict'
+                'none'
             ));
         return $response;
     }

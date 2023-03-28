@@ -160,6 +160,9 @@ class Widget
     #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
     private ?Overlay $overlay = null;
 
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?Brackets $bracket = null;
+
     public function __construct()
     {
         $this->createdDate = new \DateTimeImmutable();
@@ -412,6 +415,18 @@ class Widget
     public function removeMatchGroup(MatchGroup $matchGroup): self
     {
         $this->matchGroup->removeElement($matchGroup);
+
+        return $this;
+    }
+
+    public function getBracket(): ?Brackets
+    {
+        return $this->bracket;
+    }
+
+    public function setBracket(?Brackets $bracket): self
+    {
+        $this->bracket = $bracket;
 
         return $this;
     }

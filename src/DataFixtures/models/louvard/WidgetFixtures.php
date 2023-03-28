@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures\models\louvard;
 
+use App\DataFixtures\BracketFixtures;
 use App\DataFixtures\OverlayFixtures;
 use App\Entity\Widget;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -24,6 +25,7 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $this->setTweets($manager);
         $this->setMaps($manager);
         $this->setPlanning($manager);
+        $this->setBracket($manager);
     }
 
     private function setTopBar(ObjectManager $manager): void
@@ -167,11 +169,25 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $manager->flush();
     }
 
+    private function setBracket(ObjectManager $manager): void
+    {
+        $widget = new Widget();
+        $widget->setUuid(Uuid::v5(Uuid::v6(), 'Bracket'));
+        $widget->setName('Bracket');
+        $widget->setDescription('Bracket.');
+        $widget->setVisible(false);
+        $widget->setOverlay($this->getReference('overlay-' . self::MODEL));
+        $widget->setBracket($this->getReference('bracket-' . self::MODEL));
+        $manager->persist($widget);
+        $manager->flush();
+    }
+
     public function getDependencies(): array
     {
         return array(
             GroupFixtures::class,
             OverlayFixtures::class,
+            BracketFixtures::class,
         );
     }
 }

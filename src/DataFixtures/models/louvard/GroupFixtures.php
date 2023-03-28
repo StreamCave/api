@@ -5,6 +5,7 @@ namespace App\DataFixtures\models\louvard;
 use App\DataFixtures\MapsFixtures;
 use App\DataFixtures\OverlayFixtures;
 use App\Entity\AnswerGroup;
+use App\Entity\Brackets;
 use App\Entity\CameraGroup;
 use App\Entity\InfoGroup;
 use App\Entity\MapGroup;

@@ -27,7 +27,7 @@ class ModelFixtures extends Fixture
         $model->setRules([
             "Maps" => [
                 "min" => 1,
-                "max" => 5,
+                "max" => 9,
                 "inTopbar" => true,
                 "inBottombar" => true,
             ],

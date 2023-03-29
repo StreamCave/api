@@ -1,0 +1,729 @@
+{
+  "lower":[
+    {
+      "id":"LB R1 M1",
+      "isTop":false,
+      "state":"SCORE_DONE",
+      "isLower":true,
+      "startTime":null,
+      "nextMatchId":"LB R2 M1",
+      "participants":[
+        {
+          "name":"TBD",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        },
+        {
+          "name":"TBD",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        }
+      ],
+      "tournamentRound":"R1",
+      "nextLooserMatchId":null
+    },
+    {
+      "id":"LB R1 M2",
+      "isTop":false,
+      "state":"SCORE_DONE",
+      "isLower":true,
+      "startTime":null,
+      "nextMatchId":"LB R2 M2",
+      "participants":[
+        {
+          "name":"TBD",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        },
+        {
+          "name":"TBD",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        }
+      ],
+      "tournamentRound":"R1",
+      "nextLooserMatchId":null
+    },
+    {
+      "id":"LB R1 M3",
+      "isTop":false,
+      "state":"SCORE_DONE",
+      "isLower":true,
+      "startTime":null,
+      "nextMatchId":"LB R2 M3",
+      "participants":[
+        {
+          "name":"TBD",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        },
+        {
+          "name":"TBD",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        }
+      ],
+      "tournamentRound":"R1",
+      "nextLooserMatchId":null
+    },
+    {
+      "id":"LB R1 M4",
+      "isTop":false,
+      "state":"SCORE_DONE",
+      "isLower":true,
+      "startTime":null,
+      "nextMatchId":"LB R2 M4",
+      "participants":[
+        {
+          "name":"TBD",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        },
+        {
+          "name":"TBD",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        }
+      ],
+      "tournamentRound":"R1",
+      "nextLooserMatchId":null
+    },
+    {
+      "id":"LB R2 M1",
+      "isTop":true,
+      "state":"SCORE_DONE",
+      "isLower":true,
+      "nextMatchId":"LB R3 M1",
+      "participants":[
+        {
+          "name":"TBD",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        },
+        {
+          "name":"TBD",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        }
+      ],
+      "tournamentRound":"R2",
+      "nextLooserMatchId":null
+    },
+    {
+      "id":"LB R2 M2",
+      "isTop":false,
+      "state":"SCORE_DONE",
+      "isLower":true,
+      "nextMatchId":"LB R3 M1",
+      "participants":[
+        {
+          "name":"TBD",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        },
+        {
+          "name":"TBD",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        }
+      ],
+      "tournamentRound":"R2",
+      "nextLooserMatchId":null
+    },
+    {
+      "id":"LB R2 M3",
+      "isTop":true,
+      "state":"SCORE_DONE",
+      "isLower":true,
+      "nextMatchId":"LB R3 M2",
+      "participants":[
+        {
+          "name":"TBD",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        },
+        {
+          "name":"TBD",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        }
+      ],
+      "tournamentRound":"R2",
+      "nextLooserMatchId":null
+    },
+    {
+      "id":"LB R2 M4",
+      "isTop":false,
+      "state":"SCORE_DONE",
+      "isLower":true,
+      "nextMatchId":"LB R3 M2",
+      "participants":[
+        {
+          "name":"TBD",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        },
+        {
+          "name":"TBD",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        }
+      ],
+      "tournamentRound":"R2",
+      "nextLooserMatchId":null
+    },
+    {
+      "id":"LB R3 M1",
+      "isTop":false,
+      "state":"SCORE_DONE",
+      "isLower":true,
+      "startTime":null,
+      "nextMatchId":"LB R4 M1",
+      "participants":[
+        {
+          "name":"TBD",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        },
+        {
+          "name":"TBD",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        }
+      ],
+      "tournamentRound":"R3",
+      "nextLooserMatchId":null
+    },
+    {
+      "id":"LB R3 M2",
+      "isTop":false,
+      "state":"SCORE_DONE",
+      "isLower":true,
+      "startTime":null,
+      "nextMatchId":"LB R4 M2",
+      "participants":[
+        {
+          "name":"TBD",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        },
+        {
+          "name":"TBDA",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        }
+      ],
+      "tournamentRound":"R3",
+      "nextLooserMatchId":null
+    },
+    {
+      "id":"LB R4 M1",
+      "isTop":false,
+      "state":"SCORE_DONE",
+      "isLower":true,
+      "startTime":null,
+      "nextMatchId":"LB R5 M1",
+      "participants":[
+        {
+          "name":"TBD",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        },
+        {
+          "name":"TBDdd",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        }
+      ],
+      "tournamentRound":"R4",
+      "nextLooserMatchId":null
+    },
+    {
+      "id":"LB R4 M2",
+      "isTop":false,
+      "state":"SCORE_DONE",
+      "isLower":true,
+      "startTime":null,
+      "nextMatchId":"LB R5 M1",
+      "participants":[
+        {
+          "name":"TBD",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        },
+        {
+          "name":"TBDdd",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        }
+      ],
+      "tournamentRound":"R4",
+      "nextLooserMatchId":null
+    },
+    {
+      "id":"LB R5 M1",
+      "isTop":false,
+      "state":"SCORE_DONE",
+      "isLower":true,
+      "startTime":null,
+      "nextMatchId":"LB R6 M1",
+      "participants":[
+        {
+          "name":"TBD",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        },
+        {
+          "name":"TBD",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        }
+      ],
+      "tournamentRound":"R5",
+      "nextLooserMatchId":null
+    },
+    {
+      "id":"LB R6 M1",
+      "isTop":false,
+      "state":"SCORE_DONE",
+      "isLower":true,
+      "startTime":null,
+      "nextMatchId":"WB R6 M1",
+      "participants":[
+        {
+          "name":"TBD",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        },
+        {
+          "name":"TBD",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        }
+      ],
+      "tournamentRound":"R6",
+      "nextLooserMatchId":null
+    }
+  ],
+  "upper":[
+    {
+      "id":"WB R1 M1",
+      "isTop":true,
+      "state":"SCORE_DONE",
+      "isLower":false,
+      "startTime":null,
+      "nextMatchId":"WB R2 M1",
+      "participants":[
+        {
+          "id":"ddfee063-adde-4192-95d2-203eb2ebb8f7",
+          "name":"#1",
+          "status":"PLAYER",
+          "isWinner":false,
+          "resultText":""
+        },
+        {
+          "id":"ddfuu063-adde-4192-95d2-203eb2ebb8f7",
+          "name":"Les singes",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        }
+      ],
+      "tournamentRound":"R1",
+      "nextLooserMatchId":"LB R1 M1"
+    },
+    {
+      "id":"WB R1 M2",
+      "isTop":false,
+      "state":"SCORE_DONE",
+      "isLower":false,
+      "nextMatchId":"WB R2 M1",
+      "participants":[
+        {
+          "id":"b4ecc604-1248-4265-895a-af918e27b6ff",
+          "name":"#5",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        },
+        {
+          "id":"19abab76-3c82-40e9-a334-4f57cb81bd08",
+          "name":"#4",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        }
+      ],
+      "tournamentRound":"R1",
+      "nextLooserMatchId":"LB R1 M2"
+    },
+    {
+      "id":"WB R1 M3",
+      "isTop":true,
+      "state":"SCORE_DONE",
+      "isLower":false,
+      "nextMatchId":"WB R2 M2",
+      "participants":[
+        {
+          "id":"ef66d820-1e28-4ef6-81e6-0835b2df5236",
+          "name":"#3",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        },
+        {
+          "id":"4c07d93a-f7e9-4b84-bda3-27c08c689f90",
+          "name":"#6",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        }
+      ],
+      "tournamentRound":"R1",
+      "nextLooserMatchId":"LB R1 M3"
+    },
+    {
+      "id":"WB R1 M4",
+      "isTop":false,
+      "state":"SCORE_DONE",
+      "isLower":false,
+      "startTime":null,
+      "nextMatchId":"WB R2 M2",
+      "participants":[
+        {
+          "id":"4a05a091-f7b6-4a9a-b6eb-b7ff8essss",
+          "name":"Les Chiens",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        },
+        {
+          "id":"4a05a091-aaau-4a9a-b6eb-b7qqaa6dc87",
+          "name":"Les Pirates",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        }
+      ],
+      "tournamentRound":"R1",
+      "nextLooserMatchId":"LB R1 M4"
+    },
+    {
+      "id":"WB R1 M5",
+      "isTop":true,
+      "state":"SCORE_DONE",
+      "isLower":false,
+      "startTime":null,
+      "nextMatchId":"WB R2 M3",
+      "participants":[
+        {
+          "id":"4a05a091-zerz-4a9a-b6eb-b7ff8ea6dc87",
+          "name":"Les Veaux",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        },
+        {
+          "id":"4a05a091-f7b6-4a9a-b6eb-qaqqaa6dc87",
+          "name":"Les Lions",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        }
+      ],
+      "tournamentRound":"R1",
+      "nextLooserMatchId":"LB R1 M1"
+    },
+    {
+      "id":"WB R1 M6",
+      "isTop":false,
+      "state":"SCORE_DONE",
+      "isLower":false,
+      "startTime":null,
+      "nextMatchId":"WB R2 M3",
+      "participants":[
+        {
+          "id":"4a05a091-f7b6-4a9a-b6eb-b7ff8ea6uuuu",
+          "name":"Les Loups",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        },
+        {
+          "id":"4a05a091-f7b6-4a9a-b6eb-b7qqaa6jjuu",
+          "name":"Les Chatons",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        }
+      ],
+      "tournamentRound":"R1",
+      "nextLooserMatchId":"LB R1 M2"
+    },
+    {
+      "id":"WB R1 M7",
+      "isTop":true,
+      "state":"SCORE_DONE",
+      "isLower":false,
+      "startTime":null,
+      "nextMatchId":"WB R2 M4",
+      "participants":[
+        {
+          "id":"4a05a091-f7b6-4a9a-b6eb-b7ff8ea6qwsc",
+          "name":"Les Castors",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        },
+        {
+          "id":"4a05a091-f7b6-4a9a-b6eb-b7kkii6dc87",
+          "name":"Les Souris",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        }
+      ],
+      "tournamentRound":"R1",
+      "nextLooserMatchId":"LB R1 M3"
+    },
+    {
+      "id":"WB R1 M8",
+      "isTop":false,
+      "state":"SCORE_DONE",
+      "isLower":false,
+      "startTime":null,
+      "nextMatchId":"WB R2 M4",
+      "participants":[
+        {
+          "id":"4a05a091-f7b6-4a9a-b6eb-b7ff8ea6lomp",
+          "name":"Les Lézards",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        },
+        {
+          "id":"4a05a091-f7b6-4a9a-b6eb-b7qqaa6dd13",
+          "name":"Les Hiboux",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        }
+      ],
+      "tournamentRound":"R1",
+      "nextLooserMatchId":"LB R1 M4"
+    },
+    {
+      "id":"WB R2 M1",
+      "isTop":true,
+      "state":"SCORE_DONE",
+      "isLower":false,
+      "nextMatchId":"WB R3 M1",
+      "participants":[
+        {
+          "name":"TBD",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        },
+        {
+          "name":"TBD",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        }
+      ],
+      "tournamentRound":"R2",
+      "nextLooserMatchId":"LB R2 M1"
+    },
+    {
+      "id":"WB R2 M2",
+      "isTop":false,
+      "state":"SCORE_DONE",
+      "isLower":false,
+      "nextMatchId":"WB R3 M1",
+      "participants":[
+        {
+          "name":"TBD",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        },
+        {
+          "name":"TBD",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        }
+      ],
+      "tournamentRound":"R2",
+      "nextLooserMatchId":"LB R2 M2"
+    },
+    {
+      "id":"WB R2 M3",
+      "isTop":true,
+      "state":"SCORE_DONE",
+      "isLower":false,
+      "nextMatchId":"WB R3 M2",
+      "participants":[
+        {
+          "name":"TBD",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        },
+        {
+          "name":"TBD",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        }
+      ],
+      "tournamentRound":"R2",
+      "nextLooserMatchId":"LB R2 M3"
+    },
+    {
+      "id":"WB R2 M4",
+      "isTop":false,
+      "state":"SCORE_DONE",
+      "isLower":false,
+      "nextMatchId":"WB R3 M2",
+      "participants":[
+        {
+          "name":"TBD",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        },
+        {
+          "name":"TBD",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        }
+      ],
+      "tournamentRound":"R2",
+      "nextLooserMatchId":"LB R2 M4"
+    },
+    {
+      "id":"WB R3 M1",
+      "isTop":true,
+      "state":"SCORE_DONE",
+      "isLower":false,
+      "nextMatchId":"WB R5 M1",
+      "participants":[
+        {
+          "name":"TBD",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        },
+        {
+          "name":"TBD",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        }
+      ],
+      "tournamentRound":"R3",
+      "nextLooserMatchId":"LB R4 M1"
+    },
+    {
+      "id":"WB R3 M2",
+      "isTop":false,
+      "state":"SCORE_DONE",
+      "isLower":false,
+      "nextMatchId":"WB R5 M1",
+      "participants":[
+        {
+          "name":"TBD",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        },
+        {
+          "name":"TBD",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        }
+      ],
+      "tournamentRound":"R3",
+      "nextLooserMatchId":"LB R4 M2"
+    },
+    {
+      "id":"WB R5 M1",
+      "isTop":true,
+      "state":"SCORE_DONE",
+      "isLower":false,
+      "startTime":null,
+      "nextMatchId":"WB R6 M1",
+      "participants":[
+        {
+          "name":"TBD",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        },
+        {
+          "name":"TBD",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        }
+      ],
+      "tournamentRound":"R5",
+      "nextLooserMatchId":"LB R6 M1"
+    },
+    {
+      "id":"WB R6 M1",
+      "state":"SCORE_DONE",
+      "isLower":false,
+      "startTime":null,
+      "nextMatchId":null,
+      "participants":[
+        {
+          "name":"TBD",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        },
+        {
+          "name":"TBD",
+          "status":"PLAYED",
+          "isWinner":false,
+          "resultText":""
+        }
+      ],
+      "tournamentRound":"R6",
+      "nextLooserMatchId":null
+    }
+  ]
+}

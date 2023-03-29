@@ -91,6 +91,9 @@ class Brackets
     #[Groups(['bracket:read', 'bracket:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $overlayId = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $type = null;
+
     public function __construct()
     {
         $this->uuid = Uuid::v4();
@@ -169,6 +172,18 @@ class Brackets
     public function setOverlayId(?string $overlayId): self
     {
         $this->overlayId = $overlayId;
+
+        return $this;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(?string $type): self
+    {
+        $this->type = $type;
 
         return $this;
     }

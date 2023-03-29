@@ -84,6 +84,10 @@ class MapGroup
     #[Groups(['map_group:read','map_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $winTeam = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['map_group:read','map_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
+    private ?string $status = null;
+
     #[ORM\ManyToMany(targetEntity: Widget::class, mappedBy: 'mapGroup')]
     private Collection $widgets;
 
@@ -168,6 +172,18 @@ class MapGroup
     public function setPickTeam(?string $pickTeam): self
     {
         $this->pickTeam = $pickTeam;
+
+        return $this;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(?string $status): self
+    {
+        $this->status = $status;
 
         return $this;
     }

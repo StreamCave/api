@@ -92,6 +92,7 @@ class Brackets
     private ?string $overlayId = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['bracket:read', 'bracket:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $type = null;
 
     public function __construct()

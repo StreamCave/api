@@ -25,28 +25,9 @@ class BracketFixtures extends Fixture implements DependentFixtureInterface
         $bracket->setGame('r6');
         $bracket->setVisible(true);
         $bracket->setOverlayId($this->getReference('overlay-louvard')->getUuid());
-        $bracket->setBracket([
-            "1" => [
-                "1" => [
-                    "name" => "Team 1",
-                    "score" => 0
-                ],
-                "2" => [
-                    "name" => "Team 2",
-                    "score" => 0
-                ]
-            ],
-            "2" => [
-                "1" => [
-                    "name" => "Team 3",
-                    "score" => 0
-                ],
-                "2" => [
-                    "name" => "Team 4",
-                    "score" => 0
-                ]
-            ]
-        ]);
+        $bracket->setType("DOUBLE");
+        // Set le bracket à partir d'un fichier json
+        $bracket->setBracket([file_get_contents(__DIR__ . '/brackets/r6.json')]);
         $this->addReference('bracket-louvard', $bracket);
         $manager->persist($bracket);
         $manager->flush();

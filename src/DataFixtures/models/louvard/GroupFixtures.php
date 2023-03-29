@@ -175,6 +175,7 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
             $group->setLibMap($this->getReference('map-' . $map));
             $group->setPickTeam("Alpha");
             $group->setWinTeam($winTeam[$key]);
+            $group->setStatus("BAN");
             $this->addReference('map-group-' . self::MODEL . '-bo3-' . $map, $group);
 
             $manager->persist($group);

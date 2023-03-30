@@ -153,6 +153,7 @@ class MatchGroup
     private ?string $rounds = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['match_group:read', 'match_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $hours = null;
 
     public function __construct()

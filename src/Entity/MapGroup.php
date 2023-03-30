@@ -92,9 +92,11 @@ class MapGroup
     private Collection $widgets;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['map_group:read','map_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $scoreTeamA = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['map_group:read','map_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $scoreTeamB = null;
 
     public function __construct()

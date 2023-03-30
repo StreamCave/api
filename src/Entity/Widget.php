@@ -91,7 +91,7 @@ class Widget
     private ?int $id = null;
 
     #[ORM\Column(type: Types::GUID, unique: true)]
-    #[Groups(['widget:read','widget:write','overlay:read','model:read'])]
+    #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
     #[ApiProperty(security: 'is_granted("ROLE_ADMIN")')]
     private ?string $uuid;
 
@@ -161,6 +161,7 @@ class Widget
     private ?Overlay $overlay = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
     private ?Brackets $bracket = null;
 
     public function __construct()

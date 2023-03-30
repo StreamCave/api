@@ -28,7 +28,7 @@ use Symfony\Component\Uid\Uuid;
         schemes: ['https'],
         openapiContext: ['summary' => 'Récupérer les données d\'un widget'],
         normalizationContext: ['groups' => ['widget:read']],
-        security: 'is_granted("ROLE_ADMIN")',
+        security: 'is_granted("ROLE_ADMIN") or object.getModel().getOverlay().getUserOwner() == user or object.getModel().getOverlay().getUserAccess() == user',
         securityMessage: 'Seulement les administrateurs peuvent accéder à cette ressource.',
     ),
     new GetCollection(
@@ -37,7 +37,7 @@ use Symfony\Component\Uid\Uuid;
         schemes: ['https'],
         openapiContext: ['summary' => 'Récupérer les données de tous les widgets'],
         normalizationContext: ['groups' => ['widget:read']],
-        security: 'is_granted("ROLE_ADMIN")',
+        security: 'is_granted("ROLE_ADMIN") or object.getModel().getOverlay().getUserOwner() == user or object.getModel().getOverlay().getUserAccess() == user',
         securityMessage: 'Seulement les administrateurs peuvent accéder à cette ressource.',
     ),
     new Post(

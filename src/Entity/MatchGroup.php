@@ -156,6 +156,10 @@ class MatchGroup
     #[Groups(['match_group:read', 'match_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $hours = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['match_group:read', 'match_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
+    private ?string $mapName = null;
+
     public function __construct()
     {
         $this->uuid = Uuid::v4();
@@ -370,6 +374,18 @@ class MatchGroup
     public function setHours(?string $hours): self
     {
         $this->hours = $hours;
+
+        return $this;
+    }
+
+    public function getMapName(): ?string
+    {
+        return $this->mapName;
+    }
+
+    public function setMapName(?string $mapName): self
+    {
+        $this->mapName = $mapName;
 
         return $this;
     }

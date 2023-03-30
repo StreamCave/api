@@ -31,9 +31,9 @@ use Symfony\Component\Uid\Uuid;
         normalizationContext: ['groups' => ['overlay:read']],
         security: 'object.getUserOwner() == user or object.getUserAccess() == user or is_granted("OVERLAY_EDIT", object)',
         securityMessage: 'Seulement les administrateurs peuvent accéder à cette ressource.',
-        securityPostDenormalize: 'object.getUserOwner() == user or is_granted("OVERLAY_EDIT", object)',
+        securityPostDenormalize: 'object.getUserOwner() == user or object.getUserAccess() == user or is_granted("OVERLAY_EDIT", object)',
         securityPostDenormalizeMessage: 'Vous n\'avez pas accès à cet overlay',
-        securityPostValidation: 'object.getUserOwner() == user or is_granted("OVERLAY_EDIT", object)',
+        securityPostValidation: 'object.getUserOwner() == user or object.getUserAccess() == user or is_granted("OVERLAY_EDIT", object)',
         securityPostValidationMessage: 'Vous n\'avez pas accès à cet overlay',
     ),
     new GetCollection(

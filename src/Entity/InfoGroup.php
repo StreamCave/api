@@ -105,9 +105,11 @@ class InfoGroup
     private Collection $widgets;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['info_group:read','info_group:write'])]
     private ?string $teamNameA = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['info_group:read','info_group:write'])]
     private ?string $teamNameB = null;
 
     public function __construct()

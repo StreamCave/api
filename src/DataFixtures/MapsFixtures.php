@@ -17,7 +17,7 @@ class MapsFixtures extends Fixture
 
     private function setupMapR6(ObjectManager $manager): void
     {
-        $mapsName = ["Bartlett", "Border", "Club house", "Close Quarters", "Nighthaven Labs", "Stadium", "Yatch", "Villa", "Tower", "Theme Park", "Skyscraper", "Plane", "Outback", "Oregon", "Kanal", "Kafe", "House", "Hereford", "Fortress", "Favela", "Consulate", "Coastline", "Chalet", "Bank", "Emerald Plains"];
+        $mapsName = ["Bartlett", "Border", "Club_house", "Close_Quarters", "Nighthaven_Labs", "Stadium", "Yatch", "Villa", "Tower", "Theme Park", "Skyscraper", "Plane", "Outback", "Oregon", "Kanal", "Kafe", "House", "Hereford", "Fortress", "Favela", "Consulate", "Coastline", "Chalet", "Bank", "Emerald_Plains"];
         $mapsUri = ["bartlett", "border", "clubhouse", "closequarters", "nighthaven_labs", "stadium", "yatch", "villa", "tower", "themepark", "skyscraper", "plane", "outback", "oregon", "kanal", "kafe", "house", "hereford", "fortress", "favela", "consulate", "coastline", "chalet", "bank", "emerald"];
 
         foreach ($mapsName as $key => $mapName) {

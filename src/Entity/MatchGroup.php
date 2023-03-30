@@ -152,6 +152,9 @@ class MatchGroup
     #[Groups(['match_group:read', 'match_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $rounds = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $hours = null;
+
     public function __construct()
     {
         $this->uuid = Uuid::v4();
@@ -354,6 +357,18 @@ class MatchGroup
     public function setRounds(?string $rounds): self
     {
         $this->rounds = $rounds;
+
+        return $this;
+    }
+
+    public function getHours(): ?string
+    {
+        return $this->hours;
+    }
+
+    public function setHours(?string $hours): self
+    {
+        $this->hours = $hours;
 
         return $this;
     }

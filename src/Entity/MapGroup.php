@@ -91,6 +91,12 @@ class MapGroup
     #[ORM\ManyToMany(targetEntity: Widget::class, mappedBy: 'mapGroup')]
     private Collection $widgets;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $scoreTeamA = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $scoreTeamB = null;
+
     public function __construct()
     {
         $this->uuid = Uuid::v4();
@@ -184,6 +190,30 @@ class MapGroup
     public function setStatus(?string $status): self
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    public function getScoreTeamA(): ?string
+    {
+        return $this->scoreTeamA;
+    }
+
+    public function setScoreTeamA(?string $scoreTeamA): self
+    {
+        $this->scoreTeamA = $scoreTeamA;
+
+        return $this;
+    }
+
+    public function getScoreTeamB(): ?string
+    {
+        return $this->scoreTeamB;
+    }
+
+    public function setScoreTeamB(?string $scoreTeamB): self
+    {
+        $this->scoreTeamB = $scoreTeamB;
 
         return $this;
     }

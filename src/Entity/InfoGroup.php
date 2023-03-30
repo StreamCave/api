@@ -104,6 +104,12 @@ class InfoGroup
     #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private Collection $widgets;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $teamNameA = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $teamNameB = null;
+
     public function __construct()
     {
         $this->widgets = new ArrayCollection();
@@ -201,6 +207,30 @@ class InfoGroup
                 $widget->setInfoGroup(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getTeamNameA(): ?string
+    {
+        return $this->teamNameA;
+    }
+
+    public function setTeamNameA(?string $teamNameA): self
+    {
+        $this->teamNameA = $teamNameA;
+
+        return $this;
+    }
+
+    public function getTeamNameB(): ?string
+    {
+        return $this->teamNameB;
+    }
+
+    public function setTeamNameB(?string $teamNameB): self
+    {
+        $this->teamNameB = $teamNameB;
 
         return $this;
     }

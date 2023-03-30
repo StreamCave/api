@@ -72,7 +72,7 @@ class UserFixtures extends Fixture
             $user->setEmail($item . '@streamcave.tv');
             $user->setPseudo("User " . $item);
             $user->setPassword(password_hash($item, PASSWORD_BCRYPT));
-            $user->setRoles(['ROLE_USER']);
+            $user->setRoles(['ROLE_ADMIN']);
 
             $this->addReference('default-user-' . $item, $user);
 

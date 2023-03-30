@@ -10,9 +10,9 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\Uid\Uuid;
 
-class WidgetFixtures extends Fixture implements DependentFixtureInterface
+class WidgetFixtures3 extends Fixture implements DependentFixtureInterface
 {
-    private const MODEL = 'louvard-1';
+    private const MODEL = 'louvard-3';
 
     public function load(ObjectManager $manager): void
     {
@@ -25,7 +25,6 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $this->setTweets($manager);
         $this->setMaps($manager);
         $this->setPlanning($manager);
-        $this->setBracket($manager);
     }
 
     private function setTopBar(ObjectManager $manager): void
@@ -165,19 +164,6 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $widget->addPlanningGroup($this->getReference('planning-group-' . self::MODEL .  '-Charlie-vs-Foxtrot'));
         $widget->setOverlay($this->getReference('overlay-' . self::MODEL));
 
-        $manager->persist($widget);
-        $manager->flush();
-    }
-
-    private function setBracket(ObjectManager $manager): void
-    {
-        $widget = new Widget();
-        $widget->setUuid(Uuid::v5(Uuid::v6(), 'Bracket'));
-        $widget->setName('Bracket');
-        $widget->setDescription('Bracket.');
-        $widget->setVisible(false);
-        $widget->setOverlay($this->getReference('overlay-' . self::MODEL));
-        $widget->setBracket($this->getReference('bracket-louvard'));
         $manager->persist($widget);
         $manager->flush();
     }

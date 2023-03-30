@@ -20,9 +20,9 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\Uid\Uuid;
 
-class GroupFixtures extends Fixture implements DependentFixtureInterface
+class GroupFixtures2 extends Fixture implements DependentFixtureInterface
 {
-    private const MODEL = 'louvard-1';
+    private const MODEL = 'louvard-2';
 
     public function __construct(LibMapRepository $libMapRepository)
     {

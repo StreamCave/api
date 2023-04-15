@@ -25,7 +25,7 @@ class ApiLoginController extends AbstractController
     #[Route('/api/login', name: 'api_login', methods: ['POST'])]
     public function index(#[CurrentUser] ?User $user, Request $request, UserRepository $userRepository, ManagerRegistry $doctrine, TokenService $tokenService): Response
     {
-
+        dd($request->get('email'), $request->get('password'));
         if (!$request->get('email') || !$request->get('password')) {
             return new JsonResponse([
                 'statusCode' => 400,

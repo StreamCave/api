@@ -9,6 +9,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Cookie;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -69,7 +70,7 @@ class Oauth2DiscordController extends AbstractController
         $token = $this->jwtManager->create($userDB);
 
         // Créer un cookie
-        $response = new Response();
+        $response = new RedirectResponse($_ENV["DISCORD_SUCCESS_REDIRECT_URI"]);
         $response->headers->setCookie(
             new Cookie(
                 'refresh_token',
@@ -82,15 +83,37 @@ class Oauth2DiscordController extends AbstractController
                 false,
                 'none'
             ));
-
+        $response->headers->setCookie(
+            new Cookie(
+                'access_token_sso',
+                $accessToken,
+                new \DateTime('+1 day'),
+                '/',
+                "localhost",
+                true,
+                false,
+                false,
+                'none'
+            ));
+            $response->headers->setCookie(
+                new Cookie(
+                    'refresh_token_sso',
+                    $refreshTokenDiscord,
+                    new \DateTime('+1 day'),
+                    '/',
+                    "localhost",
+                    true,
+                    false,
+                    false,
+                    'none'
+                ));
         // On retour un json avec le cookie
-        $response->setContent(json_encode([
-            'token' => $token,
-            'refresh_token' => $refreshToken,
-            'refresh_token_discord' => $refreshTokenDiscord,
-        ]));
-        $response->headers->set('Content-Type', 'application/json');
-
+        // $response->setContent(json_encode([
+        //     'token' => $token,
+        //     'refresh_token' => $refreshToken,
+        //     'refresh_token_discord' => $refreshTokenDiscord,
+        // ]));
+        // $response->headers->set('Content-Type', 'application/json');
         return $response;
     }
 }

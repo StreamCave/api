@@ -14,9 +14,6 @@ security:
                 property: email
         # used to reload user from session & other features (e.g. switch_user)
     firewalls:
-        main:
-            custom_authenticator:
-                - App\Security\DiscordAuthenticator
         login:
             pattern: ^/api/login
             stateless: true

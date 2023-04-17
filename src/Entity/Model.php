@@ -36,7 +36,6 @@ use Symfony\Component\Uid\Uuid;
         schemes: ['https'],
         openapiContext: ['summary' => 'Récupérer les données de tous les modèles'],
         normalizationContext: ['groups' => ['model:read']],
-        security: 'is_granted("ROLE_ADMIN")',
         securityMessage: 'Seulement les administrateurs peuvent accéder à cette ressource.',
     ),
     new Post(

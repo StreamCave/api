@@ -63,6 +63,7 @@ class Oauth2DiscordController extends AbstractController
             // On génère un refreshToken dans la base de données pour l'utilisateur
             $userDB->setAvatar("https://cdn.discordapp.com/avatars/" . $discordUser['id'] ."/" . $discordUser['avatar'] .".png");
             $userDB->setToken(Uuid::v4());
+            $userDB->setSsoLogin("discord");
             $em->persist($userDB);
             $em->flush();
             $refreshToken = $userDB->getToken();

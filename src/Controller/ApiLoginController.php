@@ -34,6 +34,7 @@ class ApiLoginController extends AbstractController
         $email = $request->get('email');
         $password = $request->get('password');
         $user = $userRepository->findOneBy(['email' => $email]);
+        $user->setSsoLogin("normal");
 
         password_verify($password, $user[0]->getPassword()) ? $accessOk = true : $accessOk = false;
 

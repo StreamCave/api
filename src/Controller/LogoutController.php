@@ -48,6 +48,30 @@ class LogoutController extends AbstractController
                 false,
                 'none'
             ));
+            $response->headers->setCookie(
+                new Cookie(
+                    'refresh_token_sso',
+                    'delete',
+                    new \DateTime('now - 1 hour'),
+                    '/',
+                    $_ENV["DOMAIN"],
+                    true,
+                    true,
+                    false,
+                    'none'
+                ));
+                $response->headers->setCookie(
+                    new Cookie(
+                        'access_token_sso',
+                        'delete',
+                        new \DateTime('now - 1 hour'),
+                        '/',
+                        $_ENV["DOMAIN"],
+                        true,
+                        true,
+                        false,
+                        'none'
+                    ));
         return $response;
     }
 }

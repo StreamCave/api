@@ -31,3 +31,8 @@ services:
         class: App\EventListener\AuthenticationSuccessListener
         tags:
             - { name: kernel.event_listener, event: lexik_jwt_authentication.on_authentication_success, method: onAuthenticationSuccessResponse }
+    App\Service\DiscordApiService:
+        arguments:
+            $clientId: '%env(DISCORD_CLIENT_ID)%'
+            $clientSecret: '%env(DISCORD_CLIENT_SECRET)%'
+            $redirectUri: '%env(DISCORD_REDIRECT_URI)%'

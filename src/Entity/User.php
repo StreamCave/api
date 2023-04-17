@@ -123,10 +123,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $pseudo = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['user:read', 'user:write','overlay:read'])]
     private ?string $discordId = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['user:read', 'user:write','overlay:read'])]
     private ?string $avatar = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['user:read', 'user:write','overlay:read'])]
+    private ?string $ssoLogin = null;
 
     public function __construct()
     {
@@ -349,6 +355,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setAvatar(?string $avatar): self
     {
         $this->avatar = $avatar;
+
+        return $this;
+    }
+
+    public function getSsoLogin(): ?string
+    {
+        return $this->ssoLogin;
+    }
+
+    public function setSsoLogin(?string $ssoLogin): self
+    {
+        $this->ssoLogin = $ssoLogin;
 
         return $this;
     }

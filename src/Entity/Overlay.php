@@ -37,6 +37,15 @@ use Symfony\Component\Uid\Uuid;
         securityPostValidationMessage: 'Vous n\'avez pas accès à cet overlay',
     ),
     new GetCollection(
+        uriTemplate: '/overlays',
+        status: 200,
+        schemes: ['https'],
+        openapiContext: ['summary' => 'Récupérer les données de tous les overlays'],
+        normalizationContext: ['groups' => ['overlay:read']],
+        security: 'is_granted("ROLE_ADMIN")',
+        securityMessage: 'Seulement les administrateurs peuvent accéder à la liste des overlays.',
+    ),
+    new GetCollection(
         uriTemplate: '/allOverlays/{uuid}',
         uriVariables: "uuid",
         status: 200,

@@ -43,9 +43,7 @@ class OverlayRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('o')
             ->innerJoin('o.userAccess', 'ua')
-            ->innerJoin('o.userOwner', 'uo')
-            ->orWhere('ua.uuid = :uuid')
-            ->orWhere('uo.uuid = :uuid')
+            ->where('ua.uuid = :uuid')
             ->setParameter('uuid', $uuid)
             ->getQuery()
             ->getResult()

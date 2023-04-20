@@ -24,7 +24,13 @@ class GetAllOverlaysController extends AbstractController
     {
         $decodedJwtToken = $this->jwtManager->decode($this->tokenStorageInterface->getToken());
         $user = $this->userRepository->findOneBy(['uuid' => $decodedJwtToken['uuid']]);
-        $overlays = $this->overlayRepository->findAllAccess($user->getUuid());
+        $overlaysAccess = $this->overlayRepository->findAllAccess($user->getUuid());
+        $overlayOwner = $this->overlayRepository->findOneBy(['userOwner' => $user]);
+        $overlays = [];
+        if ($overlayOwner) {
+            $overlays[] = $overlayOwner;
+        }
+        $overlays = array_merge($overlays, $overlaysAccess);
 
         return $this->json([
             "statusCode" => 200,

@@ -156,7 +156,7 @@ class Widget
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $modifiedDate;
 
-    #[ORM\ManyToOne(inversedBy: 'widgets')]
+    #[ORM\ManyToOne(inversedBy: 'widgets', cascade: ['persist'])]
     #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
     private ?Overlay $overlay = null;
 

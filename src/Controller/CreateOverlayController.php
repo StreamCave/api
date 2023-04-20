@@ -55,40 +55,44 @@ class CreateOverlayController extends AbstractController
             $model->setDescription($data["Model"]["description"]);
             $model->setPrice($data["Model"]["price"]);
             $model->addOverlay($overlay);
+            $em->persist($model);
+            $em->flush();
+        }
 
-            // On setup les groups
-            $infoGroup = new InfoGroup();
-            $cameraGroup = new CameraGroup();
-            $matchGroup = new MatchGroup();
-            $pollGroup = new PollGroup();
-            $popupGroup = new PopupGroup();
-            $tweetGroup = new TweetGroup();
+        // On setup les groups
+        $infoGroup = new InfoGroup();
+        $cameraGroup = new CameraGroup();
+        $matchGroup = new MatchGroup();
+        $pollGroup = new PollGroup();
+        $popupGroup = new PopupGroup();
+        $tweetGroup = new TweetGroup();
 
-            // On fait le tour du array $data["widgets"] pour créer les widgets un par un
-            foreach ($data["widgets"] as $widget) {
-                $newWidget = new Widget();
-                $newWidget->setName($widget);
-                $newWidget->setModel($model);
-                $newWidget->setVisible(false);
+        // On fait le tour du array $data["widgets"] pour créer les widgets un par un
+        foreach ($data["widgets"] as $widget) {
+            $newWidget = new Widget();
+            $newWidget->setName($widget["name"]);
+            $newWidget->setDescription($widget["description"]);
+            $newWidget->setImage($widget["image"]);
+            $newWidget->setVisible(false);
 
-                $libWidget = $this->libWidgetRepository->findOneBy(['nameWidget' => $widget]);
+            $libWidget = $this->libWidgetRepository->findOneBy(['nameWidget' => $widget["name"]]);
 
+            if ($libWidget != null) {
                 match ($libWidget->getNameGroup()) {
                     'info' => $newWidget->setInfoGroup($infoGroup),
                     'camera' => $newWidget->addCameraGroup($cameraGroup),
-                    'match' => $newWidget->setMatchGroup($matchGroup),
+                    'match' => $newWidget->addMatchGroup($matchGroup),
                     'poll' => $newWidget->setPollGroup($pollGroup),
                     'popup' => $newWidget->setPopupGroup($popupGroup),
                     'tweet' => $newWidget->setTweetGroup($tweetGroup),
                 };
-
-                $em->persist($newWidget);
-                $em->flush();
             }
+
+            $em->persist($newWidget);
+            $em->flush();
         }
 
         $em->persist($overlay);
-        $em->persist($model);
         $em->flush();
 
         return $this->json([

@@ -121,6 +121,7 @@ class CreateOverlayController extends AbstractController
             $newWidget->setVisible(false);
 
             $libWidget = $this->libWidgetRepository->findOneBy(['nameWidget' => $widget["name"]]);
+
             if ($libWidget != null) {
                 match ($libWidget->getNameGroup()) {
                     'info' => $newWidget->setInfoGroup($infoGroup),
@@ -138,6 +139,7 @@ class CreateOverlayController extends AbstractController
 
         $em->persist($overlay);
         $em->flush();
+        
         return $this->json([
             "statusCode" => 200,
             "data" => $overlay

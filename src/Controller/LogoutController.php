@@ -56,7 +56,7 @@ class LogoutController extends AbstractController
                     '/',
                     $_ENV["DOMAIN"],
                     true,
-                    true,
+                    false,
                     false,
                     'none'
                 ));
@@ -68,7 +68,7 @@ class LogoutController extends AbstractController
                         '/',
                         $_ENV["DOMAIN"],
                         true,
-                        true,
+                        false,
                         false,
                         'none'
                     ));

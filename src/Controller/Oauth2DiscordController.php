@@ -54,10 +54,10 @@ class Oauth2DiscordController extends AbstractController
                 // Sinon, on crée un nouvel utilisateur
                 $userDB = new User();
                 $userDB->setEmail($discordUser['email']);
+                $userDB->setPassword("string");
                 $userDB->setDiscordId($discordUser['id']);
                 $userDB->setPseudo($discordUser['username']);
                 $userDB->setRoles(['ROLE_USER']);
-                $userDB->setPassword('');
             }
 
             // On génère un refreshToken dans la base de données pour l'utilisateur

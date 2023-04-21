@@ -49,6 +49,15 @@ class OverlayRepository extends ServiceEntityRepository
             ->getResult()
         ;
     }
+    public function findOneById($id): array
+    {
+        return $this->createQueryBuilder('o')
+            ->where('o.userOwner = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 
 //    /**
 //     * @return Overlay[] Returns an array of Overlay objects

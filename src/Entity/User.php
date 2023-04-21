@@ -28,7 +28,7 @@ use Symfony\Component\Uid\Uuid;
         schemes: ['https'],
         openapiContext: ['summary' => 'Récupérer les données d\'un utilisateur'],
         normalizationContext: ['groups' => ['user:read']],
-        security: 'is_granted("ROLE_ADMIN") or object == user',
+        security: 'is_granted("ROLE_USER") or is_granted("ROLE_ADMIN") or object == user',
         securityMessage: 'Vous n\'avez pas les droits pour accéder à cette ressource.',
     ),
     new GetCollection(

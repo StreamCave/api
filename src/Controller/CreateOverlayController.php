@@ -45,7 +45,7 @@ class CreateOverlayController extends AbstractController
         $userOwner = $this->userRepository->findOneBy(['uuid' => $decodedJwtToken['uuid']]);
         $overlay->setUserOwner($userOwner);
         foreach ($data["userAccess"] as $item) {
-            $userAccess = $this->userRepository->findOneBy(['uuid' => $decodedJwtToken['uuid']]);
+            $userAccess = $this->userRepository->findOneBy(['uuid' => explode('/', $item)[3]]);
             $overlay->addUserAccess($userAccess);
         }
         if ($data["Model"] != null) {
@@ -116,8 +116,8 @@ class CreateOverlayController extends AbstractController
         foreach ($data["widgets"] as $widget) {
             $newWidget = new Widget();
             $newWidget->setName($widget["name"]);
-            // $newWidget->setDescription($widget["description"]);
-            // $newWidget->setImage($widget["image"]);
+            $newWidget->setDescription($widget["description"]);
+            $newWidget->setImage($widget["image"]);
             $newWidget->setVisible(false);
 
             $libWidget = $this->libWidgetRepository->findOneBy(['nameWidget' => $widget["name"]]);

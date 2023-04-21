@@ -95,7 +95,7 @@ class CameraGroup
 
     #[ORM\Column]
     #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
-    private ?bool $visible = null;
+    private ?bool $visible = false;
 
     #[ORM\ManyToMany(targetEntity: Widget::class, mappedBy: 'cameraGroup')]
     #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]

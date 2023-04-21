@@ -74,7 +74,7 @@ class Model
     #[ORM\GeneratedValue]
     #[ORM\Column]
     #[Groups(['model:read', 'overlay:read'])]
-    #[ApiProperty(security: 'is_granted("ROLE_ADMIN")')]
+    #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]

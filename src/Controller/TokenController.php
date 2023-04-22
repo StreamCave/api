@@ -3,9 +3,11 @@
 namespace App\Controller;
 
 use App\Repository\UserRepository;
+use App\Service\DiscordApiService;
 use App\Service\TokenService;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,13 +15,19 @@ use Symfony\Component\Routing\Annotation\Route;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 class TokenController extends AbstractController
 {
-    public function __construct(TokenStorageInterface $tokenStorageInterface, JWTTokenManagerInterface $jwtManager)
+    public function __construct(TokenStorageInterface $tokenStorageInterface, JWTTokenManagerInterface $jwtManager, DiscordApiService $discordApiService)
     {
         $this->jwtManager = $jwtManager;
         $this->tokenStorageInterface = $tokenStorageInterface;
+        $this->discordApiService = $discordApiService;
         $this->token = null;
     }
 
@@ -42,6 +50,57 @@ class TokenController extends AbstractController
             'token' => $JWTtoken,
         ], 200);
         return $response;
+    }
+
+
+    /**
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws ClientExceptionInterface
+     */
+    #[Route('/api/discord/refresh_token', name: 'app_discord_token', methods: ['POST'])]
+    public function discordToken(Request $request): JsonResponse
+    {
+        $httpClient = HttpClient::create();
+        $data = json_decode($request->getContent(), true);
+        if ($data['refresh_token_sso']) {
+            $response = $this->discordApiService->refreshToken($data['refresh_token_sso']);
+        } else {
+            return new JsonResponse([
+                'message' => 'missing refresh_token_sso',
+            ], Response::HTTP_UNAUTHORIZED);
+        }
+
+        return new JsonResponse([
+            'token' => $response,
+        ], Response::HTTP_OK);
+    }
+
+
+    /**
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ClientExceptionInterface
+     */
+    #[Route('/api/discord/revoke_token', name: 'app_discord_token_revoke', methods: ['POST'])]
+    public function revokeDiscordToken(Request $request): JsonResponse
+    {
+        $httpClient = HttpClient::create();
+        $data = json_decode($request->getContent(), true);
+        if ($data['token_sso']) {
+            $response = $this->discordApiService->revokeToken($data['token_sso']);
+        } else {
+            return new JsonResponse([
+                'message' => 'missing token_sso',
+            ], Response::HTTP_UNAUTHORIZED);
+        }
+
+        return new JsonResponse([
+            'token' => $response,
+        ], Response::HTTP_OK);
     }
 
     private function generateToken(): string

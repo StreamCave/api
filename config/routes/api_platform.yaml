@@ -18,3 +18,11 @@ login_manage_refresh_discord:
   path: /login_manage/refresh_discord
   controller: App\Controller\TokenController::discordToken
   methods: ['POST']
+login_manage_revoke_twitch:
+  path: /login_manage/revoke_twitch
+  controller: App\Controller\TokenController::revokeTwitchToken
+  methods: ['POST']
+login_manage_refresh_twitch:
+  path: /login_manage/refresh_twitch
+  controller: App\Controller\TokenController::refreshTwitchToken
+  methods: ['POST']

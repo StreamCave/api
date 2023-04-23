@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Repository\UserRepository;
 use App\Service\DiscordApiService;
 use App\Service\TokenService;
+use App\Service\TwitchApiService;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpClient\HttpClient;
@@ -23,11 +24,12 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 class TokenController extends AbstractController
 {
-    public function __construct(TokenStorageInterface $tokenStorageInterface, JWTTokenManagerInterface $jwtManager, DiscordApiService $discordApiService)
+    public function __construct(TokenStorageInterface $tokenStorageInterface, JWTTokenManagerInterface $jwtManager, DiscordApiService $discordApiService, TwitchApiService $twitchApiService)
     {
         $this->jwtManager = $jwtManager;
         $this->tokenStorageInterface = $tokenStorageInterface;
         $this->discordApiService = $discordApiService;
+        $this->twitchApiService = $twitchApiService;
         $this->token = null;
     }
 
@@ -92,6 +94,47 @@ class TokenController extends AbstractController
         $data = json_decode($request->getContent(), true);
         if ($data['token_sso']) {
             $response = $this->discordApiService->revokeToken($data['token_sso']);
+        } else {
+            return new JsonResponse([
+                'message' => 'missing token_sso',
+            ], Response::HTTP_UNAUTHORIZED);
+        }
+        return new JsonResponse([
+            'token' => $response,
+        ], Response::HTTP_OK);
+    }
+
+    /**
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ClientExceptionInterface
+     */
+    #[Route('/api/twitch/refresh_token', name: 'app_twitch_token', methods: ['POST'])]
+    public function refreshTwitchToken(Request $request): JsonResponse
+    {
+        $httpClient = HttpClient::create();
+        $data = json_decode($request->getContent(), true);
+        if ($data['refresh_token_sso']) {
+            $response = $this->twitchApiService->refreshToken($data['refresh_token_sso']);
+        } else {
+            return new JsonResponse([
+                'message' => 'missing refresh_token_sso',
+            ], Response::HTTP_UNAUTHORIZED);
+        }
+
+        return new JsonResponse([
+            'token' => $response,
+        ], Response::HTTP_OK);
+    }
+
+    #[Route('/api/twitch/revoke_token', name: 'app_twitch_token_revoke', methods: ['POST'])]
+    public function revokeTwitchToken(Request $request): JsonResponse
+    {
+        $httpClient = HttpClient::create();
+        $data = json_decode($request->getContent(), true);
+        if ($data['token_sso']) {
+            $response = $this->twitchApiService->revokeToken($data['token_sso']);
         } else {
             return new JsonResponse([
                 'message' => 'missing token_sso',

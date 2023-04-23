@@ -70,7 +70,7 @@ class Oauth2DiscordController extends AbstractController
 
             // On génère un token JWT
             $token = $this->jwtManager->create($userDB);
-
+            
             // Créer un cookie
             $response = new RedirectResponse($_ENV["DISCORD_SUCCESS_REDIRECT_URI"]);
             $response->headers->setCookie(

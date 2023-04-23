@@ -134,6 +134,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:read', 'user:write','overlay:read'])]
     private ?string $ssoLogin = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $twitchId = null;
+
     public function __construct()
     {
         $this->overlays = new ArrayCollection();
@@ -367,6 +370,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setSsoLogin(?string $ssoLogin): self
     {
         $this->ssoLogin = $ssoLogin;
+
+        return $this;
+    }
+
+    public function getTwitchId(): ?string
+    {
+        return $this->twitchId;
+    }
+
+    public function setTwitchId(?string $twitchId): self
+    {
+        $this->twitchId = $twitchId;
 
         return $this;
     }

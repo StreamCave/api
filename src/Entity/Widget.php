@@ -164,6 +164,9 @@ class Widget
     #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
     private ?Brackets $bracket = null;
 
+    #[ORM\ManyToOne(inversedBy: 'widgets')]
+    private ?TwitchGroup $twitchGroup = null;
+
     public function __construct()
     {
         $this->createdDate = new \DateTimeImmutable();
@@ -428,6 +431,18 @@ class Widget
     public function setBracket(?Brackets $bracket): self
     {
         $this->bracket = $bracket;
+
+        return $this;
+    }
+
+    public function getTwitchGroup(): ?TwitchGroup
+    {
+        return $this->twitchGroup;
+    }
+
+    public function setTwitchGroup(?TwitchGroup $twitchGroup): self
+    {
+        $this->twitchGroup = $twitchGroup;
 
         return $this;
     }

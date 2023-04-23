@@ -15,8 +15,6 @@ class DiscordApiService {
     const AUTHORIZATION_URI = 'https://discord.com/api/oauth2/authorize';
     const TOKEN_URI = 'https://discord.com/api/oauth2/token';
 
-    const REFRESH_TOKEN_URI = 'https://discord.com/api/oauth2/token';
-
     const REVOKE_TOKEN_URI = 'https://discord.com/api/oauth2/token/revoke';
     const USERS_ME_ENDPOINT = '/api/users/@me';
 
@@ -89,7 +87,7 @@ class DiscordApiService {
      */
     public function refreshToken(string $refreshToken): array
     {
-        $response = $this->discordApiClient->request('POST', self::REFRESH_TOKEN_URI, [
+        $response = $this->discordApiClient->request('POST', self::TOKEN_URI, [
             'body' => [
                 'client_id' => $this->clientId,
                 'client_secret' => $this->clientSecret,

@@ -97,7 +97,6 @@ class TokenController extends AbstractController
                 'message' => 'missing token_sso',
             ], Response::HTTP_UNAUTHORIZED);
         }
-
         return new JsonResponse([
             'token' => $response,
         ], Response::HTTP_OK);

@@ -33,7 +33,7 @@ class JWTCreatedListener {
         $request = $this->requestStack->getCurrentRequest();
 
 
-        $expiration = new \DateTime('+1 day');
+        $expiration = new \DateTime('+5 sec');
         $user = $event->getUser();
         $payload       = $event->getData();
         $payload['pseudo'] = $user->getPseudo();

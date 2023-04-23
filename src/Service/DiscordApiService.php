@@ -94,10 +94,7 @@ class DiscordApiService {
                 'client_id' => $this->clientId,
                 'client_secret' => $this->clientSecret,
                 'grant_type' => 'refresh_token',
-                'refresh_token' => $refreshToken,
-                'redirect_uri' => $this->redirectUri,
-                'scope' => 'identify email',
-                'access_type' => 'offline'
+                'refresh_token' => $refreshToken
             ]
         ]);
 
@@ -129,7 +126,6 @@ class DiscordApiService {
                 'token_type_hint' => 'access_token'
             ]
         ]);
-
         return $response->getContent();
     }
 }

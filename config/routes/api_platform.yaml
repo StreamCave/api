@@ -2,3 +2,19 @@ api_platform:
     resource: .
     type: api_platform
     prefix: /api
+login_manage_logout:
+  path: /login_manage/logout
+  controller: App\Controller\LogoutController::logout
+  methods: ['GET']
+login_manage_refresh:
+  path: /login_manage/refresh
+  controller: App\Controller\TokenController::index
+  methods: ['GET']
+login_manage_revoke_discord:
+  path: /login_manage/revoke_discord
+  controller: App\Controller\TokenController::revokeDiscordToken
+  methods: ['POST']
+login_manage_refresh_discord:
+  path: /login_manage/refresh_discord
+  controller: App\Controller\TokenController::discordToken
+  methods: ['POST']

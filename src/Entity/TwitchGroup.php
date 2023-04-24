@@ -93,6 +93,7 @@ class TwitchGroup
     public function __construct()
     {
         $this->widgets = new ArrayCollection();
+        $this->uuid = Uuid::v4();
     }
 
     public function getId(): ?int

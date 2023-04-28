@@ -28,8 +28,15 @@ class Oauth2TwitchController extends AbstractController {
     #[Route('oauth2/twitch/connect', name: 'app_oauth2_connect_twitch')]
     public function connect(Request $request): Response
     {
-        $authorizationUri = $this->twitchApiService->getAuthorizationUri(['user:read:email']);
-        return $this->redirect($authorizationUri);
+        $authorizationUri = $this->twitchApiService->getAuthorizationUri(['user:read:email', 'channel:manage:polls', 'moderation:read']);
+        return $this->redirect($authorizationUri.'&state=sso_request');
+    }
+
+    #[Route('oauth2/twitch/connect/website', name: 'app_oauth2_connect_twitch_website')]
+    public function connectWebsite(Request $request): Response
+    {
+        $authorizationUri = $this->twitchApiService->getAuthorizationUri(['user:read:email', 'channel:manage:polls', 'moderation:read']);
+        return $this->redirect($authorizationUri.'&state=front_request');
     }
 
     #[Route('oauth2/twitch/check', name: 'app_oauth2_check_twitch')]
@@ -72,21 +79,24 @@ class Oauth2TwitchController extends AbstractController {
 
             // On génère un cookie avec le token JWT
             $response = new RedirectResponse($_ENV['TWITCH_SUCCESS_REDIRECT_URI']);
+        if($request->get('state') == "sso_request") {
+        $response->headers->setCookie(
+            new Cookie(
+                'refresh_token',
+                $refreshToken,
+                new \DateTime('+1 day'),
+                '/',
+                "localhost",
+                true,
+                true,
+                false,
+                'none'
+            )
+            );
+        }
             $response->headers->setCookie(
                 new Cookie(
-                    'refresh_token',
-                    $refreshToken,
-                    new \DateTime('+1 day'),
-                    '/',
-                    "localhost",
-                    true,
-                    true,
-                    false,
-                    'none'
-                ));
-            $response->headers->setCookie(
-                new Cookie(
-                    'access_token_sso',
+                    't_access_token_sso',
                     $accessToken,
                     new \DateTime('+1 day'),
                     '/',
@@ -96,18 +106,19 @@ class Oauth2TwitchController extends AbstractController {
                     false,
                     'none'
                 ));
-            $response->headers->setCookie(
-                new Cookie(
-                    'refresh_token_sso',
-                    $refreshTokenTwitch,
-                    new \DateTime('+1 day'),
-                    '/',
-                    "localhost",
-                    true,
-                    false,
-                    false,
-                    'none'
-                ));
+            
+                $response->headers->setCookie(
+                    new Cookie(
+                        't_refresh_token_sso',
+                        $refreshTokenTwitch,
+                        new \DateTime('+1 day'),
+                        '/',
+                        "localhost",
+                        true,
+                        false,
+                        false,
+                        'none'
+                    ));
             return $response;
         }
         return new Response("Error");

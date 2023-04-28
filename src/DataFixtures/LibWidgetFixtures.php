@@ -221,4 +221,31 @@ class LibWidgetFixtures extends Fixture
         $manager->persist($libWidget);
         $manager->flush();
     }
+
+    // TWITCH
+    private function setTwitchPoll(ObjectManager $manager): void
+    {
+        $libWidget = new LibWidget();
+        $libWidget->setUuid(Uuid::v5(Uuid::v6(), "twitchpoll"));
+        $libWidget->setNameWidget("twitchpoll");
+        $libWidget->setNameGroup("twitch");
+
+        $this->addReference('lib-widget-twitchpoll', $libWidget);
+
+        $manager->persist($libWidget);
+        $manager->flush();
+    }
+
+    private function setTwitchPrediction(ObjectManager $manager): void
+    {
+        $libWidget = new LibWidget();
+        $libWidget->setUuid(Uuid::v5(Uuid::v6(), "twitchprediction"));
+        $libWidget->setNameWidget("twitchprediction");
+        $libWidget->setNameGroup("twitch");
+
+        $this->addReference('lib-widget-twitchprediction', $libWidget);
+
+        $manager->persist($libWidget);
+        $manager->flush();
+    }
 }

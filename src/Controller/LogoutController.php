@@ -62,6 +62,18 @@ class LogoutController extends AbstractController
                 ));
                 $response->headers->setCookie(
                     new Cookie(
+                        't_refresh_token_sso',
+                        'delete',
+                        new \DateTime('now - 1 hour'),
+                        '/',
+                        $_ENV["DOMAIN"],
+                        true,
+                        false,
+                        false,
+                        'none'
+                    ));
+                $response->headers->setCookie(
+                    new Cookie(
                         'access_token_sso',
                         'delete',
                         new \DateTime('now - 1 hour'),
@@ -72,6 +84,18 @@ class LogoutController extends AbstractController
                         false,
                         'none'
                     ));
+                    $response->headers->setCookie(
+                        new Cookie(
+                            't_access_token_sso',
+                            'delete',
+                            new \DateTime('now - 1 hour'),
+                            '/',
+                            $_ENV["DOMAIN"],
+                            true,
+                            false,
+                            false,
+                            'none'
+                        ));
         return $response;
     }
 }

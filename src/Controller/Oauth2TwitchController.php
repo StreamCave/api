@@ -42,58 +42,73 @@ class Oauth2TwitchController extends AbstractController {
     #[Route('oauth2/twitch/check', name: 'app_oauth2_check_twitch')]
     public function check(Request $request): Response
     {
+        $response = new RedirectResponse($_ENV['TWITCH_SUCCESS_REDIRECT_URI']);
         if ($request->get('code')) {
             $em = $this->doctrine->getManager();
             $dataToken = $this->twitchApiService->getAccessToken($request->get('code'));
             $accessToken = $dataToken['access_token'];
             $refreshTokenTwitch = $dataToken['refresh_token'];
             $twitchUser = $this->twitchApiService->fetchUser($accessToken)['data'][0];
+            dd($dataToken);
+            if($request->get('state') == "sso_request") {
 
             // On check si l'adresse mail est déjà présente dans notre base de données
-            $userDBEmailOnly = $this->userRepository->findOneBy(['email' => $twitchUser['email']]);
-            if ($userDBEmailOnly) {
-                $userDB = $userDBEmailOnly;
-                // Si oui, on set le twitchId de l'utilisateur
-                $userDB->setTwitchId($twitchUser['id']);
-            } else {
-                // Sinon, on crée un nouvel utilisateur
-                $userDB = new User();
-                $userDB->setEmail($twitchUser['email']);
-                $userDB->setPassword("string");
-                $userDB->setTwitchId($twitchUser['id']);
-                $userDB->setAvatar($twitchUser['profile_image_url']);
-                $userDB->setPseudo($twitchUser['display_name']);
-                $userDB->setRoles(['ROLE_USER']);
+                $userDBEmailOnly = $this->userRepository->findOneBy(['email' => $twitchUser['email']]);
+                if ($userDBEmailOnly) {
+                    $userDB = $userDBEmailOnly;
+                    // Si oui, on set le twitchId de l'utilisateur
+                    $userDB->setTwitchId($twitchUser['id']);
+                } else {
+                    // Sinon, on crée un nouvel utilisateur
+                    $userDB = new User();
+                    $userDB->setEmail($twitchUser['email']);
+                    $userDB->setPassword("string");
+                    $userDB->setTwitchId($twitchUser['id']);
+                    $userDB->setAvatar($twitchUser['profile_image_url']);
+                    $userDB->setPseudo($twitchUser['display_name']);
+                    $userDB->setRoles(['ROLE_USER']);
+                }
+    
+                // On set le refreshToken de l'utilisateur
+                $userDB->setToken(Uuid::v4());
+                $userDB->setSsoLogin("twitch");
+                $em->persist($userDB);
+                $em->flush();
+    
+                $refreshToken = $userDB->getToken();
+    
+                // On génère un token JWT
+                $token = $this->jwtManager->create($userDB);
+    
+                // On génère un cookie avec le token JWT
+            $response->headers->setCookie(
+                new Cookie(
+                    'refresh_token',
+                    $refreshToken,
+                    new \DateTime('+1 day'),
+                    '/',
+                    "localhost",
+                    true,
+                    true,
+                    false,
+                    'none'
+                )
+                );
             }
-
-            // On set le refreshToken de l'utilisateur
-            $userDB->setToken(Uuid::v4());
-            $userDB->setSsoLogin("twitch");
-            $em->persist($userDB);
-            $em->flush();
-
-            $refreshToken = $userDB->getToken();
-
-            // On génère un token JWT
-            $token = $this->jwtManager->create($userDB);
-
-            // On génère un cookie avec le token JWT
-            $response = new RedirectResponse($_ENV['TWITCH_SUCCESS_REDIRECT_URI']);
-        if($request->get('state') == "sso_request") {
+        
         $response->headers->setCookie(
-            new Cookie(
-                'refresh_token',
-                $refreshToken,
+                new Cookie(
+                    'broadcaster_id',
+                $twitchUser['id'],
                 new \DateTime('+1 day'),
-                '/',
-                "localhost",
-                true,
-                true,
-                false,
-                'none'
-            )
-            );
-        }
+                    '/',
+                    "localhost",
+                    true,
+                    false,
+                    false,
+                    'none'
+                ));
+
             $response->headers->setCookie(
                 new Cookie(
                     't_access_token_sso',

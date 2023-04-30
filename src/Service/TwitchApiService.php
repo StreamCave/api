@@ -100,18 +100,22 @@ class TwitchApiService {
             ]
         ]);
 
-        $responseContent = $response->getContent();
-        $responseContent = $this->serializer->decode($responseContent, 'json');
+        if($response->getStatusCode() != 400) {
+            $responseContent = $response->getContent();
+            $responseContent = $this->serializer->decode($responseContent, 'json');
+            $data = [
+                'access_token' => $responseContent['access_token'],
+                'refresh_token' => $responseContent['refresh_token'],
+                'expires_in' => $responseContent['expires_in'],
+                'token_type' => $responseContent['token_type'],
+                'scope' => $responseContent['scope']
+            ];
+            return $data;
+        } else {
+            return ["Invalid Token"];
+        }
 
-        $data = [
-            'access_token' => $responseContent['access_token'],
-            'refresh_token' => $responseContent['refresh_token'],
-            'expires_in' => $responseContent['expires_in'],
-            'token_type' => $responseContent['token_type'],
-            'scope' => $responseContent['scope']
-        ];
 
-        return $data;
     }
 
     public function revokeToken(string $accessToken): string
@@ -121,7 +125,11 @@ class TwitchApiService {
                 'client_id' => $this->clientId,
                 'token' => $accessToken,
             ]
-        ]);
-        return $response->getContent();
+        ]); 
+        if($response->getStatusCode() != 400) {
+            return $response->getContent();
+        } else {
+            return "Invalid Token";
+        }
     }
 }

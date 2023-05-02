@@ -35,8 +35,12 @@ class Oauth2TwitchController extends AbstractController {
     #[Route('oauth2/twitch/connect/website', name: 'app_oauth2_connect_twitch_website')]
     public function connectWebsite(Request $request): Response
     {
-        $authorizationUri = $this->twitchApiService->getAuthorizationUri(['user:read:email', 'channel:manage:polls', 'moderation:read']);
-        return $this->redirect($authorizationUri.'&state=front_request');
+            $authorizationUri = $this->twitchApiService->getAuthorizationUri(['user:read:email', 'channel:manage:polls', 'moderation:read']);
+            if($request->get('email')) {
+                return $this->redirect($authorizationUri.'&state=front_request.'.$request->get('email'));
+            } else {
+                return $this->redirect($authorizationUri.'&state=front_request');
+            }
     }
 
     #[Route('oauth2/twitch/check', name: 'app_oauth2_check_twitch')]
@@ -49,9 +53,11 @@ class Oauth2TwitchController extends AbstractController {
             $accessToken = $dataToken['access_token'];
             $refreshTokenTwitch = $dataToken['refresh_token'];
             $twitchUser = $this->twitchApiService->fetchUser($accessToken)['data'][0];
-            dd($dataToken);
+            $match = null;
+            if (preg_match('/(?<=\.).*/', $request->get('state'), $group)) {
+                $match = $group[0];
+            }
             if($request->get('state') == "sso_request") {
-
             // On check si l'adresse mail est déjà présente dans notre base de données
                 $userDBEmailOnly = $this->userRepository->findOneBy(['email' => $twitchUser['email']]);
                 if ($userDBEmailOnly) {

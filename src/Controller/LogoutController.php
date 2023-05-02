@@ -86,6 +86,18 @@ class LogoutController extends AbstractController
                     ));
                     $response->headers->setCookie(
                         new Cookie(
+                            'broadcaster_id',
+                            'delete',
+                            new \DateTime('now - 1 hour'),
+                            '/',
+                            $_ENV["DOMAIN"],
+                            true,
+                            false,
+                            false,
+                            'none'
+                        ));
+                    $response->headers->setCookie(
+                        new Cookie(
                             't_access_token_sso',
                             'delete',
                             new \DateTime('now - 1 hour'),

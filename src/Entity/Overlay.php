@@ -137,6 +137,14 @@ class Overlay
     #[Groups(['overlay:read','overlay:write'])]
     private Collection $widgets;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['overlay:read','overlay:write'])]
+    private ?string $twitchChannelID = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['overlay:read','overlay:write'])]
+    private ?string $twitchChannelName = null;
+
     public function __construct()
     {
         $this->userAccess = new ArrayCollection();
@@ -282,6 +290,30 @@ class Overlay
                 $widget->setOverlay(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getTwitchChannelID(): ?string
+    {
+        return $this->twitchChannelID;
+    }
+
+    public function setTwitchChannelID(?string $twitchChannelID): self
+    {
+        $this->twitchChannelID = $twitchChannelID;
+
+        return $this;
+    }
+
+    public function getTwitchChannelName(): ?string
+    {
+        return $this->twitchChannelName;
+    }
+
+    public function setTwitchChannelName(?string $twitchChannelName): self
+    {
+        $this->twitchChannelName = $twitchChannelName;
 
         return $this;
     }

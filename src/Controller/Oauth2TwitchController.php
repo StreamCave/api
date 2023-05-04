@@ -69,6 +69,10 @@ class Oauth2TwitchController extends AbstractController {
             // On set le refreshToken de l'utilisateur
             $userDB->setToken(Uuid::v4());
             $userDB->setSsoLogin("twitch");
+            // AccessToken, RefreshToken et expiresIn de Twitch
+            $userDB->setTwitchAccessToken($accessToken);
+            $userDB->setTwitchRefreshToken($refreshTokenTwitch);
+            $userDB->setTwitchExpiresIn($dataToken['expires_in']);
             $em->persist($userDB);
             $em->flush();
 

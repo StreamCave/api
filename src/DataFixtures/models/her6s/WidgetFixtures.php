@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DataFixtures\models\flowup;
+namespace App\DataFixtures\models\her6s;
 
 use App\DataFixtures\OverlayFixtures;
 use App\Entity\Widget;
@@ -11,7 +11,7 @@ use Symfony\Component\Uid\Uuid;
 
 class WidgetFixtures extends Fixture implements DependentFixtureInterface
 {
-    private const MODEL = 'flowup';
+    private const MODEL = 'her6s';
 
     public function load(ObjectManager $manager): void
     {
@@ -33,9 +33,10 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($widget);
         $manager->flush();
     }
+
     private function setCameras(ObjectManager $manager): void
     {
-        $players = ['Alpha', 'Bravo', 'Charlie', 'Delta', 'Echo', 'Foxtrot', 'Golf', 'Hotel', 'India', 'Juliett'];
+        $players = ['Alpha', 'Bravo', 'Charlie', 'Delta', 'Echo'];
         $widget = new Widget();
         $widget->setUuid(Uuid::v5(Uuid::v6(), 'Cameras'));
         $widget->setName('Cameras');
@@ -49,37 +50,6 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $manager->flush();
     }
 
-    private function setMaps(ObjectManager $manager): void
-    {
-        $widget = new Widget();
-        $widget->setUuid(Uuid::v5(Uuid::v6(), 'Maps'));
-        $widget->setName('Maps');
-        $widget->setDescription('Cartes.');
-        $widget->setVisible(false);
-        $widget->addMapGroup($this->getReference('map-group-' . self::MODEL .  '-bo3-border'));
-        $widget->addMapGroup($this->getReference('map-group-' . self::MODEL .  '-bo3-oregon'));
-        $widget->addMapGroup($this->getReference('map-group-' . self::MODEL .  '-bo3-kafe'));
-        $widget->setOverlay($this->getReference('overlay-' . self::MODEL));
-
-        $manager->persist($widget);
-        $manager->flush();
-    }
-
-    private function setPlanning(ObjectManager $manager): void
-    {
-        $widget = new Widget();
-        $widget->setUuid(Uuid::v5(Uuid::v6(), 'Planning'));
-        $widget->setName('Planning');
-        $widget->setDescription('Planning.');
-        $widget->setVisible(false);
-        $widget->addPlanningGroup($this->getReference('planning-group-' . self::MODEL .  '-Alpha-vs-Delta'));
-        $widget->addPlanningGroup($this->getReference('planning-group-' . self::MODEL .  '-Beta-vs-Echo'));
-        $widget->addPlanningGroup($this->getReference('planning-group-' . self::MODEL .  '-Charlie-vs-Foxtrot'));
-        $widget->setOverlay($this->getReference('overlay-' . self::MODEL));
-
-        $manager->persist($widget);
-        $manager->flush();
-    }
 
     public function getDependencies(): array
     {

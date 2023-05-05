@@ -31,6 +31,24 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
     public function load(ObjectManager $manager): void
     {
         $this->setInfoGroup($manager);
+        $this->setCameraGroup($manager);
+    }
+
+    private function setCameraGroup(ObjectManager $manager): void
+    {
+        $players = ['Alpha', 'Bravo', 'Charlie', 'Delta', 'Echo'];
+
+        foreach ($players as $key => $player) {
+            $camera = new CameraGroup();
+            $camera->setUuid(Uuid::v5(Uuid::v6(), "Camera $player"));
+            $camera->setName("Camera $player");
+            $camera->setVisible(false);
+            $camera->setSocketId("socket-$player");
+            $this->addReference("camera-group-" . self::MODEL . "-$player", $camera);
+
+            $manager->persist($camera);
+            $manager->flush();
+        }
     }
 
     private function setInfoGroup(ObjectManager $manager): void

@@ -76,7 +76,7 @@ class Oauth2TwitchController extends AbstractController {
             // AccessToken, RefreshToken et expiresIn de Twitch
             $userDB->setTwitchAccessToken($accessToken);
             $userDB->setTwitchRefreshToken($refreshTokenTwitch);
-            $userDB->setTwitchExpiresIn($dataToken['expires_in']);
+            $userDB->setTwitchExpiresIn(time() + $dataToken['expires_in']);
             $em->persist($userDB);
             $em->flush();
 
@@ -102,6 +102,19 @@ class Oauth2TwitchController extends AbstractController {
             )
             );
         }
+        $response->headers->setCookie(
+            new Cookie(
+                'broadcaster_id',
+            $twitchUser['id'],
+            new \DateTime('+1 day'),
+                '/',
+                "localhost",
+                true,
+                false,
+                false,
+                'none'
+            ));
+            
             $response->headers->setCookie(
                 new Cookie(
                     't_access_token_sso',

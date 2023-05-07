@@ -30,6 +30,8 @@ class TwitchApiService {
 
     const TWITCH_PREDICTIONS_ENDPOINT = 'https://api.twitch.tv/helix/predictions';
 
+    const TWITCH_EVENTSUB_ENDPOINT = 'https://api.twitch.tv/helix/eventsub/subscriptions';
+
     public function __construct(
         private readonly HttpClientInterface $twitchApiClient,
         private readonly SerializerInterface $serializer,
@@ -383,6 +385,35 @@ class TwitchApiService {
             ],
             'query' => [
                 'broadcaster_id' => $channelId
+            ]
+        ]);
+
+        $data = json_decode($response->getContent(), true);
+
+        return $data['data'][0];
+    }
+
+    /**
+     * Create EventSub Subscription
+     */
+    public function createEventSubSubscription(
+        string $accessToken,
+        string $type,
+        string $version,
+        object $condition,
+        object $transport
+    ) {
+        $response = $this->twitchApiClient->request(Request::METHOD_POST, self::TWITCH_EVENTSUB_ENDPOINT, [
+            'auth_bearer' => $accessToken,
+            'headers' => [
+                'Client-Id' => $this->clientId,
+                'Content-Type' => 'application/json'
+            ],
+            'body' => [
+                'type' => $type,
+                'version' => $version,
+                'condition' => $condition,
+                'transport' => $transport
             ]
         ]);
 

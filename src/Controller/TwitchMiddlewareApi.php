@@ -390,4 +390,49 @@ class TwitchMiddlewareApi extends AbstractController {
             return $isOk;
         }
     }
+
+    /**
+     * @param Request $request
+     * @return Response
+     *
+     * Create EventSub Subscription
+     */
+    #[Route('/eventsub/create', name: 'twitch_eventsub_create', methods: ['POST'])]
+    public function createEventSub(Request $request): Response
+    {
+        $isOk = $this->checkAccessChannel($request);
+        if ($isOk) {
+            $data = $this->decodeData($request);
+            $err = [];
+            $accessToken = $data['access_token'] ?? array_push($err, 'access_token');
+            $sessionId = $data['session_id'] ?? array_push($err, 'session_id');
+            $type = $data['type'] ?? array_push($err, 'type');
+            $version = $data['version'] ?? array_push($err, 'version');
+            $condition = $data['condition'] ?? array_push($err, 'condition');
+            $transport = $data['transport'] ?? array_push($err, 'transport');
+            if (count($err) == 0) {
+                $userTwitch = $this->twitchApiService->fetchUser($accessToken);
+                if ($userTwitch['id'] === $condition['user_id']) {
+                    $response = $this->twitchApiService->createEventSubSubscription($accessToken, $type, $version, $condition, $transport);
+                    return $this->json([
+                        'statusCode' => 200,
+                        'response' => $response
+                    ]);
+                } else {
+                    return $this->json([
+                        'statusCode' => 400,
+                        'message' => 'User id is not the same as the condition user id'
+                    ]);
+                }
+            } else {
+                return $this->json([
+                    'statusCode' => 400,
+                    'message' => 'Missing parameters',
+                    'missing_parameters' => $err
+                ]);
+            }
+        } else {
+            return $isOk;
+        }
+    }
 }

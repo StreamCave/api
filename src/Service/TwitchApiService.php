@@ -30,6 +30,8 @@ class TwitchApiService {
 
     const TWITCH_PREDICTIONS_ENDPOINT = 'https://api.twitch.tv/helix/predictions';
 
+    const TWITCH_EVENTSUB_ENDPOINT = 'https://api.twitch.tv/helix/eventsub/subscriptions';
+
     public function __construct(
         private readonly HttpClientInterface $twitchApiClient,
         private readonly SerializerInterface $serializer,
@@ -142,7 +144,6 @@ class TwitchApiService {
         ]);
 
         $data = $response->getContent();
-
         return $this->serializer->decode($data, 'json');
     }
 
@@ -397,6 +398,51 @@ class TwitchApiService {
         $data = json_decode($response->getContent(), true);
 
         return $data['data'][0];
+    }
+
+    /**
+     * Create EventSub Subscription
+     */
+    public function createEventSubSubscription(
+        string $accessToken,
+        string $sessionId,
+        array $type,
+        string $transport
+    ) {
+    $err = [];
+foreach ($type as $topics => $params) {
+    $version = $params['version'];
+    $condition = $params['condition'];
+    $response = $this->twitchApiClient->request(Request::METHOD_POST, self::TWITCH_EVENTSUB_ENDPOINT, [
+        'auth_bearer' => $accessToken,
+        'headers' => [
+            'Client-Id' => $this->clientId,
+            'Content-Type' => 'application/json'
+        ],
+        'body' => json_encode([
+            'type' => $topics,
+            'version' => $version,
+            'condition' => $condition,
+            'transport' => [
+                'method' => 'websocket',
+                'session_id' => $sessionId
+            ]
+        ])
+    ]);
+        if($response->getStatusCode() != 400) {
+        $resp = json_decode($response->getContent(), true);
+            if (isset($resp['error'])) {
+                array_push($err, $type);
+            }
+        } else {
+            array_push($err, 'Request Error');
+        }
+    }
+        if(count($err)) {
+            return ['error_occured' => $err];
+        } else {
+            return ['listener_created' => true];
+        }
     }
 
 }

@@ -28,19 +28,15 @@ class Oauth2TwitchController extends AbstractController {
     #[Route('oauth2/twitch/connect', name: 'app_oauth2_connect_twitch')]
     public function connect(Request $request): Response
     {
-        $authorizationUri = $this->twitchApiService->getAuthorizationUri(['user:read:email', 'channel:manage:polls', 'moderation:read']);
+        $authorizationUri = $this->twitchApiService->getAuthorizationUri(['user:read:email', 'channel:manage:polls', 'moderation:read', 'channel:manage:predictions']);
         return $this->redirect($authorizationUri.'&state=sso_request');
     }
 
     #[Route('oauth2/twitch/connect/website', name: 'app_oauth2_connect_twitch_website')]
     public function connectWebsite(Request $request): Response
     {
-            $authorizationUri = $this->twitchApiService->getAuthorizationUri(['user:read:email', 'channel:manage:polls', 'moderation:read']);
-            if($request->get('email')) {
-                return $this->redirect($authorizationUri.'&state=front_request.'.$request->get('email'));
-            } else {
-                return $this->redirect($authorizationUri.'&state=front_request');
-            }
+        $authorizationUri = $this->twitchApiService->getAuthorizationUri(['user:read:email', 'channel:manage:polls', 'moderation:read', 'channel:manage:predictions']);
+        return $this->redirect($authorizationUri.'&state=front_request');
     }
 
     #[Route('oauth2/twitch/check', name: 'app_oauth2_check_twitch')]

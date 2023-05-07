@@ -390,4 +390,61 @@ class TwitchMiddlewareApi extends AbstractController {
             return $isOk;
         }
     }
+
+    /**
+     * @param Request $request
+     * @return Response
+     *
+     * Create EventSub Subscription
+     */
+    #[Route('/eventsub/create', name: 'twitch_eventsub_create', methods: ['POST'])]
+    public function createEventSub(Request $request): Response
+    {
+        $isOk = $this->checkAccessChannel($request);
+        if ($isOk) {
+            $data = $this->decodeData($request);
+            $err = [];
+            $accessToken = $data['access_token'] ?? array_push($err, 'access_token');
+            $sessionId = $data['session_id'] ?? array_push($err, 'session_id');
+            if($data['type'] === "poll" && $data['broadcaster_user_id']) {
+                $type = [
+                    'channel.poll.begin' => ['version' => 1, 'condition' => ['broadcaster_user_id' => $data['broadcaster_user_id']]],
+                    'channel.poll.progress' => ['version' => 1, 'condition' => ['broadcaster_user_id' => $data['broadcaster_user_id']]],
+                    'channel.poll.end' => ['version' => 1, 'condition' => ['broadcaster_user_id' => $data['broadcaster_user_id']]],
+                ];
+            } else if($data['type'] === "prediction" && $data['broadcaster_user_id']) {
+                $type = [
+                    'channel.prediction.begin' => ['version' => 1, 'condition' => ['broadcaster_user_id' => $data['broadcaster_user_id']]],
+                    'channel.prediction.progress' => ['version' => 1, 'condition' => ['broadcaster_user_id' => $data['broadcaster_user_id']]],
+                    'channel.prediction.end' => ['version' => 1, 'condition' => ['broadcaster_user_id' => $data['broadcaster_user_id']]],
+                ];
+            } else {
+                array_push($err, 'type');
+            }
+            $transport = $data['transport'] ?? array_push($err, 'transport');
+            if (count($err) == 0) {
+                $userTwitch = $this->twitchApiService->fetchUser($accessToken);
+                if ($userTwitch['data'][0]['id'] === $data['broadcaster_user_id']) {
+                    $response = $this->twitchApiService->createEventSubSubscription($accessToken, $sessionId, $type, $transport);
+                    return $this->json([
+                        'statusCode' => 200,
+                        'response' => $response
+                    ]);
+                } else {
+                    return $this->json([
+                        'statusCode' => 400,
+                        'message' => 'User id is not the same as the condition user id'
+                    ]);
+                }
+            } else {
+                return $this->json([
+                    'statusCode' => 400,
+                    'message' => 'Missing parameters',
+                    'missing_parameters' => $err
+                ]);
+            }
+        } else {
+            return $isOk;
+        }
+    }
 }

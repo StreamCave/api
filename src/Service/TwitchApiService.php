@@ -142,9 +142,16 @@ class TwitchApiService {
                 'Client-Id' => $this->clientId,
             ]
         ]);
-
-        $data = $response->getContent();
-        return $this->serializer->decode($data, 'json');
+        if($response->getStatusCode() != 400 && $response->getStatusCode() != 401) {
+            $data = $response->getContent();
+            return $this->serializer->decode($data, 'json');
+        } else {
+            $data = [
+                'data' => []
+            ];
+            array_push($data['data'], ['id' => 1]);
+            return $data;
+        }
     }
 
     /**

@@ -400,6 +400,13 @@ class TwitchMiddlewareApi extends AbstractController {
     #[Route('/eventsub/create', name: 'twitch_eventsub_create', methods: ['POST'])]
     public function createEventSub(Request $request): Response
     {
+        // Si c'est une requete options
+        if ($request->isMethod('OPTIONS')) {
+            return $this->json([
+                'statusCode' => 200,
+                'message' => 'OK'
+            ]);
+        }
         $isOk = $this->checkAccessChannel($request);
         if ($isOk) {
             $data = $this->decodeData($request);

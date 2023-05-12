@@ -40,6 +40,7 @@ class AuthenticationSuccessListener
         // Remplace le token existant par le nouveau à l'user
         $em = $this->doctrine->getManager();
         $user->setToken($this->token);
+        $user->setSsoLogin("normal");
         $em->persist($user);
         $em->flush();
         $event->setData($data);

@@ -24,7 +24,7 @@ class TwitchMiddlewareApi extends AbstractController {
     public function getUserInfo(Request $request): Response
     {
         $data = $this->decodeData($request);
-        $accessToken = $data['access_token'];
+        $accessToken = $this->twitchApiService->validateToken($data['access_token'], $channelId);
         $userTwitch = $this->twitchApiService->fetchUser($accessToken);
         return $this->json([
             'statusCode' => 200,
@@ -37,7 +37,7 @@ class TwitchMiddlewareApi extends AbstractController {
     {
         $data = $this->decodeData($request);
         $channelId = $data['channel_id'];
-        $accessToken = $data['access_token'];
+        $accessToken = $this->twitchApiService->validateToken($data['access_token'], $channelId);
         $userTwitch = $this->twitchApiService->fetchUser($accessToken);
         if ($userTwitch['data'][0]['id'] != $channelId) {
             return $this->json([
@@ -45,6 +45,7 @@ class TwitchMiddlewareApi extends AbstractController {
                 'message' => 'Channel ID does not match with the access token'
             ]);
         }
+        $accessToken = $this->twitchApiService->validateToken($data['access_token'], $channelId);
         $channel = $this->twitchApiService->fetchChannel($accessToken, $channelId);
         return $this->json([
             'statusCode' => 200,
@@ -57,7 +58,7 @@ class TwitchMiddlewareApi extends AbstractController {
     {
         $data = $this->decodeData($request);
         $channelId = $data['channel_id'];
-        $accessToken = $data['access_token'];
+        $accessToken = $this->twitchApiService->validateToken($data['access_token'], $channelId);
         $userTwitch = $this->twitchApiService->fetchUser($accessToken);
         if ($userTwitch['data'][0]['id'] != $channelId) {
             return $this->json([
@@ -65,6 +66,7 @@ class TwitchMiddlewareApi extends AbstractController {
                 'message' => 'Channel ID does not match with the access token'
             ]);
         }
+        $accessToken = $this->twitchApiService->validateToken($data['access_token'], $channelId);
         $moderators = $this->twitchApiService->fetchModerators($accessToken, $channelId);
         return $this->json([
             'statusCode' => 200,
@@ -83,33 +85,21 @@ class TwitchMiddlewareApi extends AbstractController {
     {
         $data = $this->decodeData($request);
         $channelId = $data['channel_id'];
-        $accessToken = $data['access_token'];
+        $accessToken = $this->twitchApiService->validateToken($data['access_token'], $channelId);
 
-        $userTwitch = $this->twitchApiService->fetchUser($accessToken);
-        if ($userTwitch['data'][0]['id'] != $channelId) {
+        $isUserModeratorOrStreamer = $this->twitchApiService->isUserModeratorOrStreamer($accessToken, $channelId);
+
+        if ($isUserModeratorOrStreamer != null) {
+            return $this->json([
+                'statusCode' => 200,
+                'isUserModeratorOrStreamer' => $isUserModeratorOrStreamer
+            ]);
+        } else {
             return $this->json([
                 'statusCode' => 400,
-                'message' => 'Channel ID does not match with the access token'
+                'message' => 'User is not moderator or streamer'
             ]);
         }
-
-        $moderators = $this->twitchApiService->fetchModerators($accessToken, $channelId);
-        $isModerator = false;
-
-        if ($channelId !== $userTwitch['data'][0]['id']) {
-            foreach ($moderators as $moderator) {
-                if ($moderator['user_id'] == $userTwitch['data'][0]['id']) {
-                    $isModerator = true;
-                }
-            }
-        } else {
-            $isModerator = true;
-        }
-
-        return $this->json([
-            'statusCode' => 200,
-            'isModerator' => $isModerator
-        ]);
     }
 
     /**
@@ -133,6 +123,7 @@ class TwitchMiddlewareApi extends AbstractController {
             $channelPointsVotingEnabled = $data['channel_points_voting_enabled'] ?? array_push($err, 'channel_points_voting_enabled');
             $channelPointsVotingEnabled = $channelPointsVotingEnabled === 'true' ? true : false;
             if (count($err) == 0) {
+                $accessToken = $this->twitchApiService->validateToken($data['access_token'], $channelId);
                 $response = $this->twitchApiService->createPoll($accessToken, $channelId, $choices, $title, $duration, $channelPointsVotingEnabled);
                 return $this->json([
                     'statusCode' => 200,
@@ -167,6 +158,7 @@ class TwitchMiddlewareApi extends AbstractController {
             $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
             $id = $data['id'] ?? array_push($err, 'id');
             if (count($err) == 0) {
+                $accessToken = $this->twitchApiService->validateToken($data['access_token'], $channelId);
                 $response = $this->twitchApiService->getPoll($accessToken, $channelId, $id);
                 return $this->json([
                     'statusCode' => 200,
@@ -202,6 +194,7 @@ class TwitchMiddlewareApi extends AbstractController {
             $id = $data['id'] ?? array_push($err, 'id');
             $status = $data['status'] ?? null;
             if (count($err) == 0) {
+                $accessToken = $this->twitchApiService->validateToken($data['access_token'], $channelId);
                 $response = $this->twitchApiService->endPoll($accessToken, $channelId, $id, $status);
                 return $this->json([
                     'statusCode' => 200,
@@ -235,6 +228,7 @@ class TwitchMiddlewareApi extends AbstractController {
             $accessToken = $data['access_token'] ?? array_push($err, 'access_token');
             $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
             if (count($err) == 0) {
+                $accessToken = $this->twitchApiService->validateToken($data['access_token'], $channelId);
                 $response = $this->twitchApiService->getPolls($accessToken, $channelId);
                 return $this->json([
                     'statusCode' => 200,
@@ -271,6 +265,7 @@ class TwitchMiddlewareApi extends AbstractController {
             $outcomes = $data['outcomes'] ?? array_push($err, 'outcomes');
             $predictionWindow = $data['predictionWindow'] ?? array_push($err, 'predictionWindow');
             if (count($err) == 0) {
+                $accessToken = $this->twitchApiService->validateToken($data['access_token'], $channelId);
                 $response = $this->twitchApiService->createPrediction($accessToken, $channelId, $title, $outcomes, $predictionWindow);
                 return $this->json([
                     'statusCode' => 200,
@@ -305,6 +300,7 @@ class TwitchMiddlewareApi extends AbstractController {
             $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
             $id = $data['id'] ?? array_push($err, 'id');
             if (count($err) == 0) {
+                $accessToken = $this->twitchApiService->validateToken($data['access_token'], $channelId);
                 $response = $this->twitchApiService->getPrediction($accessToken, $channelId, $id);
                 return $this->json([
                     'statusCode' => 200,
@@ -341,6 +337,7 @@ class TwitchMiddlewareApi extends AbstractController {
             $status = $data['status'] ?? array_push($err, 'status');
             $winningOutcomeId = $data['winningOutcomeId'] ?? null;
             if (count($err) == 0) {
+                $accessToken = $this->twitchApiService->validateToken($data['access_token'], $channelId);
                 $response = $this->twitchApiService->endPrediction($accessToken, $channelId, $id, $status, $winningOutcomeId);
                 return $this->json([
                     'statusCode' => 200,
@@ -374,6 +371,7 @@ class TwitchMiddlewareApi extends AbstractController {
             $accessToken = $data['access_token'] ?? array_push($err, 'access_token');
             $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
             if (count($err) == 0) {
+                $accessToken = $this->twitchApiService->validateToken($data['access_token'], $channelId);
                 $response = $this->twitchApiService->getAllPrediction($accessToken, $channelId);
                 return $this->json([
                     'statusCode' => 200,
@@ -423,8 +421,10 @@ class TwitchMiddlewareApi extends AbstractController {
             }
             $transport = $data['transport'] ?? array_push($err, 'transport');
             if (count($err) == 0) {
+                $accessToken = $this->twitchApiService->validateToken($data['access_token'], $channelId);
                 $userTwitch = $this->twitchApiService->fetchUser($accessToken);
                 if ($userTwitch['data'][0]['id'] === $data['broadcaster_user_id']) {
+                    $accessToken = $this->twitchApiService->validateToken($data['access_token']);
                     $response = $this->twitchApiService->createEventSubSubscription($accessToken, $sessionId, $type, $transport);
                     return $this->json([
                         'statusCode' => 200,

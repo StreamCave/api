@@ -24,7 +24,7 @@ class TwitchMiddlewareApi extends AbstractController {
     public function getUserInfo(Request $request): Response
     {
         $data = $this->decodeData($request);
-        $accessToken = $this->twitchApiService->validateToken($data['access_token'], $channelId);
+        $accessToken = $data['access_token'];
         $userTwitch = $this->twitchApiService->fetchUser($accessToken);
         return $this->json([
             'statusCode' => 200,
@@ -421,7 +421,7 @@ class TwitchMiddlewareApi extends AbstractController {
             }
             $transport = $data['transport'] ?? array_push($err, 'transport');
             if (count($err) == 0) {
-                $accessToken = $this->twitchApiService->validateToken($data['access_token'], $channelId);
+                $accessToken = $this->twitchApiService->validateToken($data['access_token'], $data['broadcaster_user_id']);
                 $userTwitch = $this->twitchApiService->fetchUser($accessToken);
                 if ($userTwitch['data'][0]['id'] === $data['broadcaster_user_id']) {
                     $accessToken = $this->twitchApiService->validateToken($data['access_token']);

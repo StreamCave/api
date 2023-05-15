@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Repository\UserRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -17,6 +18,8 @@ class TwitchApiService {
     const TOKEN_URI = 'https://id.twitch.tv/oauth2/token';
 
     const REVOKE_TOKEN_URI = 'https://id.twitch.tv/oauth2/revoke';
+
+    const TOKEN_VALIDATE = 'https://id.twitch.tv/oauth2/validate';
 
     const TWITCH_USER_ME_ENDPOINT = 'https://api.twitch.tv/helix/users';
 
@@ -37,9 +40,11 @@ class TwitchApiService {
         private readonly SerializerInterface $serializer,
         private readonly string $clientId,
         private readonly string $clientSecret,
-        private readonly string $redirectUri
+        private readonly string $redirectUri,
+        UserRepository $userRepository
     )
     {
+        $this->userRepository = $userRepository;
     }
 
     public function getAuthorizationUri(array $scope): string
@@ -110,7 +115,7 @@ class TwitchApiService {
             ];
             return $data;
         } else {
-            return ["Invalid Token"];
+            return ["access_token" => "Invalid Token"];
         }
 
 
@@ -132,7 +137,52 @@ class TwitchApiService {
     }
 
     /**
+     * Récupère le token du streamer en BDD
+     */
+    private function getStreamerAccessToken(string $channelId): string
+    {
+        $streamer = $this->userRepository->findOneBy(['twitchId' => $channelId]);
+        return $streamer->getTwitchAccessToken();
+    }
+
+    /**
+     * Vérifie la validité du token
+     */
+    public function validateToken(string $accessToken, string $channelId): string
+    {
+        $response = $this->twitchApiClient->request('GET', self::TOKEN_VALIDATE, [
+            'auth_bearer' => $accessToken,
+        ]);
+
+        // Si réponse 200, le token est valide donc on le retourne
+        if ($response->getStatusCode() === 200) {
+            $status = $this->isUserModeratorOrStreamer($accessToken, $channelId);
+            if ($status === "moderator") {
+                // On récupère le accessToken du streamer en BDD
+                $accessToken = $this->getStreamerAccessToken($channelId);
+                $response = $this->twitchApiClient->request('GET', self::TOKEN_VALIDATE, [
+                    'auth_bearer' => $accessToken,
+                ]);
+                // On vérifie si le token du streamer est valide
+                if ($response->getStatusCode() === 200) {
+                    return $accessToken;
+                } else {
+                    // Sinon, on le refresh
+                    $response = $this->refreshToken($accessToken);
+                    return $response['access_token'];
+                }
+            }
+            return $accessToken;
+        } else {
+            // Sinon, on le refresh
+            $response = $this->refreshToken($accessToken);
+            return $response['access_token'];
+        }
+    }
+
+    /**
      * Informations de l'utilisateur connecté
+     * @throws TransportExceptionInterface
      */
     public function fetchUser(string $accessToken)
     {
@@ -203,6 +253,28 @@ class TwitchApiService {
     }
 
     /**
+     * Check si l'user est soit le streamer, soit un modérateur
+     */
+    public function isUserModeratorOrStreamer(string $accessToken, string $channelId)
+    {
+        $moderators = $this->fetchModerators($accessToken, $channelId);
+        $channel = $this->fetchChannel($accessToken, $channelId);
+        $user = $this->fetchUser($accessToken);
+
+        if ($user['data'][0]['id'] === $channel['broadcaster_id']) {
+            return "streamer";
+        } else {
+            foreach ($moderators as $moderator) {
+                if ($moderator['user_id'] === $user['data'][0]['id']) {
+                    return "moderator";
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Création d'un sondage
      */
 
@@ -240,8 +312,7 @@ class TwitchApiService {
      */
     public function getPoll(
         string $accessToken,
-        string $channelId,
-        string $pollId
+        string $channelId
     ) {
         $response = $this->twitchApiClient->request(Request::METHOD_GET, self::TWITCH_POLLS_ENDPOINT, [
             'auth_bearer' => $accessToken,
@@ -249,8 +320,7 @@ class TwitchApiService {
                 'Client-Id' => $this->clientId,
             ],
             'query' => [
-                'broadcaster_id' => $channelId,
-                'id' => $pollId
+                'broadcaster_id' => $channelId
             ]
         ]);
 
@@ -341,7 +411,6 @@ class TwitchApiService {
     public function getPrediction(
         string $accessToken,
         string $channelId,
-        string $id
     ) {
         $response = $this->twitchApiClient->request(Request::METHOD_GET, self::TWITCH_PREDICTIONS_ENDPOINT, [
             'auth_bearer' => $accessToken,
@@ -350,7 +419,6 @@ class TwitchApiService {
             ],
             'query' => [
                 'broadcaster_id' => $channelId,
-                'id' => $id
             ]
         ]);
 
@@ -418,35 +486,35 @@ class TwitchApiService {
         array $type,
         string $transport
     ) {
-    $err = [];
-foreach ($type as $topics => $params) {
-    $version = $params['version'];
-    $condition = $params['condition'];
-    $response = $this->twitchApiClient->request(Request::METHOD_POST, self::TWITCH_EVENTSUB_ENDPOINT, [
-        'auth_bearer' => $accessToken,
-        'headers' => [
-            'Client-Id' => $this->clientId,
-            'Content-Type' => 'application/json'
-        ],
-        'body' => json_encode([
-            'type' => $topics,
-            'version' => $version,
-            'condition' => $condition,
-            'transport' => [
-                'method' => 'websocket',
-                'session_id' => $sessionId
-            ]
-        ])
-    ]);
-        if($response->getStatusCode() != 400) {
-        $resp = json_decode($response->getContent(), true);
-            if (isset($resp['error'])) {
-                array_push($err, $type);
+        $err = [];
+        foreach ($type as $topics => $params) {
+            $version = $params['version'];
+            $condition = $params['condition'];
+            $response = $this->twitchApiClient->request(Request::METHOD_POST, self::TWITCH_EVENTSUB_ENDPOINT, [
+                'auth_bearer' => $accessToken,
+                'headers' => [
+                    'Client-Id' => $this->clientId,
+                    'Content-Type' => 'application/json'
+                ],
+                'body' => json_encode([
+                    'type' => $topics,
+                    'version' => $version,
+                    'condition' => $condition,
+                    'transport' => [
+                        'method' => 'websocket',
+                        'session_id' => $sessionId
+                    ]
+                ])
+            ]);
+            if($response->getStatusCode() != 400) {
+            $resp = json_decode($response->getContent(), true);
+                if (isset($resp['error'])) {
+                    array_push($err, $type);
+                }
+            } else {
+                array_push($err, 'Request Error');
             }
-        } else {
-            array_push($err, 'Request Error');
         }
-    }
         if(count($err)) {
             return ['error_occured' => $err];
         } else {

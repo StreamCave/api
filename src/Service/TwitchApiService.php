@@ -387,6 +387,7 @@ class TwitchApiService {
         array $outcomes, // Choix
         int $predictionWindow
     ) {
+        $err = [];
         $response = $this->twitchApiClient->request(Request::METHOD_POST, self::TWITCH_PREDICTIONS_ENDPOINT, [
             'auth_bearer' => $accessToken,
             'headers' => [
@@ -399,10 +400,19 @@ class TwitchApiService {
                 'prediction_window' => $predictionWindow
             ]
         ]);
-
-        $data = json_decode($response->getContent(), true);
-
-        return $data['data'][0];
+        if($response->getStatusCode() != 400) {
+            $resp = json_decode($response->getContent(), true);
+            if (isset($resp['error'])) {
+                    array_push($err, $type);
+                }
+            } else {
+                array_push($err, 'Request Error');
+            }
+        if(count($err)) {
+            return ['error_occured' => $err];
+        } else {
+            return $resp['data'][0];
+        }   
     }
 
     /**

@@ -3,7 +3,11 @@
 namespace App\Service;
 
 use App\Repository\UserRepository;
+use Doctrine\Persistence\ManagerRegistry;
+use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
@@ -41,10 +45,27 @@ class TwitchApiService {
         private readonly string $clientId,
         private readonly string $clientSecret,
         private readonly string $redirectUri,
-        UserRepository $userRepository
+        UserRepository $userRepository,
+        JWTTokenManagerInterface $jwtManager,
+        JWTEncoderInterface $jwtEncoder,
+        ManagerRegistry $doctrine
     )
     {
         $this->userRepository = $userRepository;
+        $this->jwtManager = $jwtManager;
+        $this->jwtEncoder = $jwtEncoder;
+        $this->doctrine = $doctrine;
+    }
+
+    private function translateJwt(Request $request)
+    {
+        try {
+            $decodedToken = $this->jwtEncoder->decode(str_replace('Bearer ', '', $request->headers->get('Authorization')));
+            return $decodedToken;
+            // Faites quelque chose avec le jeton décodé
+        } catch (\Exception $e) {
+            // Gérer les erreurs de décodage, par exemple un jeton invalide
+        }
     }
 
     public function getAuthorizationUri(array $scope): string
@@ -93,6 +114,9 @@ class TwitchApiService {
      */
     public function refreshToken(string $refreshToken): array
     {
+        if ($refreshToken === null) {
+            return 'No refresh token provided';
+        }
         $response = $this->twitchApiClient->request('POST', self::TOKEN_URI, [
             'body' => [
                 'client_id' => $this->clientId,
@@ -115,25 +139,19 @@ class TwitchApiService {
             ];
             return $data;
         } else {
-            return ["access_token" => "Invalid Token"];
+            return 'Refresh token invalid';
         }
-
-
     }
 
-    public function revokeToken(string $accessToken): string
+    public function revokeToken(string $accessToken)
     {
         $response = $this->twitchApiClient->request('POST', self::REVOKE_TOKEN_URI, [
             'body' => [
                 'client_id' => $this->clientId,
                 'token' => $accessToken,
             ]
-        ]); 
-        if($response->getStatusCode() != 400) {
-            return $response->getContent();
-        } else {
-            return "Invalid Token";
-        }
+        ]);
+        return $response;
     }
 
     /**
@@ -148,11 +166,12 @@ class TwitchApiService {
     /**
      * Vérifie la validité du token
      */
-    public function validateToken(string $accessToken, string $channelId): string
+    public function validateToken(Request $request, string $accessToken, string $refreshToken, string $channelId): string
     {
         $response = $this->twitchApiClient->request('GET', self::TOKEN_VALIDATE, [
             'auth_bearer' => $accessToken,
         ]);
+        $userUuid = $this->translateJwt($request)['uuid'];
 
         // Si réponse 200, le token est valide donc on le retourne
         if ($response->getStatusCode() === 200) {
@@ -168,15 +187,28 @@ class TwitchApiService {
                     return $accessToken;
                 } else {
                     // Sinon, on le refresh
-                    $response = $this->refreshToken($accessToken);
+                    $response = $this->refreshToken($refreshToken);
                     return $response['access_token'];
                 }
             }
             return $accessToken;
         } else {
-            // Sinon, on le refresh
-            $response = $this->refreshToken($accessToken);
-            return $response['access_token'];
+            // On vérifie si le accessToken renseigné et le même que celui en BDD
+            // On récupère les données de l'utilisateur en BDD grâce au JWT
+            $user = $this->userRepository->findOneBy(['twitchAccessToken' => $accessToken, 'uuid' => $userUuid]);
+            if ($user) {
+                // Si oui, on refresh le token
+                $response = $this->refreshToken($refreshToken);
+                // On met à jour le token en BDD
+                $user->setTwitchAccessToken($response['access_token']);
+                $em = $this->doctrine->getManager();
+                $em->persist($user);
+                $em->flush();
+                return $response['access_token'];
+            } else {
+                // Sinon, on retourne une exception forçant l'utilisateur à se reconnecter
+                return 'Token invalid, please reconnect';
+            }
         }
     }
 
@@ -302,9 +334,12 @@ class TwitchApiService {
             ]
         ]);
 
-        $data = json_decode($response->getContent(), true);
-
-        return $data['data'][0];
+        if ($response->getStatusCode() === 200) {
+            $data = json_decode($response->getContent(), true);
+            return $data['data'][0];
+        } else {
+            return "You can't create a poll right now.";
+        }
     }
 
     /**
@@ -324,9 +359,16 @@ class TwitchApiService {
             ]
         ]);
 
-        $data = json_decode($response->getContent(), true);
-
-        return $data['data'][0];
+        if ($response->getStatusCode() === 200) {
+            $data = json_decode($response->getContent(), true);
+            if (count($data['data']) > 0) {
+                return $data['data'][0];
+            } else {
+                return "You don't have any poll right now.";
+            }
+        } else {
+            return "You can't create a poll right now.";
+        }
     }
 
     /**
@@ -350,9 +392,12 @@ class TwitchApiService {
             ]
         ]);
 
-        $data = json_decode($response->getContent(), true);
-
-        return $data['data'][0];
+        if ($response->getStatusCode() === 200) {
+            $data = json_decode($response->getContent(), true);
+            return $data['data'][0];
+        } else {
+            return "You can't end a poll right now.";
+        }
     }
 
     /**
@@ -372,9 +417,16 @@ class TwitchApiService {
             ]
         ]);
 
-        $data = json_decode($response->getContent(), true);
-
-        return $data['data'][0];
+        if ($response->getStatusCode() === 200) {
+            $data = json_decode($response->getContent(), true);
+            if (count($data['data']) > 0) {
+                return $data['data'][0];
+            } else {
+                return "You don't have any poll right now.";
+            }
+        } else {
+            return "You can't create a poll right now.";
+        }
     }
 
     /**
@@ -400,14 +452,16 @@ class TwitchApiService {
                 'prediction_window' => $predictionWindow
             ]
         ]);
-        if($response->getStatusCode() != 400) {
+        if($response->getStatusCode() != 400 && $response->getStatusCode() != 403) {
             $resp = json_decode($response->getContent(), true);
             if (isset($resp['error'])) {
-                    array_push($err, $type);
-                }
-            } else {
-                array_push($err, 'Request Error');
+                array_push($err, $type);
             }
+        } else if ($response->getStatusCode() === 403) {
+            return "You can't create a prediction right now.";
+        } else {
+            array_push($err, 'Request Error');
+        }
         if(count($err)) {
             return ['error_occured' => $err];
         } else {
@@ -432,9 +486,16 @@ class TwitchApiService {
             ]
         ]);
 
-        $data = json_decode($response->getContent(), true);
-
-        return $data['data'][0];
+        if ($response->getStatusCode() === 200) {
+            $data = json_decode($response->getContent(), true);
+            if (count($data['data']) > 0) {
+                return $data['data'][0];
+            } else {
+                return "You don't have any prediction right now.";
+            }
+        } else {
+            return "You can't create a prediction right now.";
+        }
     }
 
     /**
@@ -460,9 +521,12 @@ class TwitchApiService {
             ]
         ]);
 
-        $data = json_decode($response->getContent(), true);
-
-        return $data['data'][0];
+        if ($response->getStatusCode() === 200) {
+            $data = json_decode($response->getContent(), true);
+            return $data['data'][0];
+        } else {
+            return "You can't end a prediction right now.";
+        }
     }
 
     /**
@@ -482,9 +546,16 @@ class TwitchApiService {
             ]
         ]);
 
-        $data = json_decode($response->getContent(), true);
-
-        return $data['data'][0];
+        if ($response->getStatusCode() === 200) {
+            $data = json_decode($response->getContent(), true);
+            if (count($data['data']) > 0) {
+                return $data['data'][0];
+            } else {
+                return "You don't have any prediction right now.";
+            }
+        } else {
+            return "You can't create a prediction right now.";
+        }
     }
 
     /**

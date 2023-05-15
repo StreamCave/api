@@ -131,9 +131,13 @@ class TwitchMiddlewareApi extends AbstractController {
             $choices = $data['choices'] ?? array_push($err, 'choices');
             $duration = $data['duration'] ?? array_push($err, 'duration');
             $channelPointsVotingEnabled = $data['channel_points_voting_enabled'] ?? array_push($err, 'channel_points_voting_enabled');
-            $channelPointsVotingEnabled = $channelPointsVotingEnabled === 'true' ? true : false;
+            $channelPointsVotingEnabled = $channelPointsVotingEnabled === true ? true : false;
+            $channelPointsPerVote = 1;
+            if($channelPointsVotingEnabled === true) {
+                $channelPointsPerVote = $data['channel_points_per_vote'] ?? array_push($err, 'channel_points_per_vote');
+            }
             if (count($err) == 0) {
-                $response = $this->twitchApiService->createPoll($accessToken, $channelId, $choices, $title, $duration, $channelPointsVotingEnabled);
+                $response = $this->twitchApiService->createPoll($accessToken, $channelId, $choices, $title, $duration, $channelPointsVotingEnabled, $channelPointsPerVote);
                 return $this->json([
                     'statusCode' => 200,
                     'response' => $response

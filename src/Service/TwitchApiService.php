@@ -212,8 +212,8 @@ class TwitchApiService {
         array $choices,
         string $title,
         int $duration,
-        bool $channelPointsVotingEnabled = false,
-        int $channelPointsPerVote = 1
+        bool $channelPointsVotingEnabled,
+        int $channelPointsPerVote
     ) {
         $response = $this->twitchApiClient->request(Request::METHOD_POST, self::TWITCH_CREATE_POLL_ENDPOINT, [
             'auth_bearer' => $accessToken,
@@ -224,7 +224,9 @@ class TwitchApiService {
                 'broadcaster_id' => $channelId,
                 'title' => $title,
                 'choices' => $choices,
-                'duration' => $duration
+                'duration' => $duration,
+                'channel_points_voting_enabled' => $channelPointsVotingEnabled,
+                'channel_points_per_vote' => $channelPointsPerVote
             ]
         ]);
 

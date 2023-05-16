@@ -112,7 +112,7 @@ class TwitchApiService {
      * @throws RedirectionExceptionInterface
      * @throws ClientExceptionInterface
      */
-    public function refreshToken(string $refreshToken): array
+    public function refreshToken(string $refreshToken): array|string
     {
         if ($refreshToken === null) {
             return 'No refresh token provided';
@@ -268,6 +268,15 @@ class TwitchApiService {
      */
     public function fetchModerators(string $accessToken, string $channelId, string $userUuid)
     {
+        $refresh = null;
+        // On doit vérifier la validité du token
+        $validityUser = $this->twitchApiClient->request('GET', self::TOKEN_VALIDATE, [
+            'auth_bearer' => $accessToken,
+        ]);
+        if ($validityUser->getStatusCode() != 200) {
+            // On refresh le token
+            $refresh = $this->refreshToken($accessToken);
+        }
         if ($channelId !== null && $userUuid !== null) {
             if ($channelId === $userUuid) {
                 // C'est le streamer qui fait la requête, on renvoie donc la liste de ses modérateurs
@@ -293,16 +302,18 @@ class TwitchApiService {
                 ]);
                 if ($validity->getStatusCode() !== 200) {
                     // On refresh le token
-                    $refresh = $this->refreshToken($streamerToken['refresh_token']);
+                    $streamRefresh = $this->refreshToken($streamerToken['refresh_token']);
                     // On met à jour le token en BDD
                     $streamerDB = $this->userRepository->findOneBy(['twitchId' => $channelId]);
-                    $streamerDB->setTwitchAccessToken($refresh['access_token']);
-                    $streamerDB->setTwitchRefreshToken($refresh['refresh_token']);
-                    $streamerDB->setTwitchExpiresIn($refresh['expires_in']);
+                    $streamerDB->setTwitchAccessToken($streamRefresh['access_token']);
+                    $streamerDB->setTwitchRefreshToken($streamRefresh['refresh_token']);
+                    $streamerDB->setTwitchExpiresIn($streamRefresh['expires_in']);
                     $em = $this->doctrine->getManager();
                     $em->persist($streamerDB);
                     $em->flush();
-                    $streamerToken['access_token'] = $refresh['access_token'];
+                    $streamerToken['access_token'] = $streamRefresh['access_token'];
+
+                    // On doit vérifier la validité du token de l'utilisateur
                 }
                 // C'est un modérateur qui fait la requête, on vérifie donc qu'il est bien modérateur de la chaîne
                 $response = $this->twitchApiClient->request(Request::METHOD_GET, self::TWITCH_MODERATORS_ENPOINT, [
@@ -317,7 +328,10 @@ class TwitchApiService {
 
                 $data = json_decode($response->getContent(), true);
 
-                return $data['data'];
+                return [
+                    'data' => $data['data'],
+                    'refresh' => $refresh
+                ];
             }
         } else {
             return null;

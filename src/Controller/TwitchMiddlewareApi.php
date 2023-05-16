@@ -141,15 +141,16 @@ class TwitchMiddlewareApi extends AbstractController {
             $finalResponse = new JsonResponse(
                 [
                     'statusCode' => 200,
-                    'moderators' => $moderators
+                    'access_renew' => $moderators['refresh'] != null ? true : false,
+                    'moderators' => $moderators['data'],
                 ],
                 200,
             );
-            if ($channelId == $this->translateJwt($request)['twitchId']) {
+            if ($moderators['refresh'] != null) {
                 $finalResponse->headers->setCookie(
                     new Cookie(
                         't_access_token_sso',
-                        $accessToken,
+                        $moderators['refresh'],
                         new \DateTime('+1 day'),
                         '/',
                         'localhost',

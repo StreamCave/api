@@ -80,6 +80,8 @@ class TwitchMiddlewareApi extends AbstractController {
         }
     }
 
+    // INFO: Get channel info si t'es streamer OK
+    // INFO: Get channel info si t'es pas streamer WAIT
     #[Route('/channel', name: 'twitch_channel', methods: ['POST'])]
     public function getChannel(Request $request): JsonResponse
     {
@@ -88,18 +90,8 @@ class TwitchMiddlewareApi extends AbstractController {
         $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');
         $accessToken = $data['access_token'] ?? array_push($err, 'access_token');
         $refreshToken = $data['refresh_token'] ?? array_push($err, 'refresh_token');
+        $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
         if (count($err) === 0) {
-            $channelId = $data['channel_id'];
-            // Get Bearer token
-            $accessToken = $this->twitchApiService->validateToken($request, $data['access_token'], $refreshToken, $channelId);
-            $userTwitch = $this->twitchApiService->fetchUser($accessToken);
-            if ($userTwitch['data'][0]['id'] != $channelId) {
-                return $this->json([
-                    'statusCode' => 400,
-                    'message' => 'Channel ID does not match with the access token'
-                ]);
-            }
-            $accessToken = $this->twitchApiService->validateToken($request, $data['access_token'], $refreshToken, $channelId);
             $channel = $this->twitchApiService->fetchChannel($accessToken, $channelId);
             $finalResponse = new JsonResponse(
                 [
@@ -132,6 +124,8 @@ class TwitchMiddlewareApi extends AbstractController {
         }
     }
 
+    // INFO: Get channel moderators si t'es streamer OK
+    // INFO: Get channel moderators si t'es pas streamer OK
     #[Route('/moderators', name: 'twitch_moderators', methods: ['POST'])]
     public function getModerators(Request $request): JsonResponse
     {
@@ -142,16 +136,8 @@ class TwitchMiddlewareApi extends AbstractController {
         $refreshToken = $data['refresh_token'] ?? array_push($err, 'refresh_token');
         $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
         if (count($err) === 0) {
-            $accessToken = $this->twitchApiService->validateToken($request, $data['access_token'], $data['refresh_token'], $channelId);
-            $userTwitch = $this->twitchApiService->fetchUser($accessToken);
-            if ($userTwitch['data'][0]['id'] != $channelId) {
-                return $this->json([
-                    'statusCode' => 400,
-                    'message' => 'Channel ID does not match with the access token'
-                ]);
-            }
-            $accessToken = $this->twitchApiService->validateToken($request, $data['access_token'], $data['refresh_token'], $channelId);
-            $moderators = $this->twitchApiService->fetchModerators($accessToken, $channelId);
+            $userUuid = $this->translateJwt($request)['uuid'];
+            $moderators = $this->twitchApiService->fetchModerators($accessToken, $channelId, $userUuid);
             $finalResponse = new JsonResponse(
                 [
                     'statusCode' => 200,
@@ -163,7 +149,7 @@ class TwitchMiddlewareApi extends AbstractController {
                 $finalResponse->headers->setCookie(
                     new Cookie(
                         't_access_token_sso',
-                        $this->getJwt($request),
+                        $accessToken,
                         new \DateTime('+1 day'),
                         '/',
                         'localhost',

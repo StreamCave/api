@@ -157,10 +157,13 @@ class TwitchApiService {
     /**
      * Récupère le token du streamer en BDD
      */
-    private function getStreamerAccessToken(string $channelId): string
+    private function getStreamerToken(string $channelId): array
     {
         $streamer = $this->userRepository->findOneBy(['twitchId' => $channelId]);
-        return $streamer->getTwitchAccessToken();
+        return [
+            'access_token' => $streamer->getTwitchAccessToken(),
+            'refresh_token' => $streamer->getTwitchRefreshToken()
+        ];
     }
 
     /**
@@ -263,22 +266,59 @@ class TwitchApiService {
     /**
      * Renvoie la liste des modérateurs de la chaîne renseignée
      */
-    public function fetchModerators(string $accessToken, string $channelId)
+    public function fetchModerators(string $accessToken, string $channelId, string $userUuid)
     {
-        if ($channelId !== null) {
-            $response = $this->twitchApiClient->request(Request::METHOD_GET, self::TWITCH_MODERATORS_ENPOINT, [
-                'auth_bearer' => $accessToken,
-                'headers' => [
-                    'Client-Id' => $this->clientId,
-                ],
-                'query' => [
-                    'broadcaster_id' => $channelId
-                ]
-            ]);
+        if ($channelId !== null && $userUuid !== null) {
+            if ($channelId === $userUuid) {
+                // C'est le streamer qui fait la requête, on renvoie donc la liste de ses modérateurs
+                $response = $this->twitchApiClient->request(Request::METHOD_GET, self::TWITCH_MODERATORS_ENPOINT, [
+                    'auth_bearer' => $accessToken,
+                    'headers' => [
+                        'Client-Id' => $this->clientId,
+                    ],
+                    'query' => [
+                        'broadcaster_id' => $channelId
+                    ]
+                ]);
 
-            $data = json_decode($response->getContent(), true);
+                $data = json_decode($response->getContent(), true);
 
-            return $data['data'];
+                return $data['data'];
+            } else {
+                // On doit récupérer le accessToken du streamer en BDD
+                $streamerToken = $this->getStreamerToken($channelId);
+                // On vérifie sa validité
+                $validity = $this->twitchApiClient->request('GET', self::TOKEN_VALIDATE, [
+                    'auth_bearer' => $streamerToken['access_token'],
+                ]);
+                if ($validity->getStatusCode() !== 200) {
+                    // On refresh le token
+                    $refresh = $this->refreshToken($streamerToken['refresh_token']);
+                    // On met à jour le token en BDD
+                    $streamerDB = $this->userRepository->findOneBy(['twitchId' => $channelId]);
+                    $streamerDB->setTwitchAccessToken($refresh['access_token']);
+                    $streamerDB->setTwitchRefreshToken($refresh['refresh_token']);
+                    $streamerDB->setTwitchExpiresIn($refresh['expires_in']);
+                    $em = $this->doctrine->getManager();
+                    $em->persist($streamerDB);
+                    $em->flush();
+                    $streamerToken['access_token'] = $refresh['access_token'];
+                }
+                // C'est un modérateur qui fait la requête, on vérifie donc qu'il est bien modérateur de la chaîne
+                $response = $this->twitchApiClient->request(Request::METHOD_GET, self::TWITCH_MODERATORS_ENPOINT, [
+                    'auth_bearer' => $streamerToken['access_token'],
+                    'headers' => [
+                        'Client-Id' => $this->clientId,
+                    ],
+                    'query' => [
+                        'broadcaster_id' => $channelId
+                    ]
+                ]);
+
+                $data = json_decode($response->getContent(), true);
+
+                return $data['data'];
+            }
         } else {
             return null;
         }

@@ -784,38 +784,111 @@ class TwitchApiService {
     function createPrediction(
         string $accessToken,
         string $channelId,
+        string $userUuid,
         string $title,
         array $outcomes, // Choix
         int $predictionWindow
     ) {
-        $err = [];
-        $response = $this->twitchApiClient->request(Request::METHOD_POST, self::TWITCH_PREDICTIONS_ENDPOINT, [
+        $refresh = null;
+        // On doit vérifier la validité du token
+        $validityUser = $this->twitchApiClient->request('GET', self::TOKEN_VALIDATE, [
             'auth_bearer' => $accessToken,
-            'headers' => [
-                'Client-Id' => $this->clientId,
-            ],
-            'body' => [
-                'broadcaster_id' => $channelId,
-                'title' => $title,
-                'outcomes' => $outcomes,
-                'prediction_window' => $predictionWindow
-            ]
         ]);
-        if($response->getStatusCode() != 400 && $response->getStatusCode() != 403) {
-            $resp = json_decode($response->getContent(), true);
-            if (isset($resp['error'])) {
-                array_push($err, $type);
-            }
-        } else if ($response->getStatusCode() === 403) {
-            return "You can't create a prediction right now.";
-        } else {
-            array_push($err, 'Request Error');
+        if ($validityUser->getStatusCode() != 200) {
+            // On refresh le token
+            $refresh = $this->refreshToken($accessToken);
         }
-        if(count($err)) {
-            return ['error_occured' => $err];
+        if ($channelId !== null && $userUuid !== null) {
+            if ($channelId === $userUuid) {
+                $err = [];
+                $response = $this->twitchApiClient->request(Request::METHOD_POST, self::TWITCH_PREDICTIONS_ENDPOINT, [
+                    'auth_bearer' => $accessToken,
+                    'headers' => [
+                        'Client-Id' => $this->clientId,
+                    ],
+                    'body' => [
+                        'broadcaster_id' => $channelId,
+                        'title' => $title,
+                        'outcomes' => $outcomes,
+                        'prediction_window' => $predictionWindow
+                    ]
+                ]);
+                if($response->getStatusCode() != 400 && $response->getStatusCode() != 403) {
+                    $resp = json_decode($response->getContent(), true);
+                    if (isset($resp['error'])) {
+                        array_push($err, $type);
+                    }
+                } else if ($response->getStatusCode() === 403) {
+                    return "You can't create a prediction right now.";
+                } else {
+                    array_push($err, 'Request Error');
+                }
+                if(count($err)) {
+                    return ['error_occured' => $err];
+                } else {
+                    return [
+                        'data' => $resp['data'],
+                        'refresh' => $refresh
+                    ];
+                }
+            } else {
+                // On doit récupérer le accessToken du streamer en BDD
+                $streamerToken = $this->getStreamerToken($channelId);
+                // On vérifie sa validité
+                $validity = $this->twitchApiClient->request('GET', self::TOKEN_VALIDATE, [
+                    'auth_bearer' => $streamerToken['access_token'],
+                ]);
+                if ($validity->getStatusCode() !== 200) {
+                    // On refresh le token
+                    $streamRefresh = $this->refreshToken($streamerToken['refresh_token']);
+                    // On met à jour le token en BDD
+                    $streamerDB = $this->userRepository->findOneBy(['twitchId' => $channelId]);
+                    $streamerDB->setTwitchAccessToken($streamRefresh['access_token']);
+                    $streamerDB->setTwitchRefreshToken($streamRefresh['refresh_token']);
+                    $streamerDB->setTwitchExpiresIn($streamRefresh['expires_in']);
+                    $em = $this->doctrine->getManager();
+                    $em->persist($streamerDB);
+                    $em->flush();
+                    $streamerToken['access_token'] = $streamRefresh['access_token'];
+
+                    // On doit vérifier la validité du token de l'utilisateur
+                }
+                $err = [];
+                $response = $this->twitchApiClient->request(Request::METHOD_POST, self::TWITCH_PREDICTIONS_ENDPOINT, [
+                    'auth_bearer' => $streamerToken['access_token'],
+                    'headers' => [
+                        'Client-Id' => $this->clientId,
+                    ],
+                    'body' => [
+                        'broadcaster_id' => $channelId,
+                        'title' => $title,
+                        'outcomes' => $outcomes,
+                        'prediction_window' => $predictionWindow
+                    ]
+                ]);
+                if($response->getStatusCode() != 400 && $response->getStatusCode() != 403) {
+                    $resp = json_decode($response->getContent(), true);
+                    dd($resp);
+                    if (isset($resp['error'])) {
+                        array_push($err, $type);
+                    }
+                } else if ($response->getStatusCode() === 403) {
+                    return "You can't create a prediction right now.";
+                } else {
+                    array_push($err, 'Request Error');
+                }
+                if(count($err)) {
+                    return ['error_occured' => $err];
+                } else {
+                    return [
+                        'data' => $resp['data'],
+                        'refresh' => $refresh
+                    ];
+                }
+            }
         } else {
-            return $resp['data'][0];
-        }   
+            return null;
+        }
     }
 
     /**
@@ -824,26 +897,90 @@ class TwitchApiService {
     public function getPrediction(
         string $accessToken,
         string $channelId,
+        string $userUuid
     ) {
-        $response = $this->twitchApiClient->request(Request::METHOD_GET, self::TWITCH_PREDICTIONS_ENDPOINT, [
+        $refresh = null;
+        // On doit vérifier la validité du token
+        $validityUser = $this->twitchApiClient->request('GET', self::TOKEN_VALIDATE, [
             'auth_bearer' => $accessToken,
-            'headers' => [
-                'Client-Id' => $this->clientId,
-            ],
-            'query' => [
-                'broadcaster_id' => $channelId,
-            ]
         ]);
+        if ($validityUser->getStatusCode() != 200) {
+            // On refresh le token
+            $refresh = $this->refreshToken($accessToken);
+        }
+        if ($channelId !== null && $userUuid !== null) {
+            if ($channelId === $userUuid) {
+                $response = $this->twitchApiClient->request(Request::METHOD_GET, self::TWITCH_PREDICTIONS_ENDPOINT, [
+                    'auth_bearer' => $accessToken,
+                    'headers' => [
+                        'Client-Id' => $this->clientId,
+                    ],
+                    'query' => [
+                        'broadcaster_id' => $channelId,
+                    ]
+                ]);
 
-        if ($response->getStatusCode() === 200) {
-            $data = json_decode($response->getContent(), true);
-            if (count($data['data']) > 0) {
-                return $data['data'][0];
+                if ($response->getStatusCode() === 200) {
+                    $data = json_decode($response->getContent(), true);
+                    if (count($data['data']) > 0) {
+                        return [
+                            'data' => $data['data'],
+                            'refresh' => $refresh
+                        ];
+                    } else {
+                        return "You don't have any prediction right now.";
+                    }
+                } else {
+                    return "You can't create a prediction right now.";
+                }
             } else {
-                return "You don't have any prediction right now.";
+                // On doit récupérer le accessToken du streamer en BDD
+                $streamerToken = $this->getStreamerToken($channelId);
+                // On vérifie sa validité
+                $validity = $this->twitchApiClient->request('GET', self::TOKEN_VALIDATE, [
+                    'auth_bearer' => $streamerToken['access_token'],
+                ]);
+                if ($validity->getStatusCode() !== 200) {
+                    // On refresh le token
+                    $streamRefresh = $this->refreshToken($streamerToken['refresh_token']);
+                    // On met à jour le token en BDD
+                    $streamerDB = $this->userRepository->findOneBy(['twitchId' => $channelId]);
+                    $streamerDB->setTwitchAccessToken($streamRefresh['access_token']);
+                    $streamerDB->setTwitchRefreshToken($streamRefresh['refresh_token']);
+                    $streamerDB->setTwitchExpiresIn($streamRefresh['expires_in']);
+                    $em = $this->doctrine->getManager();
+                    $em->persist($streamerDB);
+                    $em->flush();
+                    $streamerToken['access_token'] = $streamRefresh['access_token'];
+
+                    // On doit vérifier la validité du token de l'utilisateur
+                }
+                $response = $this->twitchApiClient->request(Request::METHOD_GET, self::TWITCH_PREDICTIONS_ENDPOINT, [
+                    'auth_bearer' => $streamerToken['access_token'],
+                    'headers' => [
+                        'Client-Id' => $this->clientId,
+                    ],
+                    'query' => [
+                        'broadcaster_id' => $channelId,
+                    ]
+                ]);
+
+                if ($response->getStatusCode() === 200) {
+                    $data = json_decode($response->getContent(), true);
+                    if (count($data['data']) > 0) {
+                        return [
+                            'data' => $data['data'],
+                            'refresh' => $refresh
+                        ];
+                    } else {
+                        return "You don't have any prediction right now.";
+                    }
+                } else {
+                    return "You can't create a prediction right now.";
+                }
             }
         } else {
-            return "You can't create a prediction right now.";
+            return null;
         }
     }
 
@@ -853,28 +990,91 @@ class TwitchApiService {
     public function endPrediction(
         string $accessToken,
         string $channelId,
+        string $userUuid,
         string $id,
         string $status,
         string $winningOutcomeId = null
     ) {
-        $response = $this->twitchApiClient->request(Request::METHOD_PATCH, self::TWITCH_PREDICTIONS_ENDPOINT, [
+        $refresh = null;
+        // On doit vérifier la validité du token
+        $validityUser = $this->twitchApiClient->request('GET', self::TOKEN_VALIDATE, [
             'auth_bearer' => $accessToken,
-            'headers' => [
-                'Client-Id' => $this->clientId,
-            ],
-            'body' => [
-                'broadcaster_id' => $channelId,
-                'id' => $id,
-                'status' => $status,
-                'winning_outcome_id' => $winningOutcomeId
-            ]
         ]);
+        if ($validityUser->getStatusCode() != 200) {
+            // On refresh le token
+            $refresh = $this->refreshToken($accessToken);
+        }
+        if ($channelId !== null && $userUuid !== null) {
+            if ($channelId === $userUuid) {
+                $response = $this->twitchApiClient->request(Request::METHOD_PATCH, self::TWITCH_PREDICTIONS_ENDPOINT, [
+                    'auth_bearer' => $accessToken,
+                    'headers' => [
+                        'Client-Id' => $this->clientId,
+                    ],
+                    'body' => [
+                        'broadcaster_id' => $channelId,
+                        'id' => $id,
+                        'status' => $status,
+                        'winning_outcome_id' => $winningOutcomeId
+                    ]
+                ]);
 
-        if ($response->getStatusCode() === 200) {
-            $data = json_decode($response->getContent(), true);
-            return $data['data'][0];
+                if ($response->getStatusCode() === 200) {
+                    $data = json_decode($response->getContent(), true);
+                    return [
+                        'data' => $data['data'],
+                        'refresh' => $refresh
+                    ];
+                } else {
+                    return "You can't end a prediction right now.";
+                }
+            } else {
+                // On doit récupérer le accessToken du streamer en BDD
+                $streamerToken = $this->getStreamerToken($channelId);
+                // On vérifie sa validité
+                $validity = $this->twitchApiClient->request('GET', self::TOKEN_VALIDATE, [
+                    'auth_bearer' => $streamerToken['access_token'],
+                ]);
+                if ($validity->getStatusCode() !== 200) {
+                    // On refresh le token
+                    $streamRefresh = $this->refreshToken($streamerToken['refresh_token']);
+                    // On met à jour le token en BDD
+                    $streamerDB = $this->userRepository->findOneBy(['twitchId' => $channelId]);
+                    $streamerDB->setTwitchAccessToken($streamRefresh['access_token']);
+                    $streamerDB->setTwitchRefreshToken($streamRefresh['refresh_token']);
+                    $streamerDB->setTwitchExpiresIn($streamRefresh['expires_in']);
+                    $em = $this->doctrine->getManager();
+                    $em->persist($streamerDB);
+                    $em->flush();
+                    $streamerToken['access_token'] = $streamRefresh['access_token'];
+
+                    // On doit vérifier la validité du token de l'utilisateur
+                }
+                $response = $this->twitchApiClient->request(Request::METHOD_PATCH, self::TWITCH_PREDICTIONS_ENDPOINT, [
+                    'auth_bearer' => $streamerToken['access_token'],
+                    'headers' => [
+                        'Client-Id' => $this->clientId,
+                    ],
+                    'body' => [
+                        'broadcaster_id' => $channelId,
+                        'id' => $id,
+                        'status' => $status,
+                        'winning_outcome_id' => $winningOutcomeId
+                    ]
+                ]);
+
+                if ($response->getStatusCode() === 200) {
+                    $data = json_decode($response->getContent(), true);
+                    return [
+                        'data' => $data['data'],
+                        'refresh' => $refresh
+                    ];
+                } else {
+                    return "You can't end a prediction right now.";
+                }
+            }
         } else {
-            return "You can't end a prediction right now.";
+            return null;
         }
     }
 
@@ -883,27 +1083,91 @@ class TwitchApiService {
      */
     public function getAllPrediction(
         string $accessToken,
-        string $channelId
+        string $channelId,
+        string $userUuid
     ) {
-        $response = $this->twitchApiClient->request(Request::METHOD_GET, self::TWITCH_PREDICTIONS_ENDPOINT, [
+        $refresh = null;
+        // On doit vérifier la validité du token
+        $validityUser = $this->twitchApiClient->request('GET', self::TOKEN_VALIDATE, [
             'auth_bearer' => $accessToken,
-            'headers' => [
-                'Client-Id' => $this->clientId,
-            ],
-            'query' => [
-                'broadcaster_id' => $channelId
-            ]
         ]);
+        if ($validityUser->getStatusCode() != 200) {
+            // On refresh le token
+            $refresh = $this->refreshToken($accessToken);
+        }
+        if ($channelId !== null && $userUuid !== null) {
+            if ($channelId === $userUuid) {
+                $response = $this->twitchApiClient->request(Request::METHOD_GET, self::TWITCH_PREDICTIONS_ENDPOINT, [
+                    'auth_bearer' => $accessToken,
+                    'headers' => [
+                        'Client-Id' => $this->clientId,
+                    ],
+                    'query' => [
+                        'broadcaster_id' => $channelId
+                    ]
+                ]);
 
-        if ($response->getStatusCode() === 200) {
-            $data = json_decode($response->getContent(), true);
-            if (count($data['data']) > 0) {
-                return $data['data'][0];
+                if ($response->getStatusCode() === 200) {
+                    $data = json_decode($response->getContent(), true);
+                    if (count($data['data']) > 0) {
+                        return [
+                            'data' => $data['data'],
+                            'refresh' => $refresh
+                        ];
+                    } else {
+                        return "You don't have any prediction right now.";
+                    }
+                } else {
+                    return "You can't create a prediction right now.";
+                }
             } else {
-                return "You don't have any prediction right now.";
+                // On doit récupérer le accessToken du streamer en BDD
+                $streamerToken = $this->getStreamerToken($channelId);
+                // On vérifie sa validité
+                $validity = $this->twitchApiClient->request('GET', self::TOKEN_VALIDATE, [
+                    'auth_bearer' => $streamerToken['access_token'],
+                ]);
+                if ($validity->getStatusCode() !== 200) {
+                    // On refresh le token
+                    $streamRefresh = $this->refreshToken($streamerToken['refresh_token']);
+                    // On met à jour le token en BDD
+                    $streamerDB = $this->userRepository->findOneBy(['twitchId' => $channelId]);
+                    $streamerDB->setTwitchAccessToken($streamRefresh['access_token']);
+                    $streamerDB->setTwitchRefreshToken($streamRefresh['refresh_token']);
+                    $streamerDB->setTwitchExpiresIn($streamRefresh['expires_in']);
+                    $em = $this->doctrine->getManager();
+                    $em->persist($streamerDB);
+                    $em->flush();
+                    $streamerToken['access_token'] = $streamRefresh['access_token'];
+
+                    // On doit vérifier la validité du token de l'utilisateur
+                }
+                $response = $this->twitchApiClient->request(Request::METHOD_GET, self::TWITCH_PREDICTIONS_ENDPOINT, [
+                    'auth_bearer' => $streamerToken['access_token'],
+                    'headers' => [
+                        'Client-Id' => $this->clientId,
+                    ],
+                    'query' => [
+                        'broadcaster_id' => $channelId
+                    ]
+                ]);
+
+                if ($response->getStatusCode() === 200) {
+                    $data = json_decode($response->getContent(), true);
+                    if (count($data['data']) > 0) {
+                        return [
+                            'data' => $data['data'],
+                            'refresh' => $refresh
+                        ];
+                    } else {
+                        return "You don't have any prediction right now.";
+                    }
+                } else {
+                    return "You can't create a prediction right now.";
+                }
             }
         } else {
-            return "You can't create a prediction right now.";
+            return null;
         }
     }
 
@@ -916,6 +1180,15 @@ class TwitchApiService {
         array $type,
         string $transport
     ) {
+        $refresh = null;
+        // On doit vérifier la validité du token
+        $validityUser = $this->twitchApiClient->request('GET', self::TOKEN_VALIDATE, [
+            'auth_bearer' => $accessToken,
+        ]);
+        if ($validityUser->getStatusCode() != 200) {
+            // On refresh le token
+            $refresh = $this->refreshToken($accessToken);
+        }
         $err = [];
         foreach ($type as $topics => $params) {
             $version = $params['version'];
@@ -948,7 +1221,10 @@ class TwitchApiService {
         if(count($err)) {
             return ['error_occured' => $err];
         } else {
-            return ['listener_created' => true];
+            return [
+                'listener_created' => true,
+                'refresh' => $refresh
+            ];
         }
     }
 

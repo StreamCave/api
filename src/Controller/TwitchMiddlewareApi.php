@@ -481,50 +481,53 @@ class TwitchMiddlewareApi extends AbstractController {
     #[Route('/prediction/create', name: 'twitch_prediction_create', methods: ['POST'])]
     public function createPrediction(Request $request): JsonResponse
     {
-        $isOk = $this->checkAccessChannel($request);
-        if ($isOk) {
-            $data = $this->decodeData($request);
-            $err = [];
-            $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');
-            $accessToken = $data['access_token'] ?? array_push($err, 'access_token');
-            $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
-            $title = $data['title'] ?? array_push($err, 'title');
-            $outcomes = $data['outcomes'] ?? array_push($err, 'outcomes');
-            $predictionWindow = $data['predictionWindow'] ?? array_push($err, 'predictionWindow');
-            if (count($err) == 0) {
-                $accessToken = $this->twitchApiService->validateToken($request, $data['access_token'], $data['refresh_token'], $channelId);
-                $response = $this->twitchApiService->createPrediction($accessToken, $channelId, $title, $outcomes, $predictionWindow);
-                $finalResponse = new JsonResponse(
-                    [
-                        'statusCode' => 200,
-                        'response' => $response
-                    ],
-                    200,
-                );
-                if ($channelId == $this->translateJwt($request)['twitchId']) {
-                    $finalResponse->headers->setCookie(
-                        new Cookie(
-                            't_access_token_sso',
-                            $this->getJwt($request),
-                            new \DateTime('+1 day'),
-                            '/',
-                            'localhost',
-                            true,
-                            true,
-                            false,
-                            'none'
-                        ));
-                }
-                return $finalResponse;
-            } else {
+        $data = $this->decodeData($request);
+        $err = [];
+        $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');
+        $accessToken = $data['access_token'] ?? array_push($err, 'access_token');
+        $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
+        $title = $data['title'] ?? array_push($err, 'title');
+        $outcomes = $data['outcomes'] ?? array_push($err, 'outcomes');
+        $predictionWindow = $data['predictionWindow'] ?? array_push($err, 'predictionWindow');
+        if (count($err) == 0) {
+            $userUuid = $this->translateJwt($request)['uuid'];
+            $moderators = $this->twitchApiService->fetchModerators($accessToken, $channelId, $userUuid);
+            if ($moderators) {
                 return new JsonResponse([
-                    'statusCode' => 400,
-                    'message' => 'Missing or invalid parameters',
-                    'missing_parameters' => $err
-                ], 400);
+                    'statusCode' => 403,
+                    'message' => 'You are not a moderator of this channel'
+                ], 403);
             }
+            $response = $this->twitchApiService->createPrediction($accessToken, $channelId, $userUuid, $title, $outcomes, $predictionWindow);
+            $finalResponse = new JsonResponse(
+                [
+                    'statusCode' => 200,
+                    'access_renew' => $response['refresh'] != null ? true : false,
+                    'response' => $response['data'],
+                ],
+                200,
+            );
+            if ($response['refresh'] != null) {
+                $finalResponse->headers->setCookie(
+                    new Cookie(
+                        't_access_token_sso',
+                        $response['refresh'],
+                        new \DateTime('+1 day'),
+                        '/',
+                        'localhost',
+                        true,
+                        true,
+                        false,
+                        'none'
+                    ));
+            }
+            return $finalResponse;
         } else {
-            return $isOk;
+            return new JsonResponse([
+                'statusCode' => 400,
+                'message' => 'Missing or invalid parameters',
+                'missing_parameters' => $err
+            ], 400);
         }
     }
 
@@ -536,47 +539,50 @@ class TwitchMiddlewareApi extends AbstractController {
     #[Route('/prediction/get', name: 'twitch_prediction_get', methods: ['POST'])]
     public function getPrediction(Request $request): JsonResponse
     {
-        $isOk = $this->checkAccessChannel($request);
-        if ($isOk) {
-            $data = $this->decodeData($request);
-            $err = [];
-            $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');
-            $accessToken = $data['access_token'] ?? array_push($err, 'access_token');
-            $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
-            if (count($err) == 0) {
-                $accessToken = $this->twitchApiService->validateToken($request, $data['access_token'], $data['refresh_token'], $channelId);
-                $response = $this->twitchApiService->getPrediction($accessToken, $channelId);
-                $finalResponse = new JsonResponse(
-                    [
-                        'statusCode' => 200,
-                        'response' => $response
-                    ],
-                    200,
-                );
-                if ($channelId == $this->translateJwt($request)['twitchId']) {
-                    $finalResponse->headers->setCookie(
-                        new Cookie(
-                            't_access_token_sso',
-                            $this->getJwt($request),
-                            new \DateTime('+1 day'),
-                            '/',
-                            'localhost',
-                            true,
-                            true,
-                            false,
-                            'none'
-                        ));
-                }
-                return $finalResponse;
-            } else {
+        $data = $this->decodeData($request);
+        $err = [];
+        $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');
+        $accessToken = $data['access_token'] ?? array_push($err, 'access_token');
+        $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
+        if (count($err) == 0) {
+            $userUuid = $this->translateJwt($request)['uuid'];
+            $moderators = $this->twitchApiService->fetchModerators($accessToken, $channelId, $userUuid);
+            if (!$moderators) {
                 return new JsonResponse([
-                    'statusCode' => 400,
-                    'message' => 'Missing or invalid parameters',
-                    'missing_parameters' => $err
-                ], 400);
+                    'statusCode' => 403,
+                    'message' => 'You are not a moderator of this channel'
+                ], 403);
             }
+            $response = $this->twitchApiService->getPrediction($accessToken, $channelId, $userUuid);
+            $finalResponse = new JsonResponse(
+                [
+                    'statusCode' => 200,
+                    'access_renew' => $response['refresh'] != null ? true : false,
+                    'response' => $response['data'],
+                ],
+                200,
+            );
+            if ($response['refresh'] != null) {
+                $finalResponse->headers->setCookie(
+                    new Cookie(
+                        't_access_token_sso',
+                        $response['refresh'],
+                        new \DateTime('+1 day'),
+                        '/',
+                        'localhost',
+                        true,
+                        true,
+                        false,
+                        'none'
+                    ));
+            }
+            return $finalResponse;
         } else {
-            return $isOk;
+            return new JsonResponse([
+                'statusCode' => 400,
+                'message' => 'Missing or invalid parameters',
+                'missing_parameters' => $err
+            ], 400);
         }
     }
 
@@ -588,50 +594,53 @@ class TwitchMiddlewareApi extends AbstractController {
     #[Route('/prediction/end', name: 'twitch_prediction_end', methods: ['POST'])]
     public function endPrediction(Request $request): JsonResponse
     {
-        $isOk = $this->checkAccessChannel($request);
-        if ($isOk) {
-            $data = $this->decodeData($request);
-            $err = [];
-            $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');
-            $accessToken = $data['access_token'] ?? array_push($err, 'access_token');
-            $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
-            $id = $data['id'] ?? array_push($err, 'id');
-            $status = $data['status'] ?? array_push($err, 'status');
-            $winningOutcomeId = $data['winningOutcomeId'] ?? null;
-            if (count($err) == 0) {
-                $accessToken = $this->twitchApiService->validateToken($request, $data['access_token'], $data['refresh_token'], $channelId);
-                $response = $this->twitchApiService->endPrediction($accessToken, $channelId, $id, $status, $winningOutcomeId);
-                $finalResponse = new JsonResponse(
-                    [
-                        'statusCode' => 200,
-                        'response' => $response
-                    ],
-                    200,
-                );
-                if ($channelId == $this->translateJwt($request)['twitchId']) {
-                    $finalResponse->headers->setCookie(
-                        new Cookie(
-                            't_access_token_sso',
-                            $this->getJwt($request),
-                            new \DateTime('+1 day'),
-                            '/',
-                            'localhost',
-                            true,
-                            true,
-                            false,
-                            'none'
-                        ));
-                }
-                return $finalResponse;
-            } else {
+        $data = $this->decodeData($request);
+        $err = [];
+        $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');
+        $accessToken = $data['access_token'] ?? array_push($err, 'access_token');
+        $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
+        $id = $data['id'] ?? array_push($err, 'id');
+        $status = $data['status'] ?? array_push($err, 'status');
+        $winningOutcomeId = $data['winningOutcomeId'] ?? null;
+        if (count($err) == 0) {
+            $userUuid = $this->translateJwt($request)['uuid'];
+            $moderators = $this->twitchApiService->fetchModerators($accessToken, $channelId, $userUuid);
+            if (!$moderators) {
                 return new JsonResponse([
-                    'statusCode' => 400,
-                    'message' => 'Missing or invalid parameters',
-                    'missing_parameters' => $err
-                ], 400);
+                    'statusCode' => 403,
+                    'message' => 'You are not a moderator of this channel'
+                ], 403);
             }
+            $response = $this->twitchApiService->endPrediction($accessToken, $channelId, $userUuid, $id, $status, $winningOutcomeId);
+            $finalResponse = new JsonResponse(
+                [
+                    'statusCode' => 200,
+                    'access_renew' => $response['refresh'] != null ? true : false,
+                    'response' => $response['data'],
+                ],
+                200,
+            );
+            if ($response['refresh'] != null) {
+                $finalResponse->headers->setCookie(
+                    new Cookie(
+                        't_access_token_sso',
+                        $response['refresh'],
+                        new \DateTime('+1 day'),
+                        '/',
+                        'localhost',
+                        true,
+                        true,
+                        false,
+                        'none'
+                    ));
+            }
+            return $finalResponse;
         } else {
-            return $isOk;
+            return new JsonResponse([
+                'statusCode' => 400,
+                'message' => 'Missing or invalid parameters',
+                'missing_parameters' => $err
+            ], 400);
         }
     }
 
@@ -643,28 +652,100 @@ class TwitchMiddlewareApi extends AbstractController {
     #[Route('/prediction/all', name: 'twitch_prediction_all', methods: ['POST'])]
     public function getAllPrediction(Request $request): JsonResponse
     {
-        $isOk = $this->checkAccessChannel($request);
-        if ($isOk) {
-            $data = $this->decodeData($request);
-            $err = [];
-            $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');
-            $accessToken = $data['access_token'] ?? array_push($err, 'access_token');
-            $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
-            if (count($err) == 0) {
-                $accessToken = $this->twitchApiService->validateToken($request, $data['access_token'], $data['refresh_token'], $channelId);
-                $response = $this->twitchApiService->getAllPrediction($accessToken, $channelId);
+        $data = $this->decodeData($request);
+        $err = [];
+        $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');
+        $accessToken = $data['access_token'] ?? array_push($err, 'access_token');
+        $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
+        if (count($err) == 0) {
+            $userUuid = $this->translateJwt($request)['uuid'];
+            $moderators = $this->twitchApiService->fetchModerators($accessToken, $channelId, $userUuid);
+            if (!$moderators) {
+                return new JsonResponse([
+                    'statusCode' => 403,
+                    'message' => 'You are not a moderator of this channel'
+                ], 403);
+            }
+            $response = $this->twitchApiService->getAllPrediction($accessToken, $channelId, $userUuid);
+            $finalResponse = new JsonResponse(
+                [
+                    'statusCode' => 200,
+                    'access_renew' => $response['refresh'] != null ? true : false,
+                    'response' => $response['data'],
+                ],
+                200,
+            );
+            if ($response['refresh'] != null) {
+                $finalResponse->headers->setCookie(
+                    new Cookie(
+                        't_access_token_sso',
+                        $response['refresh'],
+                        new \DateTime('+1 day'),
+                        '/',
+                        'localhost',
+                        true,
+                        true,
+                        false,
+                        'none'
+                    ));
+            }
+            return $finalResponse;
+        } else {
+            return new JsonResponse([
+                'statusCode' => 400,
+                'message' => 'Missing or invalid parameters',
+                'missing_parameters' => $err
+            ], 400);
+        }
+    }
+
+    /**
+     * @param Request $request
+     *
+     * Create EventSub Subscription
+     */
+    #[Route('/eventsub/create', name: 'twitch_eventsub_create', methods: ['POST'])]
+    public function createEventSub(Request $request): JsonResponse
+    {
+        $data = $this->decodeData($request);
+        $err = [];
+        $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');
+        $accessToken = $data['access_token'] ?? array_push($err, 'access_token');
+        $sessionId = $data['session_id'] ?? array_push($err, 'session_id');
+        if($data['type'] === "poll" && $data['broadcaster_user_id']) {
+            $type = [
+                'channel.poll.begin' => ['version' => 1, 'condition' => ['broadcaster_user_id' => $data['broadcaster_user_id']]],
+                'channel.poll.progress' => ['version' => 1, 'condition' => ['broadcaster_user_id' => $data['broadcaster_user_id']]],
+                'channel.poll.end' => ['version' => 1, 'condition' => ['broadcaster_user_id' => $data['broadcaster_user_id']]],
+            ];
+        } else if($data['type'] === "prediction" && $data['broadcaster_user_id']) {
+            $type = [
+                'channel.prediction.begin' => ['version' => 1, 'condition' => ['broadcaster_user_id' => $data['broadcaster_user_id']]],
+                'channel.prediction.progress' => ['version' => 1, 'condition' => ['broadcaster_user_id' => $data['broadcaster_user_id']]],
+                'channel.prediction.end' => ['version' => 1, 'condition' => ['broadcaster_user_id' => $data['broadcaster_user_id']]],
+            ];
+        } else {
+            array_push($err, 'type');
+        }
+        $transport = $data['transport'] ?? array_push($err, 'transport');
+        if (count($err) == 0) {
+            $userUuid = $this->translateJwt($request)['uuid'];
+            $userTwitch = $this->twitchApiService->fetchUser($accessToken);
+            if ($userTwitch['data'][0]['id'] === $data['broadcaster_user_id']) {
+                $response = $this->twitchApiService->createEventSubSubscription($accessToken, $sessionId, $type, $transport, $userUuid);
                 $finalResponse = new JsonResponse(
                     [
                         'statusCode' => 200,
-                        'response' => $response
+                        'access_renew' => $response['refresh'] != null ? true : false,
+                        'response' => $response['data'],
                     ],
                     200,
                 );
-                if ($channelId == $this->translateJwt($request)['twitchId']) {
+                if ($response['refresh'] != null) {
                     $finalResponse->headers->setCookie(
                         new Cookie(
                             't_access_token_sso',
-                            $this->getJwt($request),
+                            $response['refresh'],
                             new \DateTime('+1 day'),
                             '/',
                             'localhost',
@@ -678,89 +759,15 @@ class TwitchMiddlewareApi extends AbstractController {
             } else {
                 return new JsonResponse([
                     'statusCode' => 400,
-                    'message' => 'Missing or invalid parameters',
-                    'missing_parameters' => $err
+                    'message' => 'User id is not the same as the condition user id'
                 ], 400);
             }
         } else {
-            return $isOk;
-        }
-    }
-
-    /**
-     * @param Request $request
-     *
-     * Create EventSub Subscription
-     */
-    #[Route('/eventsub/create', name: 'twitch_eventsub_create', methods: ['POST'])]
-    public function createEventSub(Request $request): JsonResponse
-    {
-        $isOk = $this->checkAccessChannel($request);
-        if ($isOk) {
-            $data = $this->decodeData($request);
-            $err = [];
-            $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');
-            $accessToken = $data['access_token'] ?? array_push($err, 'access_token');
-            $sessionId = $data['session_id'] ?? array_push($err, 'session_id');
-            if($data['type'] === "poll" && $data['broadcaster_user_id']) {
-                $type = [
-                    'channel.poll.begin' => ['version' => 1, 'condition' => ['broadcaster_user_id' => $data['broadcaster_user_id']]],
-                    'channel.poll.progress' => ['version' => 1, 'condition' => ['broadcaster_user_id' => $data['broadcaster_user_id']]],
-                    'channel.poll.end' => ['version' => 1, 'condition' => ['broadcaster_user_id' => $data['broadcaster_user_id']]],
-                ];
-            } else if($data['type'] === "prediction" && $data['broadcaster_user_id']) {
-                $type = [
-                    'channel.prediction.begin' => ['version' => 1, 'condition' => ['broadcaster_user_id' => $data['broadcaster_user_id']]],
-                    'channel.prediction.progress' => ['version' => 1, 'condition' => ['broadcaster_user_id' => $data['broadcaster_user_id']]],
-                    'channel.prediction.end' => ['version' => 1, 'condition' => ['broadcaster_user_id' => $data['broadcaster_user_id']]],
-                ];
-            } else {
-                array_push($err, 'type');
-            }
-            $transport = $data['transport'] ?? array_push($err, 'transport');
-            if (count($err) == 0) {
-                $accessToken = $this->twitchApiService->validateToken($request, $data['access_token'], $data['refresh_token'], $data['broadcaster_user_id']);
-                $userTwitch = $this->twitchApiService->fetchUser($accessToken);
-                if ($userTwitch['data'][0]['id'] === $data['broadcaster_user_id']) {
-                    $accessToken = $this->twitchApiService->validateToken($request, $data['access_token'], $data['refresh_token'], $data['channel_id']);
-                    $response = $this->twitchApiService->createEventSubSubscription($accessToken, $sessionId, $type, $transport);
-                    $finalResponse = new JsonResponse(
-                        [
-                            'statusCode' => 200,
-                            'response' => $response
-                        ],
-                        200,
-                    );
-                    if ($data['broadcaster_user_id'] == $this->translateJwt($request)['twitchId']) {
-                        $finalResponse->headers->setCookie(
-                            new Cookie(
-                                't_access_token_sso',
-                                $this->getJwt($request),
-                                new \DateTime('+1 day'),
-                                '/',
-                                'localhost',
-                                true,
-                                true,
-                                false,
-                                'none'
-                            ));
-                    }
-                    return $finalResponse;
-                } else {
-                    return new JsonResponse([
-                        'statusCode' => 400,
-                        'message' => 'User id is not the same as the condition user id'
-                    ], 400);
-                }
-            } else {
-                return new JsonResponse([
-                    'statusCode' => 400,
-                    'message' => 'Missing or invalid parameters',
-                    'missing_parameters' => $err
-                ], 400);
-            }
-        } else {
-            return $isOk;
+            return new JsonResponse([
+                'statusCode' => 400,
+                'message' => 'Missing or invalid parameters',
+                'missing_parameters' => $err
+            ], 400);
         }
     }
 }

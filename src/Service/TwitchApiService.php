@@ -242,22 +242,72 @@ class TwitchApiService {
     /**
      * Informations de la chaîne de l'utilisateur renseigné
      */
-    public function fetchChannel(string $accessToken, string $channelId)
+    public function fetchChannel(string $accessToken, string $channelId, string $userUuid)
     {
-        if ($channelId !== null) {
-            $response = $this->twitchApiClient->request(Request::METHOD_GET, self::TWITCH_CHANNEL_ID_ENDPOINT, [
-                'auth_bearer' => $accessToken,
-                'headers' => [
-                    'Client-Id' => $this->clientId,
-                ],
-                'query' => [
-                    'broadcaster_id' => $channelId
-                ]
-            ]);
+        $refresh = null;
+        // On doit vérifier la validité du token
+        $validityUser = $this->twitchApiClient->request('GET', self::TOKEN_VALIDATE, [
+            'auth_bearer' => $accessToken,
+        ]);
+        if ($validityUser->getStatusCode() != 200) {
+            // On refresh le token
+            $refresh = $this->refreshToken($accessToken);
+        }
+        if ($channelId !== null && $userUuid !== null) {
+            if ($channelId === $userUuid) {
+                $response = $this->twitchApiClient->request(Request::METHOD_GET, self::TWITCH_CHANNEL_ID_ENDPOINT, [
+                    'auth_bearer' => $accessToken,
+                    'headers' => [
+                        'Client-Id' => $this->clientId,
+                    ],
+                    'query' => [
+                        'broadcaster_id' => $channelId
+                    ]
+                ]);
 
-            $data = json_decode($response->getContent(), true);
+                $data = json_decode($response->getContent(), true);
 
-            return $data['data'][0];
+                return [
+                    'data' => $data['data'],
+                    'refresh' => $refresh
+                ];
+            } else {
+                // On doit récupérer le accessToken du streamer en BDD
+                $streamerToken = $this->getStreamerToken($channelId);
+                // On vérifie sa validité
+                $validity = $this->twitchApiClient->request('GET', self::TOKEN_VALIDATE, [
+                    'auth_bearer' => $streamerToken['access_token'],
+                ]);
+                if ($validity->getStatusCode() !== 200) {
+                    // On refresh le token
+                    $streamRefresh = $this->refreshToken($streamerToken['refresh_token']);
+                    // On met à jour le token en BDD
+                    $streamerDB = $this->userRepository->findOneBy(['twitchId' => $channelId]);
+                    $streamerDB->setTwitchAccessToken($streamRefresh['access_token']);
+                    $streamerDB->setTwitchRefreshToken($streamRefresh['refresh_token']);
+                    $streamerDB->setTwitchExpiresIn($streamRefresh['expires_in']);
+                    $em = $this->doctrine->getManager();
+                    $em->persist($streamerDB);
+                    $em->flush();
+                    $streamerToken['access_token'] = $streamRefresh['access_token'];
+                }
+                $response = $this->twitchApiClient->request(Request::METHOD_GET, self::TWITCH_CHANNEL_ID_ENDPOINT, [
+                    'auth_bearer' => $streamerToken['access_token'],
+                    'headers' => [
+                        'Client-Id' => $this->clientId,
+                    ],
+                    'query' => [
+                        'broadcaster_id' => $channelId
+                    ]
+                ]);
+
+                $data = json_decode($response->getContent(), true);
+
+                return [
+                    'data' => $data['data'],
+                    'refresh' => $refresh
+                ];
+            }
         } else {
             return null;
         }
@@ -292,7 +342,10 @@ class TwitchApiService {
 
                 $data = json_decode($response->getContent(), true);
 
-                return $data['data'];
+                return [
+                    'data' => $data['data'],
+                    'refresh' => $refresh
+                ];
             } else {
                 // On doit récupérer le accessToken du streamer en BDD
                 $streamerToken = $this->getStreamerToken($channelId);
@@ -328,10 +381,23 @@ class TwitchApiService {
 
                 $data = json_decode($response->getContent(), true);
 
-                return [
-                    'data' => $data['data'],
-                    'refresh' => $refresh
-                ];
+                // Je vérifie si l'utilisateur est bien modérateur de la chaîne
+                $isModerator = false;
+                $moderatorDB = $this->userRepository->findOneBy(['uuid' => $userUuid]);
+                foreach ($data['data'] as $moderator) {
+                    if ($moderator['user_id'] === $moderatorDB->getTwitchId()) {
+                        $isModerator = true;
+                    }
+                }
+
+                if ($isModerator) {
+                    return [
+                        'data' => $data['data'],
+                        'refresh' => $refresh
+                    ];
+                } else {
+                    return false;
+                }
             }
         } else {
             return null;

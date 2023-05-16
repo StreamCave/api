@@ -92,19 +92,28 @@ class TwitchMiddlewareApi extends AbstractController {
         $refreshToken = $data['refresh_token'] ?? array_push($err, 'refresh_token');
         $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
         if (count($err) === 0) {
-            $channel = $this->twitchApiService->fetchChannel($accessToken, $channelId);
+            $userUuid = $this->translateJwt($request)['uuid'];
+            $moderators = $this->twitchApiService->fetchModerators($accessToken, $channelId, $userUuid);
+            if (!$moderators) {
+                return new JsonResponse([
+                    'statusCode' => 403,
+                    'message' => 'You are not a moderator of this channel'
+                ], 403);
+            }
+            $channel = $this->twitchApiService->fetchChannel($accessToken, $channelId, $userUuid);
             $finalResponse = new JsonResponse(
                 [
                     'statusCode' => 200,
-                    'channelId' => $channel
+                    'access_renew' => $channel['refresh'] != null ? true : false,
+                    'channel' => $channel['data'],
                 ],
                 200,
             );
-            if ($channelId == $this->translateJwt($request)['twitchId']) {
+            if ($channel['refresh'] != null) {
                 $finalResponse->headers->setCookie(
                     new Cookie(
                         't_access_token_sso',
-                        $this->getJwt($request),
+                        $channel['refresh'],
                         new \DateTime('+1 day'),
                         '/',
                         'localhost',
@@ -138,6 +147,12 @@ class TwitchMiddlewareApi extends AbstractController {
         if (count($err) === 0) {
             $userUuid = $this->translateJwt($request)['uuid'];
             $moderators = $this->twitchApiService->fetchModerators($accessToken, $channelId, $userUuid);
+            if (!$moderators) {
+                return new JsonResponse([
+                    'statusCode' => 403,
+                    'message' => 'You are not a moderator of this channel'
+                ], 403);
+            }
             $finalResponse = new JsonResponse(
                 [
                     'statusCode' => 200,

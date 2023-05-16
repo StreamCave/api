@@ -250,55 +250,59 @@ class TwitchMiddlewareApi extends AbstractController {
     #[Route('/poll/create', name: 'twitch_poll_create', methods: ['POST'])]
     public function createPoll(Request $request): JsonResponse
     {
-        $isOk = $this->checkAccessChannel($request);
-        if ($isOk->getStatusCode() === 200) {
-            $data = $this->decodeData($request);
-            $err = [];
-            $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');
-            $accessToken = $data['access_token'] ?? array_push($err, 'access_token');
-            $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
-            $title = $data['title'] ?? array_push($err, 'title');
-            $choices = $data['choices'] ?? array_push($err, 'choices');
-            $duration = $data['duration'] ?? array_push($err, 'duration');
-            $channelPointsVotingEnabled = $data['channel_points_voting_enabled'] ?? array_push($err, 'channel_points_voting_enabled');
-            $channelPointsVotingEnabled = $channelPointsVotingEnabled === true ? true : false;
-            $channelPointsPerVote = 1;
-            if($channelPointsVotingEnabled === true) {
-                $channelPointsPerVote = $data['channel_points_per_vote'] ?? array_push($err, 'channel_points_per_vote');
-            }
-            if (count($err) == 0) {
-                $response = $this->twitchApiService->createPoll($accessToken, $channelId, $choices, $title, $duration, $channelPointsVotingEnabled, $channelPointsPerVote);
-                $finalResponse = new JsonResponse(
-                    [
-                        'statusCode' => 200,
-                        'response' => $response
-                    ],
-                    200,
-                );
-                if ($channelId == $this->translateJwt($request)['twitchId']) {
-                    $finalResponse->headers->setCookie(
-                        new Cookie(
-                            't_access_token_sso',
-                            $this->getJwt($request),
-                            new \DateTime('+1 day'),
-                            '/',
-                            'localhost',
-                            true,
-                            true,
-                            false,
-                            'none'
-                        ));
-                }
-                return $finalResponse;
-            } else {
+        $data = $this->decodeData($request);
+        $err = [];
+        $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');
+        $accessToken = $data['access_token'] ?? array_push($err, 'access_token');
+        $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
+        $title = $data['title'] ?? array_push($err, 'title');
+        $choices = $data['choices'] ?? array_push($err, 'choices');
+        $duration = $data['duration'] ?? array_push($err, 'duration');
+        $channelPointsVotingEnabled = $data['channel_points_voting_enabled'] ?? array_push($err, 'channel_points_voting_enabled');
+        $channelPointsVotingEnabled = $channelPointsVotingEnabled === true ? true : false;
+        $channelPointsPerVote = 1;
+        if($channelPointsVotingEnabled === true) {
+            $channelPointsPerVote = $data['channel_points_per_vote'] ?? array_push($err, 'channel_points_per_vote');
+        }
+        if (count($err) == 0) {
+            $userUuid = $this->translateJwt($request)['uuid'];
+            $moderators = $this->twitchApiService->fetchModerators($accessToken, $channelId, $userUuid);
+            if (!$moderators) {
                 return new JsonResponse([
-                    'statusCode' => 400,
-                    'message' => 'Missing or invalid parameters',
-                    'missing_parameters' => $err
-                ], 400);
+                    'statusCode' => 403,
+                    'message' => 'You are not a moderator of this channel'
+                ], 403);
             }
+            $response = $this->twitchApiService->createPoll($accessToken, $channelId, $userUuid, $choices, $title, $duration, $channelPointsVotingEnabled, $channelPointsPerVote);
+            $finalResponse = new JsonResponse(
+                [
+                    'statusCode' => 200,
+                    'access_renew' => $response['refresh'] != null ? true : false,
+                    'moderators' => $response['data'],
+                ],
+                200,
+            );
+            if ($response['refresh'] != null) {
+                $finalResponse->headers->setCookie(
+                    new Cookie(
+                        't_access_token_sso',
+                        $response['refresh'],
+                        new \DateTime('+1 day'),
+                        '/',
+                        'localhost',
+                        true,
+                        true,
+                        false,
+                        'none'
+                    ));
+            }
+            return $finalResponse;
         } else {
-            return $isOk;
+            return new JsonResponse([
+                'statusCode' => 400,
+                'message' => 'Missing or invalid parameters',
+                'missing_parameters' => $err
+            ], 400);
         }
     }
 
@@ -310,47 +314,50 @@ class TwitchMiddlewareApi extends AbstractController {
     #[Route('/poll/get', name: 'twitch_poll_get', methods: ['POST'])]
     public function getPoll(Request $request) : JsonResponse
     {
-        $isOk = $this->checkAccessChannel($request);
-        if ($isOk->getStatusCode() === 200) {
-            $data = $this->decodeData($request);
-            $err = [];
-            $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');
-            $accessToken = $data['access_token'] ?? array_push($err, 'access_token');
-            $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
-            if (count($err) == 0) {
-                $accessToken = $this->twitchApiService->validateToken($request, $data['access_token'], $data['refresh_token'], $channelId);
-                $response = $this->twitchApiService->getPoll($accessToken, $channelId);
-                $finalResponse = new JsonResponse(
-                    [
-                        'statusCode' => 200,
-                        'response' => $response
-                    ],
-                    200,
-                );
-                if ($channelId == $this->translateJwt($request)['twitchId']) {
-                    $finalResponse->headers->setCookie(
-                        new Cookie(
-                            't_access_token_sso',
-                            $this->getJwt($request),
-                            new \DateTime('+1 day'),
-                            '/',
-                            'localhost',
-                            true,
-                            true,
-                            false,
-                            'none'
-                        ));
-                }
-                return $finalResponse;
-            } else {
+        $data = $this->decodeData($request);
+        $err = [];
+        $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');
+        $accessToken = $data['access_token'] ?? array_push($err, 'access_token');
+        $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
+        if (count($err) == 0) {
+            $userUuid = $this->translateJwt($request)['uuid'];
+            $moderators = $this->twitchApiService->fetchModerators($accessToken, $channelId, $userUuid);
+            if (!$moderators) {
                 return new JsonResponse([
-                    'statusCode' => 400,
-                    'message' => 'Missing or invalid parameters',
-                    'missing_parameters' => $err
-                ], 400);
+                    'statusCode' => 403,
+                    'message' => 'You are not a moderator of this channel'
+                ], 403);
             }
+            $response = $this->twitchApiService->getPoll($accessToken, $channelId, $userUuid);
+            $finalResponse = new JsonResponse(
+                [
+                    'statusCode' => 200,
+                    'access_renew' => $response['refresh'] != null ? true : false,
+                    'response' => $response['data'],
+                ],
+                200,
+            );
+            if ($response['refresh'] != null) {
+                $finalResponse->headers->setCookie(
+                    new Cookie(
+                        't_access_token_sso',
+                        $response['refresh'],
+                        new \DateTime('+1 day'),
+                        '/',
+                        'localhost',
+                        true,
+                        true,
+                        false,
+                        'none'
+                    ));
+            }
+            return $finalResponse;
         } else {
-            return $isOk;
+            return new JsonResponse([
+                'statusCode' => 400,
+                'message' => 'Missing or invalid parameters',
+                'missing_parameters' => $err
+            ], 400);
         }
     }
 
@@ -362,49 +369,52 @@ class TwitchMiddlewareApi extends AbstractController {
     #[Route('/poll/end', name: 'twitch_poll_end', methods: ['POST'])]
     public function endPoll(Request $request): JsonResponse
     {
-        $isOk = $this->checkAccessChannel($request);
-        if ($isOk) {
-            $data = $this->decodeData($request);
-            $err = [];
-            $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');
-            $accessToken = $data['access_token'] ?? array_push($err, 'access_token');
-            $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
-            $id = $data['id'] ?? array_push($err, 'id');
-            $status = $data['status'] ?? 'TERMINATED';
-            if (count($err) == 0) {
-                $accessToken = $this->twitchApiService->validateToken($request, $data['access_token'], $data['refresh_token'], $channelId);
-                $response = $this->twitchApiService->endPoll($accessToken, $channelId, $id, $status);
-                $finalResponse = new JsonResponse(
-                    [
-                        'statusCode' => 200,
-                        'response' => $response
-                    ],
-                    200,
-                );
-                if ($channelId == $this->translateJwt($request)['twitchId']) {
-                    $finalResponse->headers->setCookie(
-                        new Cookie(
-                            't_access_token_sso',
-                            $this->getJwt($request),
-                            new \DateTime('+1 day'),
-                            '/',
-                            'localhost',
-                            true,
-                            true,
-                            false,
-                            'none'
-                        ));
-                }
-                return $finalResponse;
-            } else {
+        $data = $this->decodeData($request);
+        $err = [];
+        $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');
+        $accessToken = $data['access_token'] ?? array_push($err, 'access_token');
+        $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
+        $id = $data['id'] ?? array_push($err, 'id');
+        $status = $data['status'] ?? 'TERMINATED';
+        if (count($err) == 0) {
+            $userUuid = $this->translateJwt($request)['uuid'];
+            $moderators = $this->twitchApiService->fetchModerators($accessToken, $channelId, $userUuid);
+            if (!$moderators) {
                 return new JsonResponse([
-                    'statusCode' => 400,
-                    'message' => 'Missing or invalid parameters',
-                    'missing_parameters' => $err
-                ], 400);
+                    'statusCode' => 403,
+                    'message' => 'You are not a moderator of this channel'
+                ], 403);
             }
+            $response = $this->twitchApiService->endPoll($accessToken, $channelId, $userUuid, $id, $status);
+            $finalResponse = new JsonResponse(
+                [
+                    'statusCode' => 200,
+                    'access_renew' => $response['refresh'] != null ? true : false,
+                    'response' => $response['data'],
+                ],
+                200,
+            );
+            if ($response['refresh'] != null) {
+                $finalResponse->headers->setCookie(
+                    new Cookie(
+                        't_access_token_sso',
+                        $response['refresh'],
+                        new \DateTime('+1 day'),
+                        '/',
+                        'localhost',
+                        true,
+                        true,
+                        false,
+                        'none'
+                    ));
+            }
+            return $finalResponse;
         } else {
-            return $isOk;
+            return new JsonResponse([
+                'statusCode' => 400,
+                'message' => 'Missing or invalid parameters',
+                'missing_parameters' => $err
+            ], 400);
         }
     }
 
@@ -416,47 +426,50 @@ class TwitchMiddlewareApi extends AbstractController {
     #[Route('/poll/all', name: 'twitch_poll_all', methods: ['POST'])]
     public function getAllPoll(Request $request): JsonResponse
     {
-        $isOk = $this->checkAccessChannel($request);
-        if ($isOk) {
-            $data = $this->decodeData($request);
-            $err = [];
-            $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');
-            $accessToken = $data['access_token'] ?? array_push($err, 'access_token');
-            $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
-            if (count($err) == 0) {
-                $accessToken = $this->twitchApiService->validateToken($request, $data['access_token'], $data['refresh_token'], $channelId);
-                $response = $this->twitchApiService->getPolls($accessToken, $channelId);
-                $finalResponse = new JsonResponse(
-                    [
-                        'statusCode' => 200,
-                        'response' => $response
-                    ],
-                    200,
-                );
-                if ($channelId == $this->translateJwt($request)['twitchId']) {
-                    $finalResponse->headers->setCookie(
-                        new Cookie(
-                            't_access_token_sso',
-                            $this->getJwt($request),
-                            new \DateTime('+1 day'),
-                            '/',
-                            'localhost',
-                            true,
-                            true,
-                            false,
-                            'none'
-                        ));
-                }
-                return $finalResponse;
-            } else {
+        $data = $this->decodeData($request);
+        $err = [];
+        $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');
+        $accessToken = $data['access_token'] ?? array_push($err, 'access_token');
+        $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
+        if (count($err) == 0) {
+            $userUuid = $this->translateJwt($request)['uuid'];
+            $moderators = $this->twitchApiService->fetchModerators($accessToken, $channelId, $userUuid);
+            if (!$moderators) {
                 return new JsonResponse([
-                    'statusCode' => 400,
-                    'message' => 'Missing or invalid parameters',
-                    'missing_parameters' => $err
-                ], 400);
+                    'statusCode' => 403,
+                    'message' => 'You are not a moderator of this channel'
+                ], 403);
             }
+            $response = $this->twitchApiService->getPolls($accessToken, $channelId, $userUuid);
+            $finalResponse = new JsonResponse(
+                [
+                    'statusCode' => 200,
+                    'access_renew' => $response['refresh'] != null ? true : false,
+                    'response' => $response['data'],
+                ],
+                200,
+            );
+            if ($response['refresh'] != null) {
+                $finalResponse->headers->setCookie(
+                    new Cookie(
+                        't_access_token_sso',
+                        $response['refresh'],
+                        new \DateTime('+1 day'),
+                        '/',
+                        'localhost',
+                        true,
+                        true,
+                        false,
+                        'none'
+                    ));
+            }
+            return $finalResponse;
         } else {
-            return $isOk;
+            return new JsonResponse([
+                'statusCode' => 400,
+                'message' => 'Missing or invalid parameters',
+                'missing_parameters' => $err
+            ], 400);
         }
     }
 

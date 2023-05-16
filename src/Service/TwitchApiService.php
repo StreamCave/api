@@ -405,61 +405,103 @@ class TwitchApiService {
     }
 
     /**
-     * Check si l'user est soit le streamer, soit un modérateur
-     */
-    public function isUserModeratorOrStreamer(string $accessToken, string $channelId)
-    {
-        $moderators = $this->fetchModerators($accessToken, $channelId);
-        $channel = $this->fetchChannel($accessToken, $channelId);
-        $user = $this->fetchUser($accessToken);
-
-        if ($user['data'][0]['id'] === $channel['broadcaster_id']) {
-            return "streamer";
-        } else {
-            foreach ($moderators as $moderator) {
-                if ($moderator['user_id'] === $user['data'][0]['id']) {
-                    return "moderator";
-                }
-            }
-        }
-
-        return null;
-    }
-
-    /**
      * Création d'un sondage
      */
 
     public function createPoll(
         string $accessToken,
         string $channelId,
+        string $userUuid,
         array $choices,
         string $title,
         int $duration,
         bool $channelPointsVotingEnabled,
         int $channelPointsPerVote
     ) {
-        $response = $this->twitchApiClient->request(Request::METHOD_POST, self::TWITCH_CREATE_POLL_ENDPOINT, [
+        $refresh = null;
+        // On doit vérifier la validité du token
+        $validityUser = $this->twitchApiClient->request('GET', self::TOKEN_VALIDATE, [
             'auth_bearer' => $accessToken,
-            'headers' => [
-                'Client-Id' => $this->clientId,
-            ],
-            'body' => [
-                'broadcaster_id' => $channelId,
-                'title' => $title,
-                'choices' => $choices,
-                'duration' => $duration,
-                'channel_points_voting_enabled' => $channelPointsVotingEnabled,
-                'channel_points_per_vote' => $channelPointsPerVote
-            ]
         ]);
-
-        if ($response->getStatusCode() === 200) {
-            $data = json_decode($response->getContent(), true);
-            return $data['data'][0];
-        } else {
-            return "You can't create a poll right now.";
+        if ($validityUser->getStatusCode() != 200) {
+            // On refresh le token
+            $refresh = $this->refreshToken($accessToken);
         }
+        if ($channelId !== null && $userUuid !== null) {
+            if ($channelId === $userUuid) {
+                $response = $this->twitchApiClient->request(Request::METHOD_POST, self::TWITCH_CREATE_POLL_ENDPOINT, [
+                    'auth_bearer' => $accessToken,
+                    'headers' => [
+                        'Client-Id' => $this->clientId,
+                    ],
+                    'body' => [
+                        'broadcaster_id' => $channelId,
+                        'title' => $title,
+                        'choices' => $choices,
+                        'duration' => $duration,
+                        'channel_points_voting_enabled' => $channelPointsVotingEnabled,
+                        'channel_points_per_vote' => $channelPointsPerVote
+                    ]
+                ]);
+
+                if ($response->getStatusCode() === 200) {
+                    $data = json_decode($response->getContent(), true);
+                    return $data['data'][0];
+                } else {
+                    return "You can't create a poll right now.";
+                }
+            } else {
+                // On doit récupérer le accessToken du streamer en BDD
+                $streamerToken = $this->getStreamerToken($channelId);
+                // On vérifie sa validité
+                $validity = $this->twitchApiClient->request('GET', self::TOKEN_VALIDATE, [
+                    'auth_bearer' => $streamerToken['access_token'],
+                ]);
+                if ($validity->getStatusCode() !== 200) {
+                    // On refresh le token
+                    $streamRefresh = $this->refreshToken($streamerToken['refresh_token']);
+                    // On met à jour le token en BDD
+                    $streamerDB = $this->userRepository->findOneBy(['twitchId' => $channelId]);
+                    $streamerDB->setTwitchAccessToken($streamRefresh['access_token']);
+                    $streamerDB->setTwitchRefreshToken($streamRefresh['refresh_token']);
+                    $streamerDB->setTwitchExpiresIn($streamRefresh['expires_in']);
+                    $em = $this->doctrine->getManager();
+                    $em->persist($streamerDB);
+                    $em->flush();
+                    $streamerToken['access_token'] = $streamRefresh['access_token'];
+
+                    // On doit vérifier la validité du token de l'utilisateur
+                }
+                $response = $this->twitchApiClient->request(Request::METHOD_POST, self::TWITCH_CREATE_POLL_ENDPOINT, [
+                    'auth_bearer' => $streamerToken['access_token'],
+                    'headers' => [
+                        'Client-Id' => $this->clientId,
+                    ],
+                    'body' => [
+                        'broadcaster_id' => $channelId,
+                        'title' => $title,
+                        'choices' => $choices,
+                        'duration' => $duration,
+                        'channel_points_voting_enabled' => $channelPointsVotingEnabled,
+                        'channel_points_per_vote' => $channelPointsPerVote
+                    ]
+                ]);
+
+                if ($response->getStatusCode() !== 200) {
+                    return "You can't create a poll right now.";
+                }
+                $data = json_decode($response->getContent(), true);
+
+                return [
+                    'data' => $data['data'],
+                    'refresh' => $refresh
+                ];
+            }
+        } else {
+            return null;
+        }
+
+
     }
 
     /**
@@ -467,27 +509,88 @@ class TwitchApiService {
      */
     public function getPoll(
         string $accessToken,
-        string $channelId
+        string $channelId,
+        string $userUuid
     ) {
-        $response = $this->twitchApiClient->request(Request::METHOD_GET, self::TWITCH_POLLS_ENDPOINT, [
+        $refresh = null;
+        // On doit vérifier la validité du token
+        $validityUser = $this->twitchApiClient->request('GET', self::TOKEN_VALIDATE, [
             'auth_bearer' => $accessToken,
-            'headers' => [
-                'Client-Id' => $this->clientId,
-            ],
-            'query' => [
-                'broadcaster_id' => $channelId
-            ]
         ]);
+        if ($validityUser->getStatusCode() != 200) {
+            // On refresh le token
+            $refresh = $this->refreshToken($accessToken);
+        }
+        if ($channelId !== null && $userUuid !== null) {
+            if ($channelId === $userUuid) {
+                $response = $this->twitchApiClient->request(Request::METHOD_GET, self::TWITCH_POLLS_ENDPOINT, [
+                    'auth_bearer' => $accessToken,
+                    'headers' => [
+                        'Client-Id' => $this->clientId,
+                    ],
+                    'query' => [
+                        'broadcaster_id' => $channelId
+                    ]
+                ]);
 
-        if ($response->getStatusCode() === 200) {
-            $data = json_decode($response->getContent(), true);
-            if (count($data['data']) > 0) {
-                return $data['data'][0];
+                if ($response->getStatusCode() === 200) {
+                    $data = json_decode($response->getContent(), true);
+                    if (count($data['data']) > 0) {
+                        return $data['data'][0];
+                    } else {
+                        return "You don't have any poll right now.";
+                    }
+                } else {
+                    return "You can't create a poll right now.";
+                }
             } else {
-                return "You don't have any poll right now.";
+                // On doit récupérer le accessToken du streamer en BDD
+                $streamerToken = $this->getStreamerToken($channelId);
+                // On vérifie sa validité
+                $validity = $this->twitchApiClient->request('GET', self::TOKEN_VALIDATE, [
+                    'auth_bearer' => $streamerToken['access_token'],
+                ]);
+                if ($validity->getStatusCode() !== 200) {
+                    // On refresh le token
+                    $streamRefresh = $this->refreshToken($streamerToken['refresh_token']);
+                    // On met à jour le token en BDD
+                    $streamerDB = $this->userRepository->findOneBy(['twitchId' => $channelId]);
+                    $streamerDB->setTwitchAccessToken($streamRefresh['access_token']);
+                    $streamerDB->setTwitchRefreshToken($streamRefresh['refresh_token']);
+                    $streamerDB->setTwitchExpiresIn($streamRefresh['expires_in']);
+                    $em = $this->doctrine->getManager();
+                    $em->persist($streamerDB);
+                    $em->flush();
+                    $streamerToken['access_token'] = $streamRefresh['access_token'];
+
+                    // On doit vérifier la validité du token de l'utilisateur
+                }
+                $response = $this->twitchApiClient->request(Request::METHOD_GET, self::TWITCH_POLLS_ENDPOINT, [
+                    'auth_bearer' => $streamerToken['access_token'],
+                    'headers' => [
+                        'Client-Id' => $this->clientId,
+                    ],
+                    'query' => [
+                        'broadcaster_id' => $channelId
+                    ]
+                ]);
+
+                if ($response->getStatusCode() === 200) {
+                    $data = json_decode($response->getContent(), true);
+                    if (count($data['data']) > 0) {
+                        return [
+                            'data' => $data['data'],
+                            'refresh' => $refresh
+                        ];
+                    } else {
+                        return "You don't have any poll right now.";
+                    }
+                } else {
+                    return "You can't create a poll right now.";
+                }
             }
         } else {
-            return "You can't create a poll right now.";
+            return null;
         }
     }
 
@@ -497,26 +600,88 @@ class TwitchApiService {
     public function endPoll(
         string $accessToken,
         string $channelId,
+        string $userUuid,
         string $pollId,
         string $status = 'TERMINATED'
     ) {
-        $response = $this->twitchApiClient->request(Request::METHOD_PATCH, self::TWITCH_POLLS_ENDPOINT, [
+        $refresh = null;
+        // On doit vérifier la validité du token
+        $validityUser = $this->twitchApiClient->request('GET', self::TOKEN_VALIDATE, [
             'auth_bearer' => $accessToken,
-            'headers' => [
-                'Client-Id' => $this->clientId,
-            ],
-            'body' => [
-                'broadcaster_id' => $channelId,
-                'id' => $pollId,
-                'status' => $status
-            ]
         ]);
+        if ($validityUser->getStatusCode() != 200) {
+            // On refresh le token
+            $refresh = $this->refreshToken($accessToken);
+        }
+        if ($channelId !== null && $userUuid !== null) {
+            if ($channelId === $userUuid) {
+                $response = $this->twitchApiClient->request(Request::METHOD_PATCH, self::TWITCH_POLLS_ENDPOINT, [
+                    'auth_bearer' => $accessToken,
+                    'headers' => [
+                        'Client-Id' => $this->clientId,
+                    ],
+                    'body' => [
+                        'broadcaster_id' => $channelId,
+                        'id' => $pollId,
+                        'status' => $status
+                    ]
+                ]);
 
-        if ($response->getStatusCode() === 200) {
-            $data = json_decode($response->getContent(), true);
-            return $data['data'][0];
+                if ($response->getStatusCode() === 200) {
+                    $data = json_decode($response->getContent(), true);
+                    return [
+                        'data' => $data['data'],
+                        'refresh' => $refresh
+                    ];
+                } else {
+                    return "You can't end a poll right now.";
+                }
+            } else {
+                // On doit récupérer le accessToken du streamer en BDD
+                $streamerToken = $this->getStreamerToken($channelId);
+                // On vérifie sa validité
+                $validity = $this->twitchApiClient->request('GET', self::TOKEN_VALIDATE, [
+                    'auth_bearer' => $streamerToken['access_token'],
+                ]);
+                if ($validity->getStatusCode() !== 200) {
+                    // On refresh le token
+                    $streamRefresh = $this->refreshToken($streamerToken['refresh_token']);
+                    // On met à jour le token en BDD
+                    $streamerDB = $this->userRepository->findOneBy(['twitchId' => $channelId]);
+                    $streamerDB->setTwitchAccessToken($streamRefresh['access_token']);
+                    $streamerDB->setTwitchRefreshToken($streamRefresh['refresh_token']);
+                    $streamerDB->setTwitchExpiresIn($streamRefresh['expires_in']);
+                    $em = $this->doctrine->getManager();
+                    $em->persist($streamerDB);
+                    $em->flush();
+                    $streamerToken['access_token'] = $streamRefresh['access_token'];
+
+                    // On doit vérifier la validité du token de l'utilisateur
+                }
+                $response = $this->twitchApiClient->request(Request::METHOD_PATCH, self::TWITCH_POLLS_ENDPOINT, [
+                    'auth_bearer' => $streamerToken['access_token'],
+                    'headers' => [
+                        'Client-Id' => $this->clientId,
+                    ],
+                    'body' => [
+                        'broadcaster_id' => $channelId,
+                        'id' => $pollId,
+                        'status' => $status
+                    ]
+                ]);
+
+                if ($response->getStatusCode() === 200) {
+                    $data = json_decode($response->getContent(), true);
+                    return [
+                        'data' => $data['data'],
+                        'refresh' => $refresh
+                    ];
+                } else {
+                    return "You can't end a poll right now.";
+                }
+            }
         } else {
-            return "You can't end a poll right now.";
+            return null;
         }
     }
 
@@ -526,26 +691,90 @@ class TwitchApiService {
     function getPolls(
         string $accessToken,
         string $channelId,
+        string $userUuid
     ) {
-        $response = $this->twitchApiClient->request(Request::METHOD_GET, self::TWITCH_POLLS_ENDPOINT, [
+        $refresh = null;
+        // On doit vérifier la validité du token
+        $validityUser = $this->twitchApiClient->request('GET', self::TOKEN_VALIDATE, [
             'auth_bearer' => $accessToken,
-            'headers' => [
-                'Client-Id' => $this->clientId,
-            ],
-            'query' => [
-                'broadcaster_id' => $channelId
-            ]
         ]);
+        if ($validityUser->getStatusCode() != 200) {
+            // On refresh le token
+            $refresh = $this->refreshToken($accessToken);
+        }
+        if ($channelId !== null && $userUuid !== null) {
+            if ($channelId === $userUuid) {
+                $response = $this->twitchApiClient->request(Request::METHOD_GET, self::TWITCH_POLLS_ENDPOINT, [
+                    'auth_bearer' => $accessToken,
+                    'headers' => [
+                        'Client-Id' => $this->clientId,
+                    ],
+                    'query' => [
+                        'broadcaster_id' => $channelId
+                    ]
+                ]);
 
-        if ($response->getStatusCode() === 200) {
-            $data = json_decode($response->getContent(), true);
-            if (count($data['data']) > 0) {
-                return $data['data'][0];
+                if ($response->getStatusCode() === 200) {
+                    $data = json_decode($response->getContent(), true);
+                    if (count($data['data']) > 0) {
+                        return [
+                            'data' => $data['data'],
+                            'refresh' => $refresh
+                        ];
+                    } else {
+                        return "You don't have any poll right now.";
+                    }
+                } else {
+                    return "You can't create a poll right now.";
+                }
             } else {
-                return "You don't have any poll right now.";
+                // On doit récupérer le accessToken du streamer en BDD
+                $streamerToken = $this->getStreamerToken($channelId);
+                // On vérifie sa validité
+                $validity = $this->twitchApiClient->request('GET', self::TOKEN_VALIDATE, [
+                    'auth_bearer' => $streamerToken['access_token'],
+                ]);
+                if ($validity->getStatusCode() !== 200) {
+                    // On refresh le token
+                    $streamRefresh = $this->refreshToken($streamerToken['refresh_token']);
+                    // On met à jour le token en BDD
+                    $streamerDB = $this->userRepository->findOneBy(['twitchId' => $channelId]);
+                    $streamerDB->setTwitchAccessToken($streamRefresh['access_token']);
+                    $streamerDB->setTwitchRefreshToken($streamRefresh['refresh_token']);
+                    $streamerDB->setTwitchExpiresIn($streamRefresh['expires_in']);
+                    $em = $this->doctrine->getManager();
+                    $em->persist($streamerDB);
+                    $em->flush();
+                    $streamerToken['access_token'] = $streamRefresh['access_token'];
+
+                    // On doit vérifier la validité du token de l'utilisateur
+                }
+                $response = $this->twitchApiClient->request(Request::METHOD_GET, self::TWITCH_POLLS_ENDPOINT, [
+                    'auth_bearer' => $streamerToken['access_token'],
+                    'headers' => [
+                        'Client-Id' => $this->clientId,
+                    ],
+                    'query' => [
+                        'broadcaster_id' => $channelId
+                    ]
+                ]);
+
+                if ($response->getStatusCode() === 200) {
+                    $data = json_decode($response->getContent(), true);
+                    if (count($data['data']) > 0) {
+                        return [
+                            'data' => $data['data'],
+                            'refresh' => $refresh
+                        ];
+                    } else {
+                        return "You don't have any poll right now.";
+                    }
+                } else {
+                    return "You can't create a poll right now.";
+                }
             }
         } else {
-            return "You can't create a poll right now.";
+            return null;
         }
     }
 

@@ -447,7 +447,7 @@ class TwitchMiddlewareApi extends AbstractController {
                 ], 403);
             }
             $moderators = $this->twitchApiService->fetchModerators($accessToken, $channelId);
-            if ($moderators) {
+            if (!$moderators) {
                 return new JsonResponse([
                     'statusCode' => 403,
                     'message' => 'You are not a moderator of this channel'

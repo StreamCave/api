@@ -890,7 +890,6 @@ class TwitchApiService {
                 ]);
                 if($response->getStatusCode() != 400 && $response->getStatusCode() != 403) {
                     $resp = json_decode($response->getContent(), true);
-                    dd($resp);
                     if (isset($resp['error'])) {
                         array_push($err, $type);
                     }

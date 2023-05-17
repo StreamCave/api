@@ -1201,6 +1201,7 @@ class TwitchApiService {
     public function createEventSubSubscription(
         string $accessToken,
         string $sessionId,
+        string $channelId,
         array $type,
         string $transport
     ) {
@@ -1211,44 +1212,111 @@ class TwitchApiService {
         ]);
         if ($validityUser->getStatusCode() != 200) {
             // On refresh le token
-            $refresh = $this->refreshToken($accessToken);
+            $accessToken = $this->refreshToken($accessToken);
+            $refresh = $accessToken;
         }
-        $err = [];
-        foreach ($type as $topics => $params) {
-            $version = $params['version'];
-            $condition = $params['condition'];
-            $response = $this->twitchApiClient->request(Request::METHOD_POST, self::TWITCH_EVENTSUB_ENDPOINT, [
-                'auth_bearer' => $accessToken,
-                'headers' => [
-                    'Client-Id' => $this->clientId,
-                    'Content-Type' => 'application/json'
-                ],
-                'body' => json_encode([
-                    'type' => $topics,
-                    'version' => $version,
-                    'condition' => $condition,
-                    'transport' => [
-                        'method' => 'websocket',
-                        'session_id' => $sessionId
-                    ]
-                ])
-            ]);
-            if($response->getStatusCode() != 400) {
-            $resp = json_decode($response->getContent(), true);
-                if (isset($resp['error'])) {
-                    array_push($err, $type);
+        $streamerToken = $this->getStreamerToken($channelId);
+        if ($streamerToken !== null && $accessToken !== null) {
+            if ($streamerToken['access_token'] === $accessToken) {
+                $err = [];
+                foreach ($type as $topics => $params) {
+                    $version = $params['version'];
+                    $condition = $params['condition'];
+                    $response = $this->twitchApiClient->request(Request::METHOD_POST, self::TWITCH_EVENTSUB_ENDPOINT, [
+                        'auth_bearer' => $accessToken,
+                        'headers' => [
+                            'Client-Id' => $this->clientId,
+                            'Content-Type' => 'application/json'
+                        ],
+                        'body' => json_encode([
+                            'type' => $topics,
+                            'version' => $version,
+                            'condition' => $condition,
+                            'transport' => [
+                                'method' => 'websocket',
+                                'session_id' => $sessionId
+                            ]
+                        ])
+                    ]);
+                    if($response->getStatusCode() != 400) {
+                        $resp = json_decode($response->getContent(), true);
+                        if (isset($resp['error'])) {
+                            array_push($err, $type);
+                        }
+                    } else {
+                        array_push($err, 'Request Error');
+                    }
+                }
+                if(count($err)) {
+                    return ['error_occured' => $err];
+                } else {
+                    return [
+                        'listener_created' => true,
+                        'refresh' => $refresh
+                    ];
                 }
             } else {
-                array_push($err, 'Request Error');
+                // On doit récupérer le accessToken du streamer en BDD
+                $streamerToken = $this->getStreamerToken($channelId);
+                // On vérifie sa validité
+                $validity = $this->twitchApiClient->request('GET', self::TOKEN_VALIDATE, [
+                    'auth_bearer' => $streamerToken['access_token'],
+                ]);
+                if ($validity->getStatusCode() !== 200) {
+                    // On refresh le token
+                    $streamRefresh = $this->refreshToken($streamerToken['refresh_token']);
+                    // On met à jour le token en BDD
+                    $streamerDB = $this->userRepository->findOneBy(['twitchId' => $channelId]);
+                    $streamerDB->setTwitchAccessToken($streamRefresh['access_token']);
+                    $streamerDB->setTwitchRefreshToken($streamRefresh['refresh_token']);
+                    $streamerDB->setTwitchExpiresIn($streamRefresh['expires_in']);
+                    $em = $this->doctrine->getManager();
+                    $em->persist($streamerDB);
+                    $em->flush();
+                    $streamerToken['access_token'] = $streamRefresh['access_token'];
+
+                    // On doit vérifier la validité du token de l'utilisateur
+                }
+                $err = [];
+                foreach ($type as $topics => $params) {
+                    $version = $params['version'];
+                    $condition = $params['condition'];
+                    $response = $this->twitchApiClient->request(Request::METHOD_POST, self::TWITCH_EVENTSUB_ENDPOINT, [
+                        'auth_bearer' => $streamerToken['access_token'],
+                        'headers' => [
+                            'Client-Id' => $this->clientId,
+                            'Content-Type' => 'application/json'
+                        ],
+                        'body' => json_encode([
+                            'type' => $topics,
+                            'version' => $version,
+                            'condition' => $condition,
+                            'transport' => [
+                                'method' => 'websocket',
+                                'session_id' => $sessionId
+                            ]
+                        ])
+                    ]);
+                    if($response->getStatusCode() != 400) {
+                        $resp = json_decode($response->getContent(), true);
+                        if (isset($resp['error'])) {
+                            array_push($err, $type);
+                        }
+                    } else {
+                        array_push($err, 'Request Error');
+                    }
+                }
+                if(count($err)) {
+                    return ['error_occured' => $err];
+                } else {
+                    return [
+                        'listener_created' => true,
+                        'refresh' => $refresh
+                    ];
+                }
             }
-        }
-        if(count($err)) {
-            return ['error_occured' => $err];
         } else {
-            return [
-                'listener_created' => true,
-                'refresh' => $refresh
-            ];
+            return null;
         }
     }
 

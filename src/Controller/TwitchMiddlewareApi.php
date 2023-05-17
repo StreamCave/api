@@ -756,6 +756,7 @@ class TwitchMiddlewareApi extends AbstractController {
         $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');
         $accessToken = $data['access_token'] ?? array_push($err, 'access_token');
         $sessionId = $data['session_id'] ?? array_push($err, 'session_id');
+        $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
         if($data['type'] === "poll" && $data['broadcaster_user_id']) {
             $type = [
                 'channel.poll.begin' => ['version' => 1, 'condition' => ['broadcaster_user_id' => $data['broadcaster_user_id']]],
@@ -779,7 +780,7 @@ class TwitchMiddlewareApi extends AbstractController {
                     'message' => 'Your channel do not have the rights'
                 ], 403);
             }
-            $response = $this->twitchApiService->createEventSubSubscription($accessToken, $sessionId, $type, $transport);
+            $response = $this->twitchApiService->createEventSubSubscription($accessToken, $sessionId, $channelId, $type, $transport);
             if (!$response) {
                 return new JsonResponse([
                     'statusCode' => 404,

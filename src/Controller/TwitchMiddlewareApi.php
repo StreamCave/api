@@ -792,7 +792,7 @@ class TwitchMiddlewareApi extends AbstractController {
                     [
                         'statusCode' => 200,
                         'access_renew' => $response['refresh'] != null ? true : false,
-                        'response' => $response['data'],
+                        'response' => $response['listener_created'],
                     ],
                     200,
                 );

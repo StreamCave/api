@@ -13,7 +13,6 @@ use App\Controller\DeleteTwitchGroup;
 use App\Repository\TwitchGroupRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Uid\Uuid;
@@ -78,10 +77,10 @@ class TwitchGroup
     #[ApiProperty(security: 'is_granted("ROLE_ADMIN")')]
     private ?int $id = null;
 
-    #[ORM\Column(type: Types::GUID, unique: true)]
+    #[ORM\Column(length: 180, unique: true)]
     #[Groups(['twitch_group:read', 'twitch_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     #[ApiProperty(security: 'is_granted("ROLE_ADMIN")')]
-    private ?Uuid $uuid = null;
+    private ?string $uuid;
 
     #[ORM\OneToMany(mappedBy: 'twitchGroup', targetEntity: Widget::class)]
     private Collection $widgets;
@@ -113,12 +112,12 @@ class TwitchGroup
         return $this->id;
     }
 
-    public function getUuid(): ?Uuid
+    public function getUuid(): ?string
     {
         return $this->uuid;
     }
 
-    public function setUuid(Uuid $uuid): self
+    public function setUuid(string $uuid): self
     {
         $this->uuid = $uuid;
 

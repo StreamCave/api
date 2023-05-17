@@ -260,10 +260,12 @@ class TwitchApiService {
         ]);
         if ($validityUser->getStatusCode() != 200) {
             // On refresh le token
-            $refresh = $this->refreshToken($accessToken);
+            $accessToken = $this->refreshToken($accessToken);
+            $refresh = $accessToken;
         }
-        if ($channelId !== null && $userUuid !== null) {
-            if ($channelId === $userUuid) {
+        $streamerToken = $this->getStreamerToken($channelId);
+        if ($streamerToken !== null && $accessToken !== null) {
+            if ($streamerToken === $accessToken) {
                 $response = $this->twitchApiClient->request(Request::METHOD_GET, self::TWITCH_CHANNEL_ID_ENDPOINT, [
                     'auth_bearer' => $accessToken,
                     'headers' => [
@@ -282,7 +284,6 @@ class TwitchApiService {
                 ];
             } else {
                 // On doit récupérer le accessToken du streamer en BDD
-                $streamerToken = $this->getStreamerToken($channelId);
                 // On vérifie sa validité
                 $validity = $this->twitchApiClient->request('GET', self::TOKEN_VALIDATE, [
                     'auth_bearer' => $streamerToken['access_token'],
@@ -334,11 +335,12 @@ class TwitchApiService {
         ]);
         if ($validityUser->getStatusCode() != 200) {
             // On refresh le token
-            $refresh = $this->refreshToken($accessToken);
+            $accessToken = $this->refreshToken($accessToken);
+            $refresh = $accessToken;
         }
-        $userDB = $this->userRepository->findOneBy(['uuid' => $userUuid]);
-        if ($channelId !== null && $userDB !== null) {
-            if ($channelId === $userDB->getTwitchId()) {
+        $streamerToken = $this->getStreamerToken($channelId);
+        if ($streamerToken !== null && $accessToken !== null) {
+            if ($streamerToken === $accessToken) {
                 // C'est le streamer qui fait la requête, on renvoie donc la liste de ses modérateurs
                 $response = $this->twitchApiClient->request(Request::METHOD_GET, self::TWITCH_MODERATORS_ENPOINT, [
                     'auth_bearer' => $accessToken,
@@ -434,11 +436,12 @@ class TwitchApiService {
         ]);
         if ($validityUser->getStatusCode() != 200) {
             // On refresh le token
-            $refresh = $this->refreshToken($accessToken);
+            $accessToken = $this->refreshToken($accessToken);
+            $refresh = $accessToken;
         }
-        if ($channelId !== null && $userUuid !== null) {
-            $userDB = $this->userRepository->findOneBy(['uuid' => $userUuid]);
-            if ($channelId === $userDB->getTwitchId()) {
+        $streamerToken = $this->getStreamerToken($channelId);
+        if ($streamerToken !== null && $accessToken !== null) {
+            if ($streamerToken === $accessToken) {
                 $response = $this->twitchApiClient->request(Request::METHOD_POST, self::TWITCH_CREATE_POLL_ENDPOINT, [
                     'auth_bearer' => $accessToken,
                     'headers' => [
@@ -529,11 +532,12 @@ class TwitchApiService {
         ]);
         if ($validityUser->getStatusCode() != 200) {
             // On refresh le token
-            $refresh = $this->refreshToken($accessToken);
+            $accessToken = $this->refreshToken($accessToken);
+            $refresh = $accessToken;
         }
-        if ($channelId !== null && $userUuid !== null) {
-            $userDB = $this->userRepository->findOneBy(['uuid' => $userUuid]);
-            if ($channelId === $userDB->getTwitchId()) {
+        $streamerToken = $this->getStreamerToken($channelId);
+        if ($streamerToken !== null && $accessToken !== null) {
+            if ($streamerToken === $accessToken) {
                 $response = $this->twitchApiClient->request(Request::METHOD_GET, self::TWITCH_POLLS_ENDPOINT, [
                     'auth_bearer' => $accessToken,
                     'headers' => [
@@ -622,11 +626,12 @@ class TwitchApiService {
         ]);
         if ($validityUser->getStatusCode() != 200) {
             // On refresh le token
-            $refresh = $this->refreshToken($accessToken);
+            $accessToken = $this->refreshToken($accessToken);
+            $refresh = $accessToken;
         }
-        if ($channelId !== null && $userUuid !== null) {
-            $userDB = $this->userRepository->findOneBy(['uuid' => $userUuid]);
-            if ($channelId === $userDB->getTwitchId()) {
+        $streamerToken = $this->getStreamerToken($channelId);
+        if ($streamerToken !== null && $accessToken !== null) {
+            if ($streamerToken === $accessToken) {
                 $response = $this->twitchApiClient->request(Request::METHOD_PATCH, self::TWITCH_POLLS_ENDPOINT, [
                     'auth_bearer' => $accessToken,
                     'headers' => [
@@ -712,11 +717,12 @@ class TwitchApiService {
         ]);
         if ($validityUser->getStatusCode() != 200) {
             // On refresh le token
-            $refresh = $this->refreshToken($accessToken);
+            $accessToken = $this->refreshToken($accessToken);
+            $refresh = $accessToken;
         }
-        if ($channelId !== null && $userUuid !== null) {
-            $userDB = $this->userRepository->findOneBy(['uuid' => $userUuid]);
-            if ($channelId === $userDB->getTwitchId()) {
+        $streamerToken = $this->getStreamerToken($channelId);
+        if ($streamerToken !== null && $accessToken !== null) {
+            if ($streamerToken === $accessToken) {
                 $response = $this->twitchApiClient->request(Request::METHOD_GET, self::TWITCH_POLLS_ENDPOINT, [
                     'auth_bearer' => $accessToken,
                     'headers' => [
@@ -809,11 +815,12 @@ class TwitchApiService {
         ]);
         if ($validityUser->getStatusCode() != 200) {
             // On refresh le token
-            $refresh = $this->refreshToken($accessToken);
+            $accessToken = $this->refreshToken($accessToken);
+            $refresh = $accessToken;
         }
-        if ($channelId !== null && $userUuid !== null) {
-            $userDB = $this->userRepository->findOneBy(['uuid' => $userUuid]);
-            if ($channelId === $userDB->getTwitchId()) {
+        $streamerToken = $this->getStreamerToken($channelId);
+        if ($streamerToken !== null && $accessToken !== null) {
+            if ($streamerToken === $accessToken) {
                 $err = [];
                 $response = $this->twitchApiClient->request(Request::METHOD_POST, self::TWITCH_PREDICTIONS_ENDPOINT, [
                     'auth_bearer' => $accessToken,
@@ -920,11 +927,12 @@ class TwitchApiService {
         ]);
         if ($validityUser->getStatusCode() != 200) {
             // On refresh le token
-            $refresh = $this->refreshToken($accessToken);
+            $accessToken = $this->refreshToken($accessToken);
+            $refresh = $accessToken;
         }
-        if ($channelId !== null && $userUuid !== null) {
-            $userDB = $this->userRepository->findOneBy(['uuid' => $userUuid]);
-            if ($channelId === $userDB->getTwitchId()) {
+        $streamerToken = $this->getStreamerToken($channelId);
+        if ($streamerToken !== null && $accessToken !== null) {
+            if ($streamerToken === $accessToken) {
                 $response = $this->twitchApiClient->request(Request::METHOD_GET, self::TWITCH_PREDICTIONS_ENDPOINT, [
                     'auth_bearer' => $accessToken,
                     'headers' => [
@@ -1017,11 +1025,12 @@ class TwitchApiService {
         ]);
         if ($validityUser->getStatusCode() != 200) {
             // On refresh le token
-            $refresh = $this->refreshToken($accessToken);
+            $accessToken = $this->refreshToken($accessToken);
+            $refresh = $accessToken;
         }
-        if ($channelId !== null && $userUuid !== null) {
-            $userDB = $this->userRepository->findOneBy(['uuid' => $userUuid]);
-            if ($channelId === $userDB->getTwitchId()) {
+        $streamerToken = $this->getStreamerToken($channelId);
+        if ($streamerToken !== null && $accessToken !== null) {
+            if ($streamerToken === $accessToken) {
                 $response = $this->twitchApiClient->request(Request::METHOD_PATCH, self::TWITCH_PREDICTIONS_ENDPOINT, [
                     'auth_bearer' => $accessToken,
                     'headers' => [
@@ -1109,11 +1118,12 @@ class TwitchApiService {
         ]);
         if ($validityUser->getStatusCode() != 200) {
             // On refresh le token
-            $refresh = $this->refreshToken($accessToken);
+            $accessToken = $this->refreshToken($accessToken);
+            $refresh = $accessToken;
         }
-        if ($channelId !== null && $userUuid !== null) {
-            $userDB = $this->userRepository->findOneBy(['uuid' => $userUuid]);
-            if ($channelId === $userDB->getTwitchId()) {
+        $streamerToken = $this->getStreamerToken($channelId);
+        if ($streamerToken !== null && $accessToken !== null) {
+            if ($streamerToken === $accessToken) {
                 $response = $this->twitchApiClient->request(Request::METHOD_GET, self::TWITCH_PREDICTIONS_ENDPOINT, [
                     'auth_bearer' => $accessToken,
                     'headers' => [

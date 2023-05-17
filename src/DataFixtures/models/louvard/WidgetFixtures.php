@@ -26,6 +26,8 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $this->setMaps($manager);
         $this->setPlanning($manager);
         $this->setBracket($manager);
+        $this->setTwitchPoll($manager);
+        $this->setTwitchPrediction($manager);
     }
 
     private function setTopBar(ObjectManager $manager): void
@@ -178,6 +180,32 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $widget->setVisible(false);
         $widget->setOverlay($this->getReference('overlay-' . self::MODEL));
         $widget->setBracket($this->getReference('bracket-louvard'));
+        $manager->persist($widget);
+        $manager->flush();
+    }
+
+    private function setTwitchPoll(ObjectManager $manager): void
+    {
+        $widget = new Widget();
+        $widget->setUuid(Uuid::v5(Uuid::v6(), 'TwitchPoll'));
+        $widget->setName('TwitchPoll');
+        $widget->setDescription('TwitchPoll.');
+        $widget->setVisible(false);
+        $widget->setOverlay($this->getReference('overlay-' . self::MODEL));
+        $widget->setTwitchGroup($this->getReference('twitch-poll-' . self::MODEL));
+        $manager->persist($widget);
+        $manager->flush();
+    }
+
+    private function setTwitchPrediction(ObjectManager $manager): void
+    {
+        $widget = new Widget();
+        $widget->setUuid(Uuid::v5(Uuid::v6(), 'TwitchPrediction'));
+        $widget->setName('TwitchPrediction');
+        $widget->setDescription('TwitchPrediction.');
+        $widget->setVisible(false);
+        $widget->setOverlay($this->getReference('overlay-' . self::MODEL));
+        $widget->setTwitchGroup($this->getReference('twitch-prediction-' . self::MODEL));
         $manager->persist($widget);
         $manager->flush();
     }

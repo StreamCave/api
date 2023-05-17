@@ -40,6 +40,8 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
         $this->setTweetGroup($manager);
         $this->setMapGroupBO3($manager);
         $this->setPlanningGroup($manager);
+        $this->setTwitchPoll($manager);
+        $this->setTwitchPrediction($manager);
     }
 
     private function setCameraGroup(ObjectManager $manager): void
@@ -205,6 +207,28 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
             $manager->persist($group);
             $manager->flush();
         }
+    }
+
+    private function setTwitchPoll(ObjectManager $manager): void
+    {
+        $group = new TwitchGroup();
+        $group->setUuid(Uuid::v5(Uuid::v6(), 'Twitch Poll'));
+
+        $this->addReference('twitch-poll-' . self::MODEL, $group);
+
+        $manager->persist($group);
+        $manager->flush();
+    }
+
+    private function setTwitchPrediction(ObjectManager $manager): void
+    {
+        $group = new TwitchGroup();
+        $group->setUuid(Uuid::v5(Uuid::v6(), 'Twitch Prediction'));
+
+        $this->addReference('twitch-prediction-' . self::MODEL, $group);
+
+        $manager->persist($group);
+        $manager->flush();
     }
 
     public function getDependencies(): array

@@ -221,6 +221,15 @@ class TwitchApiService {
      */
     public function fetchUser(string $accessToken)
     {
+        $refresh = null;
+        // On doit vérifier la validité du token
+        $validityUser = $this->twitchApiClient->request('GET', self::TOKEN_VALIDATE, [
+            'auth_bearer' => $accessToken,
+        ]);
+        if ($validityUser->getStatusCode() != 200) {
+            // On refresh le token
+            $refresh = $this->refreshToken($accessToken);
+        }
         $response = $this->twitchApiClient->request(Request::METHOD_GET, self::TWITCH_USER_ME_ENDPOINT, [
             'auth_bearer' => $accessToken,
             'headers' => [
@@ -327,8 +336,9 @@ class TwitchApiService {
             // On refresh le token
             $refresh = $this->refreshToken($accessToken);
         }
-        if ($channelId !== null && $userUuid !== null) {
-            if ($channelId === $userUuid) {
+        $userDB = $this->userRepository->findOneBy(['uuid' => $userUuid]);
+        if ($channelId !== null && $userDB !== null) {
+            if ($channelId === $userDB->getTwitchId()) {
                 // C'est le streamer qui fait la requête, on renvoie donc la liste de ses modérateurs
                 $response = $this->twitchApiClient->request(Request::METHOD_GET, self::TWITCH_MODERATORS_ENPOINT, [
                     'auth_bearer' => $accessToken,
@@ -383,9 +393,8 @@ class TwitchApiService {
 
                 // Je vérifie si l'utilisateur est bien modérateur de la chaîne
                 $isModerator = false;
-                $moderatorDB = $this->userRepository->findOneBy(['uuid' => $userUuid]);
                 foreach ($data['data'] as $moderator) {
-                    if ($moderator['user_id'] === $moderatorDB->getTwitchId()) {
+                    if ($moderator['user_id'] === $userDB->getTwitchId()) {
                         $isModerator = true;
                     }
                 }
@@ -428,7 +437,8 @@ class TwitchApiService {
             $refresh = $this->refreshToken($accessToken);
         }
         if ($channelId !== null && $userUuid !== null) {
-            if ($channelId === $userUuid) {
+            $userDB = $this->userRepository->findOneBy(['uuid' => $userUuid]);
+            if ($channelId === $userDB->getTwitchId()) {
                 $response = $this->twitchApiClient->request(Request::METHOD_POST, self::TWITCH_CREATE_POLL_ENDPOINT, [
                     'auth_bearer' => $accessToken,
                     'headers' => [
@@ -488,7 +498,7 @@ class TwitchApiService {
                 ]);
 
                 if ($response->getStatusCode() !== 200) {
-                    return "You can't create a poll right now.";
+                    return false;
                 }
                 $data = json_decode($response->getContent(), true);
 
@@ -522,7 +532,8 @@ class TwitchApiService {
             $refresh = $this->refreshToken($accessToken);
         }
         if ($channelId !== null && $userUuid !== null) {
-            if ($channelId === $userUuid) {
+            $userDB = $this->userRepository->findOneBy(['uuid' => $userUuid]);
+            if ($channelId === $userDB->getTwitchId()) {
                 $response = $this->twitchApiClient->request(Request::METHOD_GET, self::TWITCH_POLLS_ENDPOINT, [
                     'auth_bearer' => $accessToken,
                     'headers' => [
@@ -583,10 +594,10 @@ class TwitchApiService {
                             'refresh' => $refresh
                         ];
                     } else {
-                        return "You don't have any poll right now.";
+                        return false;
                     }
                 } else {
-                    return "You can't create a poll right now.";
+                    return false;
                 }
             }
         } else {
@@ -614,7 +625,8 @@ class TwitchApiService {
             $refresh = $this->refreshToken($accessToken);
         }
         if ($channelId !== null && $userUuid !== null) {
-            if ($channelId === $userUuid) {
+            $userDB = $this->userRepository->findOneBy(['uuid' => $userUuid]);
+            if ($channelId === $userDB->getTwitchId()) {
                 $response = $this->twitchApiClient->request(Request::METHOD_PATCH, self::TWITCH_POLLS_ENDPOINT, [
                     'auth_bearer' => $accessToken,
                     'headers' => [
@@ -677,7 +689,7 @@ class TwitchApiService {
                         'refresh' => $refresh
                     ];
                 } else {
-                    return "You can't end a poll right now.";
+                    return false;
                 }
             }
         } else {
@@ -703,7 +715,8 @@ class TwitchApiService {
             $refresh = $this->refreshToken($accessToken);
         }
         if ($channelId !== null && $userUuid !== null) {
-            if ($channelId === $userUuid) {
+            $userDB = $this->userRepository->findOneBy(['uuid' => $userUuid]);
+            if ($channelId === $userDB->getTwitchId()) {
                 $response = $this->twitchApiClient->request(Request::METHOD_GET, self::TWITCH_POLLS_ENDPOINT, [
                     'auth_bearer' => $accessToken,
                     'headers' => [
@@ -767,10 +780,10 @@ class TwitchApiService {
                             'refresh' => $refresh
                         ];
                     } else {
-                        return "You don't have any poll right now.";
+                        return false;
                     }
                 } else {
-                    return "You can't create a poll right now.";
+                    return false;
                 }
             }
         } else {
@@ -799,7 +812,8 @@ class TwitchApiService {
             $refresh = $this->refreshToken($accessToken);
         }
         if ($channelId !== null && $userUuid !== null) {
-            if ($channelId === $userUuid) {
+            $userDB = $this->userRepository->findOneBy(['uuid' => $userUuid]);
+            if ($channelId === $userDB->getTwitchId()) {
                 $err = [];
                 $response = $this->twitchApiClient->request(Request::METHOD_POST, self::TWITCH_PREDICTIONS_ENDPOINT, [
                     'auth_bearer' => $accessToken,
@@ -909,7 +923,8 @@ class TwitchApiService {
             $refresh = $this->refreshToken($accessToken);
         }
         if ($channelId !== null && $userUuid !== null) {
-            if ($channelId === $userUuid) {
+            $userDB = $this->userRepository->findOneBy(['uuid' => $userUuid]);
+            if ($channelId === $userDB->getTwitchId()) {
                 $response = $this->twitchApiClient->request(Request::METHOD_GET, self::TWITCH_PREDICTIONS_ENDPOINT, [
                     'auth_bearer' => $accessToken,
                     'headers' => [
@@ -973,10 +988,10 @@ class TwitchApiService {
                             'refresh' => $refresh
                         ];
                     } else {
-                        return "You don't have any prediction right now.";
+                        return false;
                     }
                 } else {
-                    return "You can't create a prediction right now.";
+                    return false;
                 }
             }
         } else {
@@ -1005,7 +1020,8 @@ class TwitchApiService {
             $refresh = $this->refreshToken($accessToken);
         }
         if ($channelId !== null && $userUuid !== null) {
-            if ($channelId === $userUuid) {
+            $userDB = $this->userRepository->findOneBy(['uuid' => $userUuid]);
+            if ($channelId === $userDB->getTwitchId()) {
                 $response = $this->twitchApiClient->request(Request::METHOD_PATCH, self::TWITCH_PREDICTIONS_ENDPOINT, [
                     'auth_bearer' => $accessToken,
                     'headers' => [
@@ -1070,7 +1086,7 @@ class TwitchApiService {
                         'refresh' => $refresh
                     ];
                 } else {
-                    return "You can't end a prediction right now.";
+                    return false;
                 }
             }
         } else {
@@ -1096,7 +1112,8 @@ class TwitchApiService {
             $refresh = $this->refreshToken($accessToken);
         }
         if ($channelId !== null && $userUuid !== null) {
-            if ($channelId === $userUuid) {
+            $userDB = $this->userRepository->findOneBy(['uuid' => $userUuid]);
+            if ($channelId === $userDB->getTwitchId()) {
                 $response = $this->twitchApiClient->request(Request::METHOD_GET, self::TWITCH_PREDICTIONS_ENDPOINT, [
                     'auth_bearer' => $accessToken,
                     'headers' => [
@@ -1160,10 +1177,10 @@ class TwitchApiService {
                             'refresh' => $refresh
                         ];
                     } else {
-                        return "You don't have any prediction right now.";
+                        return false;
                     }
                 } else {
-                    return "You can't create a prediction right now.";
+                    return false;
                 }
             }
         } else {

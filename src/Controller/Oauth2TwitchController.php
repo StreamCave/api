@@ -64,6 +64,7 @@ class Oauth2TwitchController extends AbstractController {
                 $userDB->setAvatar($twitchUser['profile_image_url']);
                 $userDB->setPseudo($twitchUser['display_name']);
                 $userDB->setRoles(['ROLE_USER']);
+                $userDB->setTwitchStatus($twitchUser['broadcaster_type']);
             }
 
             // On set le refreshToken de l'utilisateur

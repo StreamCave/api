@@ -40,8 +40,6 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
         $this->setTweetGroup($manager);
         $this->setMapGroupBO3($manager);
         $this->setPlanningGroup($manager);
-        $this->setTwitchPoll($manager);
-        $this->setTwitchPrediction($manager);
     }
 
     private function setCameraGroup(ObjectManager $manager): void
@@ -207,123 +205,6 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
             $manager->persist($group);
             $manager->flush();
         }
-    }
-
-    private function setTwitchPoll(ObjectManager $manager): void
-    {
-        $group = new TwitchGroup();
-        $group->setUuid(Uuid::v5(Uuid::v6(), 'Twitch Poll'));
-        $group->setData([
-            'id' => '123456789',
-            'broadcaster_id' => '123456789',
-            'broadcaster_name' => 'brietgame',
-            'title' => 'Quel joueur est en attaque ?',
-            'choices' => [
-                [
-                    'id' => '123456789',
-                    'title' => 'Alpha',
-                    'votes' => 0,
-                    'channel_points_votes' => 0,
-                    'bits_votes' => 0
-                ],
-                [
-                    'id' => '123456789',
-                    'title' => 'Bravo',
-                    'votes' => 0,
-                    'channel_points_votes' => 0,
-                    'bits_votes' => 0
-                ],
-                [
-                    'id' => '123456789',
-                    'title' => 'Charlie',
-                    'votes' => 0,
-                    'channel_points_votes' => 0,
-                    'bits_votes' => 0
-                ],
-                [
-                    'id' => '123456789',
-                    'title' => 'Delta',
-                    'votes' => 0,
-                    'channel_points_votes' => 0,
-                    'bits_votes' => 0
-                ],
-                [
-                    'id' => '123456789',
-                    'title' => 'Echo',
-                    'votes' => 0,
-                    'channel_points_votes' => 0,
-                    'bits_votes' => 0
-                ],
-                [
-                    'id' => '123456789',
-                    'title' => 'Foxtrot',
-                    'votes' => 0,
-                    'channel_points_votes' => 0,
-                    'bits_votes' => 0
-                ],
-                [
-                    'id' => '123456789',
-                    'title' => 'Golf',
-                    'votes' => 0,
-                    'channel_points_votes' => 0,
-                    'bits_votes' => 0
-                ],
-                [
-                    'id' => '123456789',
-                    'title' => 'Hotel',
-                    'votes' => 0,
-                    'channel_points_votes' => 0,
-                    'bits_votes' => 0
-                ],
-                [
-                    'id' => '123456789',
-                    'title' => 'India',
-                    'votes' => 0,
-                    'channel_points_votes' => 0,
-                    'bits_votes' => 0
-                ]
-            ]
-        ]);
-
-        $this->addReference('twitch-poll-' . self::MODEL, $group);
-
-        $manager->persist($group);
-        $manager->flush();
-    }
-
-    private function setTwitchPrediction(ObjectManager $manager): void
-    {
-        $group = new TwitchGroup();
-        $group->setUuid(Uuid::v5(Uuid::v6(), 'Twitch Prediction'));
-        $group->setData([
-            'id' => '123456789',
-            'broadcaster_id' => '123456789',
-            'broadcaster_name' => 'brietgame',
-            'title' => 'Qui va gagner ?',
-            'outcomes' => [
-                [
-                    'id' => '123456789',
-                    'title' => 'Alpha',
-                    'color' => 'blue',
-                    'users' => 0,
-                    'channel_points' => 0,
-                    'bits' => 0
-                ],
-                [
-                    'id' => '123456789',
-                    'title' => 'Bravo',
-                    'color' => 'red',
-                    'users' => 0,
-                    'channel_points' => 0,
-                    'bits' => 0
-                ]
-            ]
-        ]);
-
-        $this->addReference('twitch-prediction-' . self::MODEL, $group);
-
-        $manager->persist($group);
-        $manager->flush();
     }
 
     public function getDependencies(): array

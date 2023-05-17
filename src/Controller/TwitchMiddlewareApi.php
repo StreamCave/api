@@ -63,15 +63,14 @@ class TwitchMiddlewareApi extends AbstractController {
         $refreshToken = $data['refresh_token'] ?? array_push($err, 'refresh_token');
         $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
         if (count($err) === 0) {
-            $userUuid = $this->translateJwt($request)['uuid'];
-            $moderators = $this->twitchApiService->fetchModerators($accessToken, $channelId, $userUuid);
+            $moderators = $this->twitchApiService->fetchModerators($accessToken, $channelId);
             if (!$moderators) {
                 return new JsonResponse([
                     'statusCode' => 403,
                     'message' => 'You are not a moderator of this channel'
                 ], 403);
             }
-            $channel = $this->twitchApiService->fetchChannel($accessToken, $channelId, $userUuid);
+            $channel = $this->twitchApiService->fetchChannel($accessToken, $channelId);
             $finalResponse = new JsonResponse(
                 [
                     'statusCode' => 200,
@@ -116,8 +115,7 @@ class TwitchMiddlewareApi extends AbstractController {
         $refreshToken = $data['refresh_token'] ?? array_push($err, 'refresh_token');
         $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
         if (count($err) === 0) {
-            $userUuid = $this->translateJwt($request)['uuid'];
-            $moderators = $this->twitchApiService->fetchModerators($accessToken, $channelId, $userUuid);
+            $moderators = $this->twitchApiService->fetchModerators($accessToken, $channelId);
             if (!$moderators) {
                 return new JsonResponse([
                     'statusCode' => 403,
@@ -185,15 +183,14 @@ class TwitchMiddlewareApi extends AbstractController {
                     'message' => 'Your channel do not have the rights'
                 ], 403);
             }
-            $userUuid = $this->translateJwt($request)['uuid'];
-            $moderators = $this->twitchApiService->fetchModerators($accessToken, $channelId, $userUuid);
+            $moderators = $this->twitchApiService->fetchModerators($accessToken, $channelId);
             if (!$moderators) {
                 return new JsonResponse([
                     'statusCode' => 403,
                     'message' => 'You are not a moderator of this channel'
                 ], 403);
             }
-            $response = $this->twitchApiService->createPoll($accessToken, $channelId, $userUuid, $choices, $title, $duration, $channelPointsVotingEnabled, $channelPointsPerVote);
+            $response = $this->twitchApiService->createPoll($accessToken, $channelId, $choices, $title, $duration, $channelPointsVotingEnabled, $channelPointsPerVote);
             $finalResponse = new JsonResponse(
                 [
                     'statusCode' => 200,
@@ -246,15 +243,14 @@ class TwitchMiddlewareApi extends AbstractController {
                     'message' => 'Your channel do not have the rights'
                 ], 403);
             }
-            $userUuid = $this->translateJwt($request)['uuid'];
-            $moderators = $this->twitchApiService->fetchModerators($accessToken, $channelId, $userUuid);
+            $moderators = $this->twitchApiService->fetchModerators($accessToken, $channelId);
             if (!$moderators) {
                 return new JsonResponse([
                     'statusCode' => 403,
                     'message' => 'You are not a moderator of this channel'
                 ], 403);
             }
-            $response = $this->twitchApiService->getPoll($accessToken, $channelId, $userUuid);
+            $response = $this->twitchApiService->getPoll($accessToken, $channelId);
             if (!$response) {
                 return new JsonResponse([
                     'statusCode' => 404,
@@ -315,15 +311,14 @@ class TwitchMiddlewareApi extends AbstractController {
                     'message' => 'Your channel do not have the rights'
                 ], 403);
             }
-            $userUuid = $this->translateJwt($request)['uuid'];
-            $moderators = $this->twitchApiService->fetchModerators($accessToken, $channelId, $userUuid);
+            $moderators = $this->twitchApiService->fetchModerators($accessToken, $channelId);
             if (!$moderators) {
                 return new JsonResponse([
                     'statusCode' => 403,
                     'message' => 'You are not a moderator of this channel'
                 ], 403);
             }
-            $response = $this->twitchApiService->endPoll($accessToken, $channelId, $userUuid, $id, $status);
+            $response = $this->twitchApiService->endPoll($accessToken, $channelId, $id, $status);
             if (!$response) {
                 return new JsonResponse([
                     'statusCode' => 404,
@@ -382,15 +377,14 @@ class TwitchMiddlewareApi extends AbstractController {
                     'message' => 'Your channel do not have the rights'
                 ], 403);
             }
-            $userUuid = $this->translateJwt($request)['uuid'];
-            $moderators = $this->twitchApiService->fetchModerators($accessToken, $channelId, $userUuid);
+            $moderators = $this->twitchApiService->fetchModerators($accessToken, $channelId);
             if (!$moderators) {
                 return new JsonResponse([
                     'statusCode' => 403,
                     'message' => 'You are not a moderator of this channel'
                 ], 403);
             }
-            $response = $this->twitchApiService->getPolls($accessToken, $channelId, $userUuid);
+            $response = $this->twitchApiService->getPolls($accessToken, $channelId);
             if (!$response) {
                 return new JsonResponse([
                     'statusCode' => 404,
@@ -452,15 +446,14 @@ class TwitchMiddlewareApi extends AbstractController {
                     'message' => 'Your channel do not have the rights'
                 ], 403);
             }
-            $userUuid = $this->translateJwt($request)['uuid'];
-            $moderators = $this->twitchApiService->fetchModerators($accessToken, $channelId, $userUuid);
+            $moderators = $this->twitchApiService->fetchModerators($accessToken, $channelId);
             if ($moderators) {
                 return new JsonResponse([
                     'statusCode' => 403,
                     'message' => 'You are not a moderator of this channel'
                 ], 403);
             }
-            $response = $this->twitchApiService->createPrediction($accessToken, $channelId, $userUuid, $title, $outcomes, $predictionWindow);
+            $response = $this->twitchApiService->createPrediction($accessToken, $channelId, $title, $outcomes, $predictionWindow);
             if (!$response) {
                 return new JsonResponse([
                     'statusCode' => 404,
@@ -519,15 +512,14 @@ class TwitchMiddlewareApi extends AbstractController {
                     'message' => 'Your channel do not have the rights'
                 ], 403);
             }
-            $userUuid = $this->translateJwt($request)['uuid'];
-            $moderators = $this->twitchApiService->fetchModerators($accessToken, $channelId, $userUuid);
+            $moderators = $this->twitchApiService->fetchModerators($accessToken, $channelId);
             if (!$moderators) {
                 return new JsonResponse([
                     'statusCode' => 403,
                     'message' => 'You are not a moderator of this channel'
                 ], 403);
             }
-            $response = $this->twitchApiService->getPrediction($accessToken, $channelId, $userUuid);
+            $response = $this->twitchApiService->getPrediction($accessToken, $channelId);
             if (!$response) {
                 return new JsonResponse([
                     'statusCode' => 404,
@@ -589,15 +581,14 @@ class TwitchMiddlewareApi extends AbstractController {
                     'message' => 'Your channel do not have the rights'
                 ], 403);
             }
-            $userUuid = $this->translateJwt($request)['uuid'];
-            $moderators = $this->twitchApiService->fetchModerators($accessToken, $channelId, $userUuid);
+            $moderators = $this->twitchApiService->fetchModerators($accessToken, $channelId);
             if (!$moderators) {
                 return new JsonResponse([
                     'statusCode' => 403,
                     'message' => 'You are not a moderator of this channel'
                 ], 403);
             }
-            $response = $this->twitchApiService->endPrediction($accessToken, $channelId, $userUuid, $id, $status, $winningOutcomeId);
+            $response = $this->twitchApiService->endPrediction($accessToken, $channelId, $id, $status, $winningOutcomeId);
             if (!$response) {
                 return new JsonResponse([
                     'statusCode' => 404,
@@ -656,15 +647,14 @@ class TwitchMiddlewareApi extends AbstractController {
                     'message' => 'Your channel do not have the rights'
                 ], 403);
             }
-            $userUuid = $this->translateJwt($request)['uuid'];
-            $moderators = $this->twitchApiService->fetchModerators($accessToken, $channelId, $userUuid);
+            $moderators = $this->twitchApiService->fetchModerators($accessToken, $channelId);
             if (!$moderators) {
                 return new JsonResponse([
                     'statusCode' => 403,
                     'message' => 'You are not a moderator of this channel'
                 ], 403);
             }
-            $response = $this->twitchApiService->getAllPrediction($accessToken, $channelId, $userUuid);
+            $response = $this->twitchApiService->getAllPrediction($accessToken, $channelId);
             if (!$response) {
                 return new JsonResponse([
                     'statusCode' => 404,
@@ -733,7 +723,6 @@ class TwitchMiddlewareApi extends AbstractController {
         }
         $transport = $data['transport'] ?? array_push($err, 'transport');
         if (count($err) == 0) {
-            $userUuid = $this->translateJwt($request)['uuid'];
             $userTwitch = $this->twitchApiService->fetchUser($accessToken);
             if ($userTwitch['data'][0]['id'] === $data['broadcaster_user_id']) {
                 if (!$this->cantCallTwitch($data['broadcaster_user_id'])) {
@@ -742,7 +731,7 @@ class TwitchMiddlewareApi extends AbstractController {
                         'message' => 'Your channel do not have the rights'
                     ], 403);
                 }
-                $response = $this->twitchApiService->createEventSubSubscription($accessToken, $sessionId, $type, $transport, $userUuid);
+                $response = $this->twitchApiService->createEventSubSubscription($accessToken, $sessionId, $type, $transport);
                 if (!$response) {
                     return new JsonResponse([
                         'statusCode' => 404,

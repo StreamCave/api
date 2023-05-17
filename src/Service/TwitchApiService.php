@@ -174,7 +174,6 @@ class TwitchApiService {
         $response = $this->twitchApiClient->request('GET', self::TOKEN_VALIDATE, [
             'auth_bearer' => $accessToken,
         ]);
-        $userUuid = $this->translateJwt($request)['uuid'];
 
         // Si réponse 200, le token est valide donc on le retourne
         if ($response->getStatusCode() === 200) {
@@ -198,7 +197,7 @@ class TwitchApiService {
         } else {
             // On vérifie si le accessToken renseigné et le même que celui en BDD
             // On récupère les données de l'utilisateur en BDD grâce au JWT
-            $user = $this->userRepository->findOneBy(['twitchAccessToken' => $accessToken, 'uuid' => $userUuid]);
+            $user = $this->userRepository->findOneBy(['twitchAccessToken' => $accessToken]);
             if ($user) {
                 // Si oui, on refresh le token
                 $response = $this->refreshToken($refreshToken);
@@ -251,7 +250,7 @@ class TwitchApiService {
     /**
      * Informations de la chaîne de l'utilisateur renseigné
      */
-    public function fetchChannel(string $accessToken, string $channelId, string $userUuid)
+    public function fetchChannel(string $accessToken, string $channelId)
     {
         $refresh = null;
         // On doit vérifier la validité du token
@@ -326,7 +325,7 @@ class TwitchApiService {
     /**
      * Renvoie la liste des modérateurs de la chaîne renseignée
      */
-    public function fetchModerators(string $accessToken, string $channelId, string $userUuid)
+    public function fetchModerators(string $accessToken, string $channelId)
     {
         $refresh = null;
         // On doit vérifier la validité du token
@@ -395,6 +394,7 @@ class TwitchApiService {
 
                 // Je vérifie si l'utilisateur est bien modérateur de la chaîne
                 $isModerator = false;
+                $userDB = $this->userRepository->findOneBy(['twitchAccessToken' => $refresh]);
                 foreach ($data['data'] as $moderator) {
                     if ($moderator['user_id'] === $userDB->getTwitchId()) {
                         $isModerator = true;
@@ -422,7 +422,6 @@ class TwitchApiService {
     public function createPoll(
         string $accessToken,
         string $channelId,
-        string $userUuid,
         array $choices,
         string $title,
         int $duration,
@@ -522,8 +521,7 @@ class TwitchApiService {
      */
     public function getPoll(
         string $accessToken,
-        string $channelId,
-        string $userUuid
+        string $channelId
     ) {
         $refresh = null;
         // On doit vérifier la validité du token
@@ -615,7 +613,6 @@ class TwitchApiService {
     public function endPoll(
         string $accessToken,
         string $channelId,
-        string $userUuid,
         string $pollId,
         string $status = 'TERMINATED'
     ) {
@@ -707,8 +704,7 @@ class TwitchApiService {
      */
     function getPolls(
         string $accessToken,
-        string $channelId,
-        string $userUuid
+        string $channelId
     ) {
         $refresh = null;
         // On doit vérifier la validité du token
@@ -803,7 +799,6 @@ class TwitchApiService {
     function createPrediction(
         string $accessToken,
         string $channelId,
-        string $userUuid,
         string $title,
         array $outcomes, // Choix
         int $predictionWindow
@@ -917,8 +912,7 @@ class TwitchApiService {
      */
     public function getPrediction(
         string $accessToken,
-        string $channelId,
-        string $userUuid
+        string $channelId
     ) {
         $refresh = null;
         // On doit vérifier la validité du token
@@ -1013,7 +1007,6 @@ class TwitchApiService {
     public function endPrediction(
         string $accessToken,
         string $channelId,
-        string $userUuid,
         string $id,
         string $status,
         string $winningOutcomeId = null
@@ -1108,8 +1101,7 @@ class TwitchApiService {
      */
     public function getAllPrediction(
         string $accessToken,
-        string $channelId,
-        string $userUuid
+        string $channelId
     ) {
         $refresh = null;
         // On doit vérifier la validité du token

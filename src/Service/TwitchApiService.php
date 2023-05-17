@@ -264,7 +264,7 @@ class TwitchApiService {
         }
         $streamerToken = $this->getStreamerToken($channelId);
         if ($streamerToken !== null && $accessToken !== null) {
-            if ($streamerToken === $accessToken) {
+            if ($streamerToken['access_token'] === $accessToken) {
                 $response = $this->twitchApiClient->request(Request::METHOD_GET, self::TWITCH_CHANNEL_ID_ENDPOINT, [
                     'auth_bearer' => $accessToken,
                     'headers' => [
@@ -440,7 +440,7 @@ class TwitchApiService {
         }
         $streamerToken = $this->getStreamerToken($channelId);
         if ($streamerToken !== null && $accessToken !== null) {
-            if ($streamerToken === $accessToken) {
+            if ($streamerToken['access_token'] === $accessToken) {
                 $response = $this->twitchApiClient->request(Request::METHOD_POST, self::TWITCH_CREATE_POLL_ENDPOINT, [
                     'auth_bearer' => $accessToken,
                     'headers' => [
@@ -535,7 +535,7 @@ class TwitchApiService {
         }
         $streamerToken = $this->getStreamerToken($channelId);
         if ($streamerToken !== null && $accessToken !== null) {
-            if ($streamerToken === $accessToken) {
+            if ($streamerToken['access_token'] === $accessToken) {
                 $response = $this->twitchApiClient->request(Request::METHOD_GET, self::TWITCH_POLLS_ENDPOINT, [
                     'auth_bearer' => $accessToken,
                     'headers' => [
@@ -592,7 +592,7 @@ class TwitchApiService {
                     $data = json_decode($response->getContent(), true);
                     if (count($data['data']) > 0) {
                         return [
-                            'data' => $data['data'],
+                            'data' => $data['data'][0],
                             'refresh' => $refresh
                         ];
                     } else {
@@ -627,7 +627,7 @@ class TwitchApiService {
             $refresh = $accessToken;
         }
         $streamerToken = $this->getStreamerToken($channelId);
-        if ($streamerToken !== null && $accessToken !== null) {
+        if ($streamerToken['access_token'] !== null && $accessToken !== null) {
             if ($streamerToken === $accessToken) {
                 $response = $this->twitchApiClient->request(Request::METHOD_PATCH, self::TWITCH_POLLS_ENDPOINT, [
                     'auth_bearer' => $accessToken,
@@ -718,7 +718,7 @@ class TwitchApiService {
         }
         $streamerToken = $this->getStreamerToken($channelId);
         if ($streamerToken !== null && $accessToken !== null) {
-            if ($streamerToken === $accessToken) {
+            if ($streamerToken['access_token'] === $accessToken) {
                 $response = $this->twitchApiClient->request(Request::METHOD_GET, self::TWITCH_POLLS_ENDPOINT, [
                     'auth_bearer' => $accessToken,
                     'headers' => [
@@ -815,7 +815,7 @@ class TwitchApiService {
         }
         $streamerToken = $this->getStreamerToken($channelId);
         if ($streamerToken !== null && $accessToken !== null) {
-            if ($streamerToken === $accessToken) {
+            if ($streamerToken['access_token'] === $accessToken) {
                 $err = [];
                 $response = $this->twitchApiClient->request(Request::METHOD_POST, self::TWITCH_PREDICTIONS_ENDPOINT, [
                     'auth_bearer' => $accessToken,
@@ -926,7 +926,7 @@ class TwitchApiService {
         }
         $streamerToken = $this->getStreamerToken($channelId);
         if ($streamerToken !== null && $accessToken !== null) {
-            if ($streamerToken === $accessToken) {
+            if ($streamerToken['access_token'] === $accessToken) {
                 $response = $this->twitchApiClient->request(Request::METHOD_GET, self::TWITCH_PREDICTIONS_ENDPOINT, [
                     'auth_bearer' => $accessToken,
                     'headers' => [
@@ -941,7 +941,7 @@ class TwitchApiService {
                     $data = json_decode($response->getContent(), true);
                     if (count($data['data']) > 0) {
                         return [
-                            'data' => $data['data'],
+                            'data' => $data['data'][0],
                             'refresh' => $refresh
                         ];
                     } else {
@@ -986,7 +986,7 @@ class TwitchApiService {
                     $data = json_decode($response->getContent(), true);
                     if (count($data['data']) > 0) {
                         return [
-                            'data' => $data['data'],
+                            'data' => $data['data'][0],
                             'refresh' => $refresh
                         ];
                     } else {
@@ -1023,7 +1023,7 @@ class TwitchApiService {
         }
         $streamerToken = $this->getStreamerToken($channelId);
         if ($streamerToken !== null && $accessToken !== null) {
-            if ($streamerToken === $accessToken) {
+            if ($streamerToken['access_token'] === $accessToken) {
                 $response = $this->twitchApiClient->request(Request::METHOD_PATCH, self::TWITCH_PREDICTIONS_ENDPOINT, [
                     'auth_bearer' => $accessToken,
                     'headers' => [
@@ -1115,7 +1115,7 @@ class TwitchApiService {
         }
         $streamerToken = $this->getStreamerToken($channelId);
         if ($streamerToken !== null && $accessToken !== null) {
-            if ($streamerToken === $accessToken) {
+            if ($streamerToken['access_token'] === $accessToken) {
                 $response = $this->twitchApiClient->request(Request::METHOD_GET, self::TWITCH_PREDICTIONS_ENDPOINT, [
                     'auth_bearer' => $accessToken,
                     'headers' => [

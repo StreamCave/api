@@ -197,58 +197,57 @@ class TwitchMiddlewareApi extends AbstractController {
                 ], 403);
             }
             $response = $this->twitchApiService->createPoll($accessToken, $channelId, $choices, $title, $duration, $channelPointsVotingEnabled, $channelPointsPerVote);
-            if ($response['data'] != false) {
-                $pollId = $response['data'][0]['id'];
-
-                // Vérifie si TwitchGroup en fonction de overlayId existe, on édite le twitchId et le visible
-                $twitchGroup = $this->twitchGroupRepository->findOneBy(['overlayId', $overlayId]);
-                if ($twitchGroup != null) {
-                    $twitchGroup->setTwitchId($pollId);
-                    $twitchGroup->setVisible(true);
-                    $twitchGroup->setType('poll');
-                    $em = $this->doctrine->getManager();
-                    $em->persist($twitchGroup);
-                    $em->flush();
-                } else {
-                    // Créer un twitchGroup
-                    $twitchGroup = new TwitchGroup();
-                    $twitchGroup->setTwitchId($pollId);
-                    $twitchGroup->setVisible(true);
-                    $twitchGroup->setOverlayId($overlayId);
-                    $twitchGroup->setType('poll');
-                    $em = $this->doctrine->getManager();
-                    $em->persist($twitchGroup);
-                    $em->flush();
-                }
-                $finalResponse = new JsonResponse(
-                    [
-                        'statusCode' => 200,
-                        'access_renew' => $response['refresh'] != null ? true : false,
-                        'data' => $response['data'],
-                    ],
-                    200,
-                );
-                if ($response['refresh'] != null) {
-                    $finalResponse->headers->setCookie(
-                        new Cookie(
-                            't_access_token_sso',
-                            $response['refresh'],
-                            new \DateTime('+1 day'),
-                            '/',
-                            'localhost',
-                            true,
-                            true,
-                            false,
-                            'none'
-                        ));
-                }
-                return $finalResponse;
-            } else {
+            if ($response['data'] == false) {
                 return new JsonResponse([
                     'statusCode' => 400,
                     'message' => 'Poll already started'
                 ], 400);
             }
+            $pollId = $response['data'][0]['id'];
+
+            // Vérifie si TwitchGroup en fonction de overlayId existe, on édite le twitchId et le visible
+            $twitchGroup = $this->twitchGroupRepository->findOneBy(['overlayId', $overlayId]);
+            if ($twitchGroup != null) {
+                $twitchGroup->setTwitchId($pollId);
+                $twitchGroup->setVisible(true);
+                $twitchGroup->setType('poll');
+                $em = $this->doctrine->getManager();
+                $em->persist($twitchGroup);
+                $em->flush();
+            } else {
+                // Créer un twitchGroup
+                $twitchGroup = new TwitchGroup();
+                $twitchGroup->setTwitchId($pollId);
+                $twitchGroup->setVisible(true);
+                $twitchGroup->setOverlayId($overlayId);
+                $twitchGroup->setType('poll');
+                $em = $this->doctrine->getManager();
+                $em->persist($twitchGroup);
+                $em->flush();
+            }
+            $finalResponse = new JsonResponse(
+                [
+                    'statusCode' => 200,
+                    'access_renew' => $response['refresh'] != null ? true : false,
+                    'data' => $response['data'],
+                ],
+                200,
+            );
+            if ($response['refresh'] != null) {
+                $finalResponse->headers->setCookie(
+                    new Cookie(
+                        't_access_token_sso',
+                        $response['refresh'],
+                        new \DateTime('+1 day'),
+                        '/',
+                        'localhost',
+                        true,
+                        true,
+                        false,
+                        'none'
+                    ));
+            }
+            return $finalResponse;
         } else {
             return new JsonResponse([
                 'statusCode' => 400,

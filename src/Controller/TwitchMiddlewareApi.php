@@ -773,50 +773,42 @@ class TwitchMiddlewareApi extends AbstractController {
         }
         $transport = $data['transport'] ?? array_push($err, 'transport');
         if (count($err) == 0) {
-            $userTwitch = $this->twitchApiService->fetchUser($accessToken);
-            if ($userTwitch['data'][0]['id'] === $data['broadcaster_user_id']) {
-                if (!$this->cantCallTwitch($data['broadcaster_user_id'])) {
-                    return new JsonResponse([
-                        'statusCode' => 403,
-                        'message' => 'Your channel do not have the rights'
-                    ], 403);
-                }
-                $response = $this->twitchApiService->createEventSubSubscription($accessToken, $sessionId, $type, $transport);
-                if (!$response) {
-                    return new JsonResponse([
-                        'statusCode' => 404,
-                        'message' => 'No poll found'
-                    ], 404);
-                }
-                $finalResponse = new JsonResponse(
-                    [
-                        'statusCode' => 200,
-                        'access_renew' => $response['refresh'] != null ? true : false,
-                        'response' => $response['listener_created'],
-                    ],
-                    200,
-                );
-                if ($response['refresh'] != null) {
-                    $finalResponse->headers->setCookie(
-                        new Cookie(
-                            't_access_token_sso',
-                            $response['refresh'],
-                            new \DateTime('+1 day'),
-                            '/',
-                            'localhost',
-                            true,
-                            true,
-                            false,
-                            'none'
-                        ));
-                }
-                return $finalResponse;
-            } else {
+            if (!$this->cantCallTwitch($data['broadcaster_user_id'])) {
                 return new JsonResponse([
-                    'statusCode' => 400,
-                    'message' => 'User id is not the same as the condition user id'
-                ], 400);
+                    'statusCode' => 403,
+                    'message' => 'Your channel do not have the rights'
+                ], 403);
             }
+            $response = $this->twitchApiService->createEventSubSubscription($accessToken, $sessionId, $type, $transport);
+            if (!$response) {
+                return new JsonResponse([
+                    'statusCode' => 404,
+                    'message' => 'No poll found'
+                ], 404);
+            }
+            $finalResponse = new JsonResponse(
+                [
+                    'statusCode' => 200,
+                    'access_renew' => $response['refresh'] != null ? true : false,
+                    'response' => $response['listener_created'],
+                ],
+                200,
+            );
+            if ($response['refresh'] != null) {
+                $finalResponse->headers->setCookie(
+                    new Cookie(
+                        't_access_token_sso',
+                        $response['refresh'],
+                        new \DateTime('+1 day'),
+                        '/',
+                        'localhost',
+                        true,
+                        true,
+                        false,
+                        'none'
+                    ));
+            }
+            return $finalResponse;
         } else {
             return new JsonResponse([
                 'statusCode' => 400,

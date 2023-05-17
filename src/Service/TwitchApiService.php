@@ -458,7 +458,10 @@ class TwitchApiService {
 
                 if ($response->getStatusCode() === 200) {
                     $data = json_decode($response->getContent(), true);
-                    return $data['data'][0];
+                    return [
+                        'data' => $data['data'][0],
+                        'refresh' => $refresh
+                    ];
                 } else {
                     return "You can't create a poll right now.";
                 }
@@ -549,7 +552,10 @@ class TwitchApiService {
                 if ($response->getStatusCode() === 200) {
                     $data = json_decode($response->getContent(), true);
                     if (count($data['data']) > 0) {
-                        return $data['data'][0];
+                        return [
+                            'data' => $data['data'][0],
+                            'refresh' => $refresh
+                        ];
                     } else {
                         return "You don't have any poll right now.";
                     }

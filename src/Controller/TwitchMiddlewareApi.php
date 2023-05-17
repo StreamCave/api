@@ -206,7 +206,7 @@ class TwitchMiddlewareApi extends AbstractController {
             $pollId = $response['data'][0]['id'];
 
             // Vérifie si TwitchGroup en fonction de overlayId existe, on édite le twitchId et le visible
-            $twitchGroup = $this->twitchGroupRepository->findBy(['overlayId' => $overlayId]);
+            $twitchGroup = $this->twitchGroupRepository->findBy(['overlayId' => $overlayId])[0];
             if ($twitchGroup != null) {
                 $twitchGroup->setTwitchId($pollId);
                 $twitchGroup->setVisible(true);

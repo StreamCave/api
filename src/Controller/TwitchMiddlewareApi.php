@@ -197,7 +197,7 @@ class TwitchMiddlewareApi extends AbstractController {
                 ], 403);
             }
             $response = $this->twitchApiService->createPoll($accessToken, $channelId, $choices, $title, $duration, $channelPointsVotingEnabled, $channelPointsPerVote);
-            if (count($response) == 0) {
+            if ($response['data'] != false) {
                 $pollId = $response['data'][0]['id'];
 
                 // Vérifie si TwitchGroup en fonction de overlayId existe, on édite le twitchId et le visible

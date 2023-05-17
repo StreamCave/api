@@ -502,11 +502,8 @@ class TwitchApiService {
                     ]
                 ]);
 
-                if ($response->getStatusCode() !== 200) {
-                    return [
-                        'data' => false,
-                        'refresh' => $refresh
-                    ];
+                if ($response->getStatusCode() === 400) {
+                    return null;
                 }
                 $data = json_decode($response->getContent(), true);
 

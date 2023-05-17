@@ -197,7 +197,7 @@ class TwitchMiddlewareApi extends AbstractController {
                 ], 403);
             }
             $response = $this->twitchApiService->createPoll($accessToken, $channelId, $choices, $title, $duration, $channelPointsVotingEnabled, $channelPointsPerVote);
-            if ($response['data'] == false) {
+            if ($response == null) {
                 return new JsonResponse([
                     'statusCode' => 400,
                     'message' => 'Poll already started'

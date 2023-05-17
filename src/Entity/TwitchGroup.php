@@ -83,12 +83,24 @@ class TwitchGroup
     #[ApiProperty(security: 'is_granted("ROLE_ADMIN")')]
     private ?Uuid $uuid = null;
 
-    #[ORM\Column(nullable: true)]
-    #[Groups(['twitch_group:read', 'twitch_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
-    private array $data = [];
-
     #[ORM\OneToMany(mappedBy: 'twitchGroup', targetEntity: Widget::class)]
     private Collection $widgets;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['twitch_group:read', 'twitch_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
+    private ?string $twitchId = null;
+
+    #[ORM\Column(nullable: true)]
+    #[Groups(['twitch_group:read', 'twitch_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
+    private ?bool $visible = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['twitch_group:read', 'twitch_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
+    private ?string $overlayId = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['twitch_group:read', 'twitch_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
+    private ?string $type = null;
 
     public function __construct()
     {
@@ -109,18 +121,6 @@ class TwitchGroup
     public function setUuid(Uuid $uuid): self
     {
         $this->uuid = $uuid;
-
-        return $this;
-    }
-
-    public function getData(): array
-    {
-        return $this->data;
-    }
-
-    public function setData(?array $data): self
-    {
-        $this->data = $data;
 
         return $this;
     }
@@ -151,6 +151,54 @@ class TwitchGroup
                 $widget->setTwitchGroup(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getTwitchId(): ?string
+    {
+        return $this->twitchId;
+    }
+
+    public function setTwitchId(string $twitchId): self
+    {
+        $this->twitchId = $twitchId;
+
+        return $this;
+    }
+
+    public function isVisible(): ?bool
+    {
+        return $this->visible;
+    }
+
+    public function setVisible(?bool $visible): self
+    {
+        $this->visible = $visible;
+
+        return $this;
+    }
+
+    public function getOverlayId(): ?string
+    {
+        return $this->overlayId;
+    }
+
+    public function setOverlayId(?string $overlayId): self
+    {
+        $this->overlayId = $overlayId;
+
+        return $this;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(?string $type): self
+    {
+        $this->type = $type;
 
         return $this;
     }

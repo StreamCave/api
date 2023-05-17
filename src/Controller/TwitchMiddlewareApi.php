@@ -2,8 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\TwitchGroup;
+use App\Repository\TwitchGroupRepository;
 use App\Repository\UserRepository;
 use App\Service\TwitchApiService;
+use Doctrine\Persistence\ManagerRegistry;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -15,11 +18,13 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/middleware/twitch', methods: ['POST'])]
 class TwitchMiddlewareApi extends AbstractController {
 
-    public function __construct(TwitchApiService $twitchApiService, JWTEncoderInterface $jwtEncoder, UserRepository $userRepository)
+    public function __construct(TwitchApiService $twitchApiService, JWTEncoderInterface $jwtEncoder, UserRepository $userRepository, TwitchGroupRepository $twitchGroupRepository, ManagerRegistry $doctrine)
     {
         $this->twitchApiService = $twitchApiService;
         $this->jwtEncoder = $jwtEncoder;
         $this->userRepository = $userRepository;
+        $this->twitchGroupRepository = $twitchGroupRepository;
+        $this->doctrine = $doctrine;
     }
 
     private function decodeData(Request $request) {
@@ -172,6 +177,7 @@ class TwitchMiddlewareApi extends AbstractController {
         $duration = $data['duration'] ?? array_push($err, 'duration');
         $channelPointsVotingEnabled = $data['channel_points_voting_enabled'] ?? array_push($err, 'channel_points_voting_enabled');
         $channelPointsVotingEnabled = $channelPointsVotingEnabled === true ? true : false;
+        $overlayId = $data['overlay_id'] ?? array_push($err, 'overlay_id');
         $channelPointsPerVote = 1;
         if($channelPointsVotingEnabled === true) {
             $channelPointsPerVote = $data['channel_points_per_vote'] ?? array_push($err, 'channel_points_per_vote');
@@ -191,11 +197,32 @@ class TwitchMiddlewareApi extends AbstractController {
                 ], 403);
             }
             $response = $this->twitchApiService->createPoll($accessToken, $channelId, $choices, $title, $duration, $channelPointsVotingEnabled, $channelPointsPerVote);
+            $pollId = $response['data'][0]['id'];
+            // Vérifie si TwitchGroup en fonction de overlayId existe, on édite le twitchId et le visible
+            $twitchGroup = $this->twitchGroupRepository->findOneBy(['overlayId', $overlayId]);
+            if ($twitchGroup != null) {
+                $twitchGroup->setTwitchId($pollId);
+                $twitchGroup->setVisible(true);
+                $twitchGroup->setType('poll');
+                $em = $this->doctrine->getManager();
+                $em->persist($twitchGroup);
+                $em->flush();
+            } else {
+                // Créer un twitchGroup
+                $twitchGroup = new TwitchGroup();
+                $twitchGroup->setTwitchId($pollId);
+                $twitchGroup->setVisible(true);
+                $twitchGroup->setOverlayId($overlayId);
+                $twitchGroup->setType('poll');
+                $em = $this->doctrine->getManager();
+                $em->persist($twitchGroup);
+                $em->flush();
+            }
             $finalResponse = new JsonResponse(
                 [
                     'statusCode' => 200,
                     'access_renew' => $response['refresh'] != null ? true : false,
-                    'moderators' => $response['data'],
+                    'data' => $response['data'],
                 ],
                 200,
             );
@@ -304,6 +331,7 @@ class TwitchMiddlewareApi extends AbstractController {
         $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
         $id = $data['id'] ?? array_push($err, 'id');
         $status = $data['status'] ?? 'TERMINATED';
+        $overlayId = $data['overlay_id'] ?? array_push($err, 'overlay_id');
         if (count($err) == 0) {
             if (!$this->cantCallTwitch($channelId)) {
                 return new JsonResponse([
@@ -439,6 +467,7 @@ class TwitchMiddlewareApi extends AbstractController {
         $title = $data['title'] ?? array_push($err, 'title');
         $outcomes = $data['outcomes'] ?? array_push($err, 'outcomes');
         $predictionWindow = $data['predictionWindow'] ?? array_push($err, 'predictionWindow');
+        $overlayId = $data['overlay_id'] ?? array_push($err, 'overlay_id');
         if (count($err) == 0) {
             if (!$this->cantCallTwitch($channelId)) {
                 return new JsonResponse([
@@ -454,6 +483,27 @@ class TwitchMiddlewareApi extends AbstractController {
                 ], 403);
             }
             $response = $this->twitchApiService->createPrediction($accessToken, $channelId, $title, $outcomes, $predictionWindow);
+            $predictionId = $response['data'][0]['id'];
+            // Vérifie si TwitchGroup en fonction de overlayId existe, on édite le twitchId et le visible
+            $twitchGroup = $this->twitchGroupRepository->findOneBy(['overlayId', $overlayId]);
+            if ($twitchGroup != null) {
+                $twitchGroup->setTwitchId($predictionId);
+                $twitchGroup->setVisible(true);
+                $twitchGroup->setType('prediction');
+                $em = $this->doctrine->getManager();
+                $em->persist($twitchGroup);
+                $em->flush();
+            } else {
+                // Créer un twitchGroup
+                $twitchGroup = new TwitchGroup();
+                $twitchGroup->setTwitchId($predictionId);
+                $twitchGroup->setVisible(true);
+                $twitchGroup->setOverlayId($overlayId);
+                $twitchGroup->setType('prediction');
+                $em = $this->doctrine->getManager();
+                $em->persist($twitchGroup);
+                $em->flush();
+            }
             if (!$response) {
                 return new JsonResponse([
                     'statusCode' => 404,

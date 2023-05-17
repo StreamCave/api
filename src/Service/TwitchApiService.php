@@ -339,7 +339,7 @@ class TwitchApiService {
         }
         $streamerToken = $this->getStreamerToken($channelId);
         if ($streamerToken !== null && $accessToken !== null) {
-            if ($streamerToken === $accessToken) {
+            if ($streamerToken['access_token'] === $accessToken) {
                 // C'est le streamer qui fait la requête, on renvoie donc la liste de ses modérateurs
                 $response = $this->twitchApiClient->request(Request::METHOD_GET, self::TWITCH_MODERATORS_ENPOINT, [
                     'auth_bearer' => $accessToken,
@@ -394,7 +394,7 @@ class TwitchApiService {
 
                 // Je vérifie si l'utilisateur est bien modérateur de la chaîne
                 $isModerator = false;
-                $userDB = $this->userRepository->findOneBy(['twitchAccessToken' => $refresh]);
+                $userDB = $this->userRepository->findOneBy(['twitchAccessToken' => $accessToken]);
                 foreach ($data['data'] as $moderator) {
                     if ($moderator['user_id'] === $userDB->getTwitchId()) {
                         $isModerator = true;

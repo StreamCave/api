@@ -205,9 +205,10 @@ class TwitchMiddlewareApi extends AbstractController {
                 $pollId = $response['data']['id'];
             }
             // Vérifie si TwitchGroup en fonction de overlayId existe, on édite le twitchId et le visible
-            $twitchGroup = $this->twitchGroupRepository->findBy(['overlayId' => $overlayId])[0];
+            $twitchGroup = $this->twitchGroupRepository->findBy(['overlayId' => $overlayId]);
             if($pollId != null) {
                 if ($twitchGroup != null) {
+                    $twitchGroup = $twitchGroup[0];
                     $twitchGroup->setTwitchId($pollId);
                     $twitchGroup->setVisible(true);
                     $twitchGroup->setType('poll');
@@ -216,6 +217,7 @@ class TwitchMiddlewareApi extends AbstractController {
                     $em->flush();
                 } else {
                     // Créer un twitchGroup
+                    $twitchGroup = $twitchGroup[0];
                     $twitchGroup = new TwitchGroup();
                     $twitchGroup->setTwitchId($pollId);
                     $twitchGroup->setVisible(true);
@@ -303,42 +305,43 @@ class TwitchMiddlewareApi extends AbstractController {
                     'message' => 'No poll found'
                 ], 404);
             }
-            $twitchGroup = $this->twitchGroupRepository->findBy(['overlayId' => $overlayId])[0];
+            $twitchGroup = $this->twitchGroupRepository->findBy(['overlayId' => $overlayId]);
             if ($twitchGroup != null) {
-            $visible = $twitchGroup->isVisible();
-            $finalResponse = new JsonResponse(
-                [
-                    'statusCode' => 200,
-                    'access_renew' => $response['refresh'] != null ? true : false,
-                    'response' => $response['data'],
-                    'visible' => $visible
-                ],
-                200,
-            );
-            } else {
+                $twitchGroup = $twitchGroup[0];
+                $visible = $twitchGroup->isVisible();
                 $finalResponse = new JsonResponse(
                     [
                         'statusCode' => 200,
                         'access_renew' => $response['refresh'] != null ? true : false,
                         'response' => $response['data'],
+                        'visible' => $visible
                     ],
                     200,
                 );
-            }
-            if ($response['refresh'] != null) {
-                $finalResponse->headers->setCookie(
-                    new Cookie(
-                        't_access_token_sso',
-                        $response['refresh'],
-                        new \DateTime('+1 day'),
-                        '/',
-                        'localhost',
-                        true,
-                        true,
-                        false,
-                        'none'
-                    ));
-            }
+                } else {
+                    $finalResponse = new JsonResponse(
+                        [
+                            'statusCode' => 200,
+                            'access_renew' => $response['refresh'] != null ? true : false,
+                            'response' => $response['data'],
+                        ],
+                        200,
+                    );
+                }
+                if ($response['refresh'] != null) {
+                    $finalResponse->headers->setCookie(
+                        new Cookie(
+                            't_access_token_sso',
+                            $response['refresh'],
+                            new \DateTime('+1 day'),
+                            '/',
+                            'localhost',
+                            true,
+                            true,
+                            false,
+                            'none'
+                        ));
+                }
             return $finalResponse;
         } else {
             return new JsonResponse([
@@ -521,8 +524,9 @@ class TwitchMiddlewareApi extends AbstractController {
             $response = $this->twitchApiService->createPrediction($accessToken, $refreshToken, $channelId, $title, $outcomes, $predictionWindow);
             $predictionId = $response['data'][0]['id'];
             // Vérifie si TwitchGroup en fonction de overlayId existe, on édite le twitchId et le visible
-            $twitchGroup = $this->twitchGroupRepository->findBy(['overlayId' => $overlayId])[0];
+            $twitchGroup = $this->twitchGroupRepository->findBy(['overlayId' => $overlayId]);
             if ($twitchGroup != null) {
+                $twitchGroup = $twitchGroup[0];
                 $twitchGroup->setTwitchId($predictionId);
                 $twitchGroup->setVisible(true);
                 $twitchGroup->setType('prediction');
@@ -531,6 +535,7 @@ class TwitchMiddlewareApi extends AbstractController {
                 $em->flush();
             } else {
                 // Créer un twitchGroup
+                $twitchGroup = $twitchGroup[0];
                 $twitchGroup = new TwitchGroup();
                 $twitchGroup->setTwitchId($predictionId);
                 $twitchGroup->setVisible(true);
@@ -834,7 +839,7 @@ class TwitchMiddlewareApi extends AbstractController {
                 ],
                 200,
             );
-            if ($response['refresh'] != null) {
+            if ($response != null && $response['refresh'] != null) {
                 $finalResponse->headers->setCookie(
                     new Cookie(
                         't_access_token_sso',

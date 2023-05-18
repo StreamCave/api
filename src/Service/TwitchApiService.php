@@ -112,7 +112,7 @@ class TwitchApiService {
      * @throws RedirectionExceptionInterface
      * @throws ClientExceptionInterface
      */
-    public function refreshToken(string $refreshToken): array|string
+    public function refreshToken(string $refreshToken)
     {
         if ($refreshToken === null) {
             return 'No refresh token provided';
@@ -139,7 +139,7 @@ class TwitchApiService {
             ];
             return $data;
         } else {
-            return 'Refresh token invalid';
+            return null;
         }
     }
 
@@ -250,7 +250,7 @@ class TwitchApiService {
     /**
      * Informations de la chaîne de l'utilisateur renseigné
      */
-    public function fetchChannel(string $accessToken, string $channelId)
+    public function fetchChannel(string $accessToken, string $refreshToken, string $channelId)
     {
         $refresh = null;
         // On doit vérifier la validité du token
@@ -259,7 +259,7 @@ class TwitchApiService {
         ]);
         if ($validityUser->getStatusCode() != 200) {
             // On refresh le token
-            $accessToken = $this->refreshToken($accessToken);
+            $accessToken = $this->refreshToken($refreshToken);
             $refresh = $accessToken;
         }
         $streamerToken = $this->getStreamerToken($channelId);
@@ -325,7 +325,7 @@ class TwitchApiService {
     /**
      * Renvoie la liste des modérateurs de la chaîne renseignée
      */
-    public function fetchModerators(string $accessToken, string $channelId)
+    public function fetchModerators(string $accessToken, string $refreshToken, string $channelId)
     {
         $refresh = null;
         // On doit vérifier la validité du token
@@ -334,7 +334,7 @@ class TwitchApiService {
         ]);
         if ($validityUser->getStatusCode() != 200) {
             // On refresh le token
-            $accessToken = $this->refreshToken($accessToken);
+            $accessToken = $this->refreshToken($refreshToken);
             $refresh = $accessToken;
         }
         $streamerToken = $this->getStreamerToken($channelId);
@@ -423,6 +423,7 @@ class TwitchApiService {
 
     public function createPoll(
         string $accessToken,
+        string $refreshToken,
         string $channelId,
         array $choices,
         string $title,
@@ -437,7 +438,7 @@ class TwitchApiService {
         ]);
         if ($validityUser->getStatusCode() != 200) {
             // On refresh le token
-            $accessToken = $this->refreshToken($accessToken);
+            $accessToken = $this->refreshToken($refreshToken);
             $refresh = $accessToken;
         }
         $streamerToken = $this->getStreamerToken($channelId);
@@ -526,6 +527,7 @@ class TwitchApiService {
      */
     public function getPoll(
         string $accessToken,
+        string $refreshToken,
         string $channelId
     ) {
         $refresh = null;
@@ -535,7 +537,7 @@ class TwitchApiService {
         ]);
         if ($validityUser->getStatusCode() != 200) {
             // On refresh le token
-            $accessToken = $this->refreshToken($accessToken);
+            $accessToken = $this->refreshToken($refreshToken);
             $refresh = $accessToken;
         }
         $streamerToken = $this->getStreamerToken($channelId);
@@ -620,6 +622,7 @@ class TwitchApiService {
      */
     public function endPoll(
         string $accessToken,
+        string $refreshToken,
         string $channelId,
         string $pollId,
         string $status = 'TERMINATED'
@@ -631,7 +634,7 @@ class TwitchApiService {
         ]);
         if ($validityUser->getStatusCode() != 200) {
             // On refresh le token
-            $accessToken = $this->refreshToken($accessToken);
+            $accessToken = $this->refreshToken($refreshToken);
             $refresh = $accessToken;
         }
         $streamerToken = $this->getStreamerToken($channelId);
@@ -712,6 +715,7 @@ class TwitchApiService {
      */
     function getPolls(
         string $accessToken,
+        string $refreshToken,
         string $channelId
     ) {
         $refresh = null;
@@ -721,7 +725,7 @@ class TwitchApiService {
         ]);
         if ($validityUser->getStatusCode() != 200) {
             // On refresh le token
-            $accessToken = $this->refreshToken($accessToken);
+            $accessToken = $this->refreshToken($refreshToken);
             $refresh = $accessToken;
         }
         $streamerToken = $this->getStreamerToken($channelId);
@@ -806,6 +810,7 @@ class TwitchApiService {
      */
     function createPrediction(
         string $accessToken,
+        string $refreshToken,
         string $channelId,
         string $title,
         array $outcomes, // Choix
@@ -818,7 +823,7 @@ class TwitchApiService {
         ]);
         if ($validityUser->getStatusCode() != 200) {
             // On refresh le token
-            $accessToken = $this->refreshToken($accessToken);
+            $accessToken = $this->refreshToken($refreshToken);
             $refresh = $accessToken;
         }
         $streamerToken = $this->getStreamerToken($channelId);
@@ -919,6 +924,7 @@ class TwitchApiService {
      */
     public function getPrediction(
         string $accessToken,
+        string $refreshToken,
         string $channelId
     ) {
         $refresh = null;
@@ -928,7 +934,7 @@ class TwitchApiService {
         ]);
         if ($validityUser->getStatusCode() != 200) {
             // On refresh le token
-            $accessToken = $this->refreshToken($accessToken);
+            $accessToken = $this->refreshToken($refreshToken);
             $refresh = $accessToken;
         }
         $streamerToken = $this->getStreamerToken($channelId);
@@ -1013,6 +1019,7 @@ class TwitchApiService {
      */
     public function endPrediction(
         string $accessToken,
+        string $refreshToken,
         string $channelId,
         string $id,
         string $status,
@@ -1025,7 +1032,7 @@ class TwitchApiService {
         ]);
         if ($validityUser->getStatusCode() != 200) {
             // On refresh le token
-            $accessToken = $this->refreshToken($accessToken);
+            $accessToken = $this->refreshToken($refreshToken);
             $refresh = $accessToken;
         }
         $streamerToken = $this->getStreamerToken($channelId);
@@ -1108,6 +1115,7 @@ class TwitchApiService {
      */
     public function getAllPrediction(
         string $accessToken,
+        string $refreshToken,
         string $channelId
     ) {
         $refresh = null;
@@ -1117,7 +1125,7 @@ class TwitchApiService {
         ]);
         if ($validityUser->getStatusCode() != 200) {
             // On refresh le token
-            $accessToken = $this->refreshToken($accessToken);
+            $accessToken = $this->refreshToken($refreshToken);
             $refresh = $accessToken;
         }
         $streamerToken = $this->getStreamerToken($channelId);
@@ -1202,6 +1210,7 @@ class TwitchApiService {
      */
     public function createEventSubSubscription(
         string $accessToken,
+        string $refreshToken,
         string $sessionId,
         string $channelId,
         array $type,
@@ -1214,7 +1223,7 @@ class TwitchApiService {
         ]);
         if ($validityUser->getStatusCode() != 200) {
             // On refresh le token
-            $accessToken = $this->refreshToken($accessToken);
+            $accessToken = $this->refreshToken($refreshToken);
             $refresh = $accessToken;
         }
         $streamerToken = $this->getStreamerToken($channelId);

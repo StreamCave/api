@@ -270,6 +270,8 @@ class TwitchMiddlewareApi extends AbstractController {
         $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');
         $accessToken = $data['access_token'] ?? array_push($err, 'access_token');
         $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
+        $overlayId = $data['overlay_id'] ?? array_push($err, 'overlay_id');
+        $finalResponse;
         if (count($err) == 0) {
             if (!$this->cantCallTwitch($channelId)) {
                 return new JsonResponse([
@@ -291,14 +293,28 @@ class TwitchMiddlewareApi extends AbstractController {
                     'message' => 'No poll found'
                 ], 404);
             }
+            $twitchGroup = $this->twitchGroupRepository->findBy(['overlayId' => $overlayId])[0];
+            if ($twitchGroup != null) {
+            $visible = $twitchGroup->isVisible();
             $finalResponse = new JsonResponse(
                 [
                     'statusCode' => 200,
                     'access_renew' => $response['refresh'] != null ? true : false,
                     'response' => $response['data'],
+                    'visible' => $visible
                 ],
                 200,
             );
+            } else {
+                $finalResponse = new JsonResponse(
+                    [
+                        'statusCode' => 200,
+                        'access_renew' => $response['refresh'] != null ? true : false,
+                        'response' => $response['data'],
+                    ],
+                    200,
+                );
+            }
             if ($response['refresh'] != null) {
                 $finalResponse->headers->setCookie(
                     new Cookie(

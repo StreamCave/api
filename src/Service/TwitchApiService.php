@@ -395,9 +395,11 @@ class TwitchApiService {
                 // Je vérifie si l'utilisateur est bien modérateur de la chaîne
                 $isModerator = false;
                 $userDB = $this->userRepository->findOneBy(['twitchAccessToken' => $accessToken]);
-                foreach ($data['data'] as $moderator) {
-                    if ($moderator['user_id'] === $userDB->getTwitchId()) {
-                        $isModerator = true;
+                if($userDB !== null) {
+                    foreach ($data['data'] as $moderator) {
+                        if ($moderator['user_id'] === $userDB->getTwitchId()) {
+                            $isModerator = true;
+                        }
                     }
                 }
 

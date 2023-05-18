@@ -465,7 +465,7 @@ class TwitchApiService {
                         'refresh' => $refresh
                     ];
                 } else {
-                    return "You can't create a poll right now.";
+                    return null;
                 }
             } else {
                 // On doit récupérer le accessToken du streamer en BDD

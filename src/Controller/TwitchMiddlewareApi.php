@@ -271,7 +271,6 @@ class TwitchMiddlewareApi extends AbstractController {
         $accessToken = $data['access_token'] ?? array_push($err, 'access_token');
         $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
         $overlayId = $data['overlay_id'] ?? array_push($err, 'overlay_id');
-        $finalResponse;
         if (count($err) == 0) {
             if (!$this->cantCallTwitch($channelId)) {
                 return new JsonResponse([
@@ -508,7 +507,7 @@ class TwitchMiddlewareApi extends AbstractController {
             $response = $this->twitchApiService->createPrediction($accessToken, $channelId, $title, $outcomes, $predictionWindow);
             $predictionId = $response['data'][0]['id'];
             // Vérifie si TwitchGroup en fonction de overlayId existe, on édite le twitchId et le visible
-            $twitchGroup = $this->twitchGroupRepository->findOneBy(['overlayId', $overlayId]);
+            $twitchGroup = $this->twitchGroupRepository->findBy(['overlayId' => $overlayId])[0];
             if ($twitchGroup != null) {
                 $twitchGroup->setTwitchId($predictionId);
                 $twitchGroup->setVisible(true);

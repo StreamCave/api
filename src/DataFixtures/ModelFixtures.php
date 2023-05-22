@@ -19,7 +19,7 @@ class ModelFixtures extends Fixture
 
     private function modelLouvard(ObjectManager $manager) {
         $model = new Model();
-        $model->setUuid(Uuid::v5(Uuid::v6(), 'Louvard'));
+        $model->setUuid('louvard');
         $model->setName('Louvard');
         $model->setDescription('Ceci est le modèle Louvard.');
         $model->setPrice(0);
@@ -48,7 +48,7 @@ class ModelFixtures extends Fixture
     private function modelFlowUp(ObjectManager $manager): void
     {
         $model = new Model();
-        $model->setUuid(Uuid::v5(Uuid::v6(), 'FlowUp'));
+        $model->setUuid('flowup');
         $model->setName('FlowUp');
         $model->setDescription('Ceci est le modèle FlowUp.');
         $model->setPrice(0);
@@ -77,7 +77,7 @@ class ModelFixtures extends Fixture
     private function modelHER6S(ObjectManager $manager): void
     {
         $model = new Model();
-        $model->setUuid(Uuid::v5(Uuid::v6(), 'HER6S'));
+        $model->setUuid('her6s');
         $model->setName('HER6S');
         $model->setDescription('Ceci est le modèle HER6S.');
         $model->setPrice(0);
@@ -106,7 +106,7 @@ class ModelFixtures extends Fixture
     private function modelRoadToLan(ObjectManager $manager): void
     {
         $model = new Model();
-        $model->setUuid(Uuid::v5(Uuid::v6(), 'RoadToLan'));
+        $model->setUuid('roadtolan');
         $model->setName('RoadToLan');
         $model->setDescription('Ceci est le modèle RoadToLan.');
         $model->setPrice(0);

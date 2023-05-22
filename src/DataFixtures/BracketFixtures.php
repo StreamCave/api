@@ -24,7 +24,7 @@ class BracketFixtures extends Fixture implements DependentFixtureInterface
         $bracket->setName('Rainbow Six Siege');
         $bracket->setGame('r6');
         $bracket->setVisible(true);
-        $bracket->setOverlayId($this->getReference('overlay-louvard-1')->getUuid());
+        $bracket->setOverlayId($this->getReference('overlay-test')->getUuid());
         $bracket->setType("DOUBLE");
         // Set le bracket à partir d'un fichier json
         $bracket->setBracket([file_get_contents(__DIR__ . '/brackets/r6.json')]);

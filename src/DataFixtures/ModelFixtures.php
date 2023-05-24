@@ -20,7 +20,7 @@ class ModelFixtures extends Fixture
     private function modelLouvard(ObjectManager $manager) {
         $model = new Model();
         $model->setUuid('louvard');
-        $model->setName('Louvard');
+        $model->setName('louvard');
         $model->setDescription('Ceci est le modèle Louvard.');
         $model->setPrice(0);
         $model->setPreview("https://cdn.streamcave.tv/models/louvard/preview.jpg");
@@ -49,7 +49,7 @@ class ModelFixtures extends Fixture
     {
         $model = new Model();
         $model->setUuid('flowup');
-        $model->setName('FlowUp');
+        $model->setName('flowup');
         $model->setDescription('Ceci est le modèle FlowUp.');
         $model->setPrice(0);
         $model->setPreview("https://cdn.streamcave.tv/models/flowup/preview.jpg");
@@ -78,7 +78,7 @@ class ModelFixtures extends Fixture
     {
         $model = new Model();
         $model->setUuid('her6s');
-        $model->setName('HER6S');
+        $model->setName('her6s');
         $model->setDescription('Ceci est le modèle HER6S.');
         $model->setPrice(0);
         $model->setPreview("https://cdn.streamcave.tv/models/her6s/preview.jpg");
@@ -107,7 +107,7 @@ class ModelFixtures extends Fixture
     {
         $model = new Model();
         $model->setUuid('roadtolan');
-        $model->setName('RoadToLan');
+        $model->setName('roadtolan');
         $model->setDescription('Ceci est le modèle RoadToLan.');
         $model->setPrice(0);
         $model->setPreview("https://cdn.streamcave.tv/models/roadtolan/preview.jpg");

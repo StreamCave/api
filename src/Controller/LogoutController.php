@@ -42,7 +42,7 @@ class LogoutController extends AbstractController
                 'delete',
                 new \DateTime('now - 1 hour'),
                 '/',
-                $_ENV["DOMAIN"],
+                '*.streamcave.tv',
                 true,
                 true,
                 false,

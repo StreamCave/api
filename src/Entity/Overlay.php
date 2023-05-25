@@ -9,6 +9,7 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use App\Controller\ChangeModelOverlayController;
 use App\Controller\CreateOverlayController;
 use App\Controller\DeleteOverlayController;
 use App\Controller\GetAllOverlaysController;
@@ -68,6 +69,7 @@ use Symfony\Component\Uid\Uuid;
         uriVariables: "uuid",
         status: 200,
         schemes: ['https'],
+        controller: ChangeModelOverlayController::class,
         openapiContext: ['summary' => 'Modifier un overlay'],
         normalizationContext: ['groups' => ['overlay:read']],
         denormalizationContext: ['groups' => ['overlay:write']],

@@ -64,7 +64,8 @@ class ModelFixtures extends Fixture
                 "numberOfGroup" => 1,
                 "maxPerGroup" => 2,
                 "minPerGroup" => 1,
-            ]
+            ],
+            "Widgets" => ['topbar', 'bottombar', 'cameras', 'match', 'poll', 'popup', 'tweet', 'maps', 'planning']
         ]);
         $model->setTags(["R6"]);
 
@@ -93,7 +94,8 @@ class ModelFixtures extends Fixture
                 "numberOfGroup" => 2,
                 "maxPerGroup" => 5,
                 "minPerGroup" => 1,
-            ]
+            ],
+            "Widgets" => ['topbar', 'bottombar', 'cameras', 'match', 'poll', 'popup', 'tweet', 'maps', 'planning']
         ]);
         $model->setTags(["R6"]);
 
@@ -122,7 +124,8 @@ class ModelFixtures extends Fixture
                 "numberOfGroup" => 2,
                 "maxPerGroup" => 5,
                 "minPerGroup" => 1,
-            ]
+            ],
+            "Widgets" => ['topbar', 'cameras']
         ]);
         $model->setTags(["R6"]);
 

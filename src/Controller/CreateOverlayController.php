@@ -10,6 +10,7 @@ use App\Entity\Overlay;
 use App\Entity\PollGroup;
 use App\Entity\PopupGroup;
 use App\Entity\TweetGroup;
+use App\Entity\TwitchGroup;
 use App\Entity\Widget;
 use App\Repository\LibWidgetRepository;
 use App\Repository\ModelRepository;
@@ -69,7 +70,9 @@ class CreateOverlayController extends AbstractController
         $matchGroup = new MatchGroup();
         $pollGroup = new PollGroup();
         $popupGroup = new PopupGroup();
+        $twitchGroup = new TwitchGroup();
         $tweetGroup = new TweetGroup();
+        $twitchGroup = new TwitchGroup();
 
         // On fait le tour du array $data["widgets"] pour créer les widgets un par un
         // foreach ($data["widgets"] as $widget) {
@@ -130,6 +133,7 @@ class CreateOverlayController extends AbstractController
                     'poll' => $newWidget->setPollGroup($pollGroup),
                     'popup' => $newWidget->setPopupGroup($popupGroup),
                     'tweet' => $newWidget->setTweetGroup($tweetGroup),
+                    'twitch' => $newWidget->setTwitchGroup($twitchGroup)
                 };
             }
 

@@ -81,7 +81,7 @@ class TwitchGroup
     #[ORM\Column(type: Types::GUID, unique: true)]
     #[Groups(['twitch_group:read', 'twitch_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     #[ApiProperty(security: 'is_granted("ROLE_ADMIN")')]
-    private ?Uuid $uuid = null;
+    private ?Uuid $uuid;
 
     #[ORM\Column(nullable: true)]
     #[Groups(['twitch_group:read', 'twitch_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]

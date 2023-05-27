@@ -143,7 +143,7 @@ class TweetGroup
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $modifiedDate = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     #[Groups(['tweet_group:read', 'tweet_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?bool $visible = null;
 
@@ -151,7 +151,7 @@ class TweetGroup
     #[Groups(['tweet_group:read', 'tweet_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $overlayId = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['tweet_group:read', 'tweet_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $hashtag = null;
 

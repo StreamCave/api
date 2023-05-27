@@ -83,7 +83,7 @@ class PopupGroup
     #[ApiProperty(security: 'is_granted("ROLE_ADMIN")')]
     private ?string $uuid;
 
-    #[ORM\Column(type: Types::TEXT)]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Groups(['popup_group:read', 'popup_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $content = null;
 

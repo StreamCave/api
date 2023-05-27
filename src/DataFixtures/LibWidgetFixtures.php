@@ -27,13 +27,15 @@ class LibWidgetFixtures extends Fixture
         $this->setTimer($manager);
         $this->setBannerPub($manager);
         $this->setVideoPub($manager);
+        $this->setTwitchPoll($manager);
+        $this->setTwitchPrediction($manager);
     }
 
     private function setTopbar(ObjectManager $manager): void
     {
         $libWidget = new LibWidget();
-        $libWidget->setUuid(Uuid::v5(Uuid::v6(), "topbar"));
-        $libWidget->setNameWidget("topbar");
+        $libWidget->setUuid("topbar");
+        $libWidget->setNameWidget("TopBar");
         $libWidget->setNameGroup("info");
 
         $this->addReference('lib-widget-topbar', $libWidget);
@@ -44,8 +46,8 @@ class LibWidgetFixtures extends Fixture
     private function setBottombar(ObjectManager $manager): void
     {
         $libWidget = new LibWidget();
-        $libWidget->setUuid(Uuid::v5(Uuid::v6(), "bottombar"));
-        $libWidget->setNameWidget("bottombar");
+        $libWidget->setUuid("bottombar");
+        $libWidget->setNameWidget("BottomBar");
         $libWidget->setNameGroup("info");
 
         $this->addReference('lib-widget-bottombar', $libWidget);
@@ -56,8 +58,8 @@ class LibWidgetFixtures extends Fixture
     private function setVersus(ObjectManager $manager): void
     {
         $libWidget = new LibWidget();
-        $libWidget->setUuid(Uuid::v5(Uuid::v6(), "versus"));
-        $libWidget->setNameWidget("versus");
+        $libWidget->setUuid("versus");
+        $libWidget->setNameWidget("Versus");
         $libWidget->setNameGroup("match");
 
         $this->addReference('lib-widget-versus', $libWidget);
@@ -68,8 +70,8 @@ class LibWidgetFixtures extends Fixture
     private function setNextMatch(ObjectManager $manager): void
     {
         $libWidget = new LibWidget();
-        $libWidget->setUuid(Uuid::v5(Uuid::v6(), "nextmatch"));
-        $libWidget->setNameWidget("nextmatch");
+        $libWidget->setUuid("nextmatch");
+        $libWidget->setNameWidget("NextMatch");
         $libWidget->setNameGroup("match");
 
         $this->addReference('lib-widget-nextmatch', $libWidget);
@@ -80,8 +82,8 @@ class LibWidgetFixtures extends Fixture
     private function setPopup(ObjectManager $manager): void
     {
         $libWidget = new LibWidget();
-        $libWidget->setUuid(Uuid::v5(Uuid::v6(), "popup"));
-        $libWidget->setNameWidget("popup");
+        $libWidget->setUuid("popup");
+        $libWidget->setNameWidget("Popup");
         $libWidget->setNameGroup("popup");
 
         $this->addReference('lib-widget-popup', $libWidget);
@@ -92,8 +94,8 @@ class LibWidgetFixtures extends Fixture
     private function setPoll(ObjectManager $manager): void
     {
         $libWidget = new LibWidget();
-        $libWidget->setUuid(Uuid::v5(Uuid::v6(), "poll"));
-        $libWidget->setNameWidget("poll");
+        $libWidget->setUuid("poll");
+        $libWidget->setNameWidget("Poll");
         $libWidget->setNameGroup("poll");
 
         $this->addReference('lib-widget-poll', $libWidget);
@@ -104,8 +106,8 @@ class LibWidgetFixtures extends Fixture
     private function setCamera(ObjectManager $manager): void
     {
         $libWidget = new LibWidget();
-        $libWidget->setUuid(Uuid::v5(Uuid::v6(), "camera"));
-        $libWidget->setNameWidget("camera");
+        $libWidget->setUuid("cameras");
+        $libWidget->setNameWidget("Cameras");
         $libWidget->setNameGroup("camera");
 
         $this->addReference('lib-widget-camera', $libWidget);
@@ -116,8 +118,8 @@ class LibWidgetFixtures extends Fixture
     private function setBracket(ObjectManager $manager): void
     {
         $libWidget = new LibWidget();
-        $libWidget->setUuid(Uuid::v5(Uuid::v6(), "bracket"));
-        $libWidget->setNameWidget("bracket");
+        $libWidget->setUuid("bracket");
+        $libWidget->setNameWidget("Bracket");
         $libWidget->setNameGroup("match");
 
         $this->addReference('lib-widget-bracket', $libWidget);
@@ -128,8 +130,8 @@ class LibWidgetFixtures extends Fixture
     private function setPlanning(ObjectManager $manager): void
     {
         $libWidget = new LibWidget();
-        $libWidget->setUuid(Uuid::v5(Uuid::v6(), "planning"));
-        $libWidget->setNameWidget("planning");
+        $libWidget->setUuid("planning");
+        $libWidget->setNameWidget("Planning");
         $libWidget->setNameGroup("match");
 
         $this->addReference('lib-widget-planning', $libWidget);
@@ -140,8 +142,8 @@ class LibWidgetFixtures extends Fixture
     private function setTweet(ObjectManager $manager): void
     {
         $libWidget = new LibWidget();
-        $libWidget->setUuid(Uuid::v5(Uuid::v6(), "tweet"));
-        $libWidget->setNameWidget("tweet");
+        $libWidget->setUuid("Tweets");
+        $libWidget->setNameWidget("Tweets");
         $libWidget->setNameGroup("tweet");
 
         $this->addReference('lib-widget-tweet', $libWidget);
@@ -152,8 +154,8 @@ class LibWidgetFixtures extends Fixture
     private function setImage(ObjectManager $manager): void
     {
         $libWidget = new LibWidget();
-        $libWidget->setUuid(Uuid::v5(Uuid::v6(), "image"));
-        $libWidget->setNameWidget("image");
+        $libWidget->setUuid("image");
+        $libWidget->setNameWidget("Image");
         $libWidget->setNameGroup("media");
 
         $this->addReference('lib-widget-image', $libWidget);
@@ -164,8 +166,8 @@ class LibWidgetFixtures extends Fixture
     private function setVideo(ObjectManager $manager): void
     {
         $libWidget = new LibWidget();
-        $libWidget->setUuid(Uuid::v5(Uuid::v6(), "video"));
-        $libWidget->setNameWidget("video");
+        $libWidget->setUuid("video");
+        $libWidget->setNameWidget("Video");
         $libWidget->setNameGroup("media");
 
         $this->addReference('lib-widget-video', $libWidget);
@@ -176,8 +178,8 @@ class LibWidgetFixtures extends Fixture
     private function setBanMap(ObjectManager $manager): void
     {
         $libWidget = new LibWidget();
-        $libWidget->setUuid(Uuid::v5(Uuid::v6(), "banmap"));
-        $libWidget->setNameWidget("banmap");
+        $libWidget->setUuid("banmap");
+        $libWidget->setNameWidget("BanMap");
         $libWidget->setNameGroup("banmap");
 
         $this->addReference('lib-widget-banmap', $libWidget);
@@ -188,8 +190,8 @@ class LibWidgetFixtures extends Fixture
     private function setTimer(ObjectManager $manager): void
     {
         $libWidget = new LibWidget();
-        $libWidget->setUuid(Uuid::v5(Uuid::v6(), "timer"));
-        $libWidget->setNameWidget("timer");
+        $libWidget->setUuid("timer");
+        $libWidget->setNameWidget("Timer");
         $libWidget->setNameGroup("info");
 
         $this->addReference('lib-widget-timer', $libWidget);
@@ -200,8 +202,8 @@ class LibWidgetFixtures extends Fixture
     private function setBannerPub(ObjectManager $manager): void
     {
         $libWidget = new LibWidget();
-        $libWidget->setUuid(Uuid::v5(Uuid::v6(), "bannerpub"));
-        $libWidget->setNameWidget("bannerpub");
+        $libWidget->setUuid("bannerpub");
+        $libWidget->setNameWidget("BannerPub");
         $libWidget->setNameGroup("pub");
 
         $this->addReference('lib-widget-bannerpub', $libWidget);
@@ -212,8 +214,8 @@ class LibWidgetFixtures extends Fixture
     private function setVideoPub(ObjectManager $manager): void
     {
         $libWidget = new LibWidget();
-        $libWidget->setUuid(Uuid::v5(Uuid::v6(), "videopub"));
-        $libWidget->setNameWidget("videopub");
+        $libWidget->setUuid("videopub");
+        $libWidget->setNameWidget("VideoPub");
         $libWidget->setNameGroup("pub");
 
         $this->addReference('lib-widget-videopub', $libWidget);
@@ -226,8 +228,8 @@ class LibWidgetFixtures extends Fixture
     private function setTwitchPoll(ObjectManager $manager): void
     {
         $libWidget = new LibWidget();
-        $libWidget->setUuid(Uuid::v5(Uuid::v6(), "twitchpoll"));
-        $libWidget->setNameWidget("twitchpoll");
+        $libWidget->setUuid("twitchpoll");
+        $libWidget->setNameWidget("TwitchPoll");
         $libWidget->setNameGroup("twitch");
 
         $this->addReference('lib-widget-twitchpoll', $libWidget);
@@ -239,8 +241,8 @@ class LibWidgetFixtures extends Fixture
     private function setTwitchPrediction(ObjectManager $manager): void
     {
         $libWidget = new LibWidget();
-        $libWidget->setUuid(Uuid::v5(Uuid::v6(), "twitchprediction"));
-        $libWidget->setNameWidget("twitchprediction");
+        $libWidget->setUuid("twitchprediction");
+        $libWidget->setNameWidget("TwitchPrediction");
         $libWidget->setNameGroup("twitch");
 
         $this->addReference('lib-widget-twitchprediction', $libWidget);

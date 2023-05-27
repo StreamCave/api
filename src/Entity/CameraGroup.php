@@ -94,7 +94,7 @@ class CameraGroup
     #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $uuid;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?bool $visible = false;
 

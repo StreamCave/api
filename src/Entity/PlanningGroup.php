@@ -80,7 +80,7 @@ class PlanningGroup
     #[Groups(['planning_group:read', 'planning_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $uuid;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['planning_group:read', 'planning_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $teamA = null;
 
@@ -88,7 +88,7 @@ class PlanningGroup
     #[Groups(['planning_group:read', 'planning_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $logoA = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['planning_group:read', 'planning_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $teamB = null;
 
@@ -96,7 +96,7 @@ class PlanningGroup
     #[Groups(['planning_group:read', 'planning_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $logoB = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     #[Groups(['planning_group:read', 'planning_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?\DateTimeInterface $startDate = null;
 

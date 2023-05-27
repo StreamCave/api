@@ -15,6 +15,7 @@ class ModelFixtures extends Fixture
         $this->modelFlowUp($manager);
         $this->modelHER6S($manager);
         $this->modelRoadToLan($manager);
+        $this->modelYunktis($manager);
     }
 
     private function modelLouvard(ObjectManager $manager) {
@@ -35,7 +36,8 @@ class ModelFixtures extends Fixture
                 "numberOfGroup" => 2,
                 "maxPerGroup" => 5,
                 "minPerGroup" => 1,
-            ]
+            ],
+            "Widgets" => ['TopBar', 'BottomBar', 'Cameras', 'Versus', "NextMatch", 'Poll', 'Popup', 'Tweets', 'Maps', 'Planning', 'TwitchPoll', 'TwitchPrediction']
         ]);
         $model->setTags(["R6", "RocketLeague", "CSGO"]);
 
@@ -65,7 +67,7 @@ class ModelFixtures extends Fixture
                 "maxPerGroup" => 2,
                 "minPerGroup" => 1,
             ],
-            "Widgets" => ['topbar', 'bottombar', 'cameras', 'match', 'poll', 'popup', 'tweet', 'maps', 'planning']
+            "Widgets" => ['TopBar', 'BottomBar', 'Cameras', 'Versus', "NextMatch", 'Poll', 'Popup', 'Tweets', 'Maps', 'Planning', 'TwitchPoll', 'TwitchPrediction']
         ]);
         $model->setTags(["R6"]);
 
@@ -95,7 +97,7 @@ class ModelFixtures extends Fixture
                 "maxPerGroup" => 5,
                 "minPerGroup" => 1,
             ],
-            "Widgets" => ['topbar', 'bottombar', 'cameras', 'match', 'poll', 'popup', 'tweet', 'maps', 'planning']
+            "Widgets" => ['TopBar', 'Cameras', 'Poll', 'Popup', 'Tweets', 'TwitchPoll', 'TwitchPrediction']
         ]);
         $model->setTags(["R6"]);
 
@@ -106,6 +108,36 @@ class ModelFixtures extends Fixture
     }
 
     private function modelRoadToLan(ObjectManager $manager): void
+    {
+        $model = new Model();
+        $model->setUuid('roadtolan');
+        $model->setName('roadtolan');
+        $model->setDescription('Ceci est le modèle RoadToLan.');
+        $model->setPrice(0);
+        $model->setPreview("https://cdn.streamcave.tv/models/roadtolan/preview.jpg");
+        $model->setRules([
+            "Maps" => [
+                "min" => 1,
+                "max" => 3,
+                "inTopbar" => true,
+                "inBottombar" => true,
+            ],
+            "Cameras" => [
+                "numberOfGroup" => 2,
+                "maxPerGroup" => 5,
+                "minPerGroup" => 1,
+            ],
+            "Widgets" => ['TopBar', 'BottomBar', 'Cameras', 'Versus', "NextMatch", 'Poll', 'Popup', 'Tweets', 'Maps', 'Planning', 'TwitchPoll', 'TwitchPrediction']
+        ]);
+        $model->setTags(["R6"]);
+
+        $this->addReference('model-roadtolan', $model);
+
+        $manager->persist($model);
+        $manager->flush();
+    }
+
+    private function modelYunktis(ObjectManager $manager): void
     {
         $model = new Model();
         $model->setUuid('yunktis');
@@ -125,7 +157,7 @@ class ModelFixtures extends Fixture
                 "maxPerGroup" => 5,
                 "minPerGroup" => 1,
             ],
-            "Widgets" => ['topbar', 'cameras']
+            "Widgets" => ['TopBar', 'BottomBar', 'Cameras', 'Versus', "NextMatch", 'Poll', 'Popup', 'Tweets', 'Maps', 'Planning', 'TwitchPoll', 'TwitchPrediction']
         ]);
         $model->setTags(["R6"]);
 

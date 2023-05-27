@@ -145,7 +145,7 @@ class MatchGroup
     #[Groups(['match_group:read', 'match_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $overlayId = null;
 
-    #[ORM\ManyToMany(targetEntity: Widget::class, mappedBy: 'matchGroup')]
+    #[ORM\ManyToMany(targetEntity: Widget::class, mappedBy: 'matchGroup', cascade: ['persist'])]
     private Collection $widgets;
 
     #[ORM\Column(length: 255, nullable: true)]

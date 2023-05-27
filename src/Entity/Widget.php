@@ -146,7 +146,7 @@ class Widget
     #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
     private Collection $planningGroup;
 
-    #[ORM\ManyToMany(targetEntity: MatchGroup::class, inversedBy: 'widgets')]
+    #[ORM\ManyToMany(targetEntity: MatchGroup::class, inversedBy: 'widgets', cascade: ['persist'])]
     #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
     private Collection $matchGroup;
 
@@ -164,7 +164,7 @@ class Widget
     #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
     private ?Brackets $bracket = null;
 
-    #[ORM\ManyToOne(inversedBy: 'widgets')]
+    #[ORM\ManyToOne(inversedBy: 'widgets', cascade: ['persist'])]
     private ?TwitchGroup $twitchGroup = null;
 
     public function __construct()

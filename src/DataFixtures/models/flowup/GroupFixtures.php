@@ -75,7 +75,7 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
     private function setMatchGroup(ObjectManager $manager): void
     {
         $group = new MatchGroup();
-        $group->setUuid(Uuid::v5(Uuid::v6(), 'Default Match FlowUp'));
+        $group->setUuid(Uuid::v5(Uuid::v6(), 'Default Match'));
         $group->setTeamNameA('Alpha');
         $group->setLogoTeamA('https://cdn.streamcave.tv/teams/alpha.png');
         $group->setPlayersTeamA(['Ace', 'Castle', 'Pulse', 'Thatcher', 'Thermite']);

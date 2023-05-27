@@ -83,7 +83,7 @@ class PollGroup
     #[ApiProperty(security: 'is_granted("ROLE_ADMIN")')]
     private ?string $uuid;
 
-    #[ORM\Column(type: Types::TEXT)]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Groups(['poll_group:read', 'poll_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $question = null;
 
@@ -104,23 +104,23 @@ class PollGroup
     #[Groups(['poll_group:read', 'poll_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $overlayId = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['poll_group:read', 'poll_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $channel = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     #[Groups(['poll_group:read', 'poll_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     #[Groups(['poll_group:read', 'poll_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     #[Groups(['poll_group:read', 'poll_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?bool $pollStarted = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     #[Groups(['poll_group:read', 'poll_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?bool $visible = null;
 

@@ -50,7 +50,7 @@ class AuthenticationSuccessListener
                 $user->getToken(),
                 new \DateTime('+1 day'),
                 '/',
-                'streamcave.tv',
+                $_ENV['COOKIE_DOMAIN'],
                 true,
                 true,
                 false,

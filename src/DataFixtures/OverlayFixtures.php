@@ -15,7 +15,7 @@ class OverlayFixtures extends Fixture implements DependentFixtureInterface
 //        $this->setupSixquatre($manager);
         $this->setupFlowUp($manager);
         $this->setupHER6S($manager);
-        $this->setupRoadToLan($manager);
+        $this->setupYunktis($manager);
     }
 
     private function setupSixquatre(ObjectManager $manager): void
@@ -64,16 +64,16 @@ class OverlayFixtures extends Fixture implements DependentFixtureInterface
         $manager->flush();
     }
 
-    private function setupRoadToLan(ObjectManager $manager): void
+    private function setupYunktis(ObjectManager $manager): void
     {
         $overlay = new Overlay();
-        $overlay->setUuid('roadtolan');
-        $overlay->setName('RoadToLan');
-        $overlay->setModel($this->getReference('model-roadtolan'));
+        $overlay->setUuid('yunktis');
+        $overlay->setName('Yunktis');
+        $overlay->setModel($this->getReference('model-yunktis'));
         $overlay->setUserOwner($this->getReference('default-admin-user-2'));
         $overlay->addUserAccess($this->getReference('default-admin-user'));
 
-        $this->addReference('overlay-roadtolan', $overlay);
+        $this->addReference('overlay-yunktis', $overlay);
 
         $manager->persist($overlay);
         $manager->flush();

@@ -106,11 +106,11 @@ class ModelFixtures extends Fixture
     private function modelRoadToLan(ObjectManager $manager): void
     {
         $model = new Model();
-        $model->setUuid('roadtolan');
-        $model->setName('roadtolan');
-        $model->setDescription('Ceci est le modèle RoadToLan.');
+        $model->setUuid('yunktis');
+        $model->setName('yunktis');
+        $model->setDescription('Ceci est le modèle Yunktis.');
         $model->setPrice(0);
-        $model->setPreview("https://cdn.streamcave.tv/models/roadtolan/preview.jpg");
+        $model->setPreview("https://cdn.streamcave.tv/models/yunktis/preview.jpg");
         $model->setRules([
             "Maps" => [
                 "min" => 1,
@@ -126,7 +126,7 @@ class ModelFixtures extends Fixture
         ]);
         $model->setTags(["R6"]);
 
-        $this->addReference('model-roadtolan', $model);
+        $this->addReference('model-yunktis', $model);
 
         $manager->persist($model);
         $manager->flush();

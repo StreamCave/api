@@ -42,7 +42,7 @@ class ChangeModelOverlayController extends AbstractController {
         $this->infoGroupRepository = $infoGroupRepository;
     }
 
-    private function generateInfoGroup() : InfoGroup
+    private function generateInfoGroup($nameWidget) : InfoGroup
     {
         $em = $this->doctrine->getManager();
         $infoGroup = new InfoGroup();

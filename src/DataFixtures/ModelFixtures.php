@@ -37,7 +37,7 @@ class ModelFixtures extends Fixture
                 "maxPerGroup" => 5,
                 "minPerGroup" => 1,
             ],
-            "Widgets" => ['TopBar', 'BottomBar', 'Cameras', 'Versus', "NextMatch", 'Poll', 'Popup', 'Tweets', 'Maps', 'Planning', 'TwitchPoll', 'TwitchPrediction']
+            "Widgets" => ['TopBar', 'BottomBar', 'Cameras', 'Match', 'Poll', 'Popup', 'Tweets', 'Maps', 'Planning', 'TwitchPoll', 'TwitchPrediction']
         ]);
         $model->setTags(["R6", "RocketLeague", "CSGO"]);
 
@@ -67,7 +67,7 @@ class ModelFixtures extends Fixture
                 "maxPerGroup" => 2,
                 "minPerGroup" => 1,
             ],
-            "Widgets" => ['TopBar', 'BottomBar', 'Cameras', 'Versus', "NextMatch", 'Poll', 'Popup', 'Tweets', 'Maps', 'Planning', 'TwitchPoll', 'TwitchPrediction']
+            "Widgets" => ['TopBar', 'BottomBar', 'Cameras', 'Match', 'Poll', 'Popup', 'Tweets', 'Maps', 'Planning', 'TwitchPoll', 'TwitchPrediction']
         ]);
         $model->setTags(["R6"]);
 
@@ -127,7 +127,7 @@ class ModelFixtures extends Fixture
                 "maxPerGroup" => 5,
                 "minPerGroup" => 1,
             ],
-            "Widgets" => ['TopBar', 'BottomBar', 'Cameras', 'Versus', "NextMatch", 'Poll', 'Popup', 'Tweets', 'Maps', 'Planning', 'TwitchPoll', 'TwitchPrediction']
+            "Widgets" => ['TopBar', 'BottomBar', 'Cameras', 'Match', 'Poll', 'Popup', 'Tweets', 'Maps', 'Planning', 'TwitchPoll', 'TwitchPrediction']
         ]);
         $model->setTags(["R6"]);
 
@@ -157,7 +157,7 @@ class ModelFixtures extends Fixture
                 "maxPerGroup" => 5,
                 "minPerGroup" => 1,
             ],
-            "Widgets" => ['TopBar', 'BottomBar', 'Cameras', 'Versus', "NextMatch", 'Poll', 'Popup', 'Tweets', 'Maps', 'Planning', 'TwitchPoll', 'TwitchPrediction']
+            "Widgets" => ['TopBar', 'BottomBar', 'Cameras', 'Match', 'Poll', 'Popup', 'Tweets', 'Maps', 'Planning', 'TwitchPoll', 'TwitchPrediction']
         ]);
         $model->setTags(["R6"]);
 

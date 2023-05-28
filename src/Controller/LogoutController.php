@@ -18,7 +18,7 @@ class LogoutController extends AbstractController
         $this->token = null;
     }
 
-    #[Route('/api/logout', name: 'api_logout', methods: ['GET'])]
+    #[Route('/login_manage/logout', name: 'api_logout', methods: ['GET'])]
     public function logout(Request $request, UserRepository $userRepository, ManagerRegistry $doctrine, TokenService $tokenService): JsonResponse
     {
 

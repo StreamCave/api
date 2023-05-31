@@ -33,7 +33,7 @@ class TokenController extends AbstractController
         $this->token = null;
     }
 
-    #[Route('/login_manage/refresh', name: 'app_token', methods: ['GET'])]
+    #[Route('/api/refresh_token', name: 'app_token', methods: ['GET'])]
     public function index(Request $request, UserRepository $userRepository, ManagerRegistry $doctrine, TokenService $tokenService): Response
     {
         $this->token = $tokenService->translateTokenFromCookie($request->cookies->get('refresh_token'));
@@ -62,7 +62,7 @@ class TokenController extends AbstractController
      * @throws DecodingExceptionInterface
      * @throws ClientExceptionInterface
      */
-    #[Route('/login_manage/revoke_discord', name: 'app_discord_token', methods: ['POST'])]
+    #[Route('/api/discord/refresh_token', name: 'app_discord_token', methods: ['POST'])]
     public function discordToken(Request $request): JsonResponse
     {
         $httpClient = HttpClient::create();
@@ -87,7 +87,7 @@ class TokenController extends AbstractController
      * @throws RedirectionExceptionInterface
      * @throws ClientExceptionInterface
      */
-    #[Route('/login_manage/revoke_discord', name: 'app_discord_token_revoke', methods: ['POST'])]
+    #[Route('/api/discord/revoke_token', name: 'app_discord_token_revoke', methods: ['POST'])]
     public function revokeDiscordToken(Request $request): JsonResponse
     {
         $httpClient = HttpClient::create();
@@ -110,7 +110,7 @@ class TokenController extends AbstractController
      * @throws RedirectionExceptionInterface
      * @throws ClientExceptionInterface
      */
-    #[Route('/login_manage/refresh_twitch', name: 'app_twitch_token', methods: ['POST'])]
+    #[Route('/api/twitch/refresh_token', name: 'app_twitch_token', methods: ['POST'])]
     public function refreshTwitchToken(Request $request): JsonResponse
     {
         $httpClient = HttpClient::create();
@@ -128,7 +128,7 @@ class TokenController extends AbstractController
         ], Response::HTTP_OK);
     }
 
-    #[Route('/login_manage/revoke_twitch', name: 'app_twitch_token_revoke', methods: ['POST'])]
+    #[Route('/api/twitch/revoke_token', name: 'app_twitch_token_revoke', methods: ['POST'])]
     public function revokeTwitchToken(Request $request): JsonResponse
     {
         $httpClient = HttpClient::create();

@@ -32,10 +32,9 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($widget);
         $manager->flush();
     }
-
     private function setCameras(ObjectManager $manager): void
     {
-        $players = ['Alpha', 'Bravo', 'Charlie', 'Delta', 'Echo'];
+        $players = ['Alpha', 'Bravo', 'Charlie', 'Delta', 'Echo', 'Foxtrot', 'Golf', 'Hotel', 'India', 'Juliett'];
         $widget = new Widget();
         $widget->setUuid(Uuid::v5(Uuid::v6(), 'Cameras'));
         $widget->setName('Cameras');
@@ -48,8 +47,6 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($widget);
         $manager->flush();
     }
-
-
     public function getDependencies(): array
     {
         return array(

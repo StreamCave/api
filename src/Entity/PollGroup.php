@@ -100,7 +100,7 @@ class PollGroup
     #[Groups(['poll_group:read', 'poll_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private Collection $answerGroups;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['poll_group:read', 'poll_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $overlayId = null;
 

@@ -5,24 +5,24 @@ api_platform:
 login_manage_logout:
   path: /login_manage/logout
   controller: App\Controller\LogoutController::logout
-  methods: ['GET']
+  methods: [ 'GET' ]
 login_manage_refresh:
   path: /login_manage/refresh
   controller: App\Controller\TokenController::index
-  methods: ['GET']
+  methods: [ 'GET' ]
 login_manage_revoke_discord:
   path: /login_manage/revoke_discord
   controller: App\Controller\TokenController::revokeDiscordToken
-  methods: ['POST']
+  methods: [ 'POST' ]
 login_manage_refresh_discord:
   path: /login_manage/refresh_discord
   controller: App\Controller\TokenController::discordToken
-  methods: ['POST']
+  methods: [ 'POST' ]
 login_manage_revoke_twitch:
   path: /login_manage/revoke_twitch
   controller: App\Controller\TokenController::revokeTwitchToken
-  methods: ['POST']
+  methods: [ 'POST' ]
 login_manage_refresh_twitch:
   path: /login_manage/refresh_twitch
   controller: App\Controller\TokenController::refreshTwitchToken
-  methods: ['POST']
+  methods: [ 'POST' ]

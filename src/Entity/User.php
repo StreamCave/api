@@ -135,7 +135,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $ssoLogin = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['user:read', 'user:write','overlay:read'])]
     private ?string $twitchId = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['user:read', 'user:write','overlay:read'])]
+    private ?string $twitchAccessToken = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['user:read', 'user:write','overlay:read'])]
+    private ?string $twitchRefreshToken = null;
+
+    #[ORM\Column(nullable: true)]
+    #[Groups(['user:read', 'user:write','overlay:read'])]
+    private ?int $twitchExpiresIn = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $twitchStatus = null;
 
     public function __construct()
     {
@@ -382,6 +398,54 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setTwitchId(?string $twitchId): self
     {
         $this->twitchId = $twitchId;
+
+        return $this;
+    }
+
+    public function getTwitchAccessToken(): ?string
+    {
+        return $this->twitchAccessToken;
+    }
+
+    public function setTwitchAccessToken(?string $twitchAccessToken): self
+    {
+        $this->twitchAccessToken = $twitchAccessToken;
+
+        return $this;
+    }
+
+    public function getTwitchRefreshToken(): ?string
+    {
+        return $this->twitchRefreshToken;
+    }
+
+    public function setTwitchRefreshToken(?string $twitchRefreshToken): self
+    {
+        $this->twitchRefreshToken = $twitchRefreshToken;
+
+        return $this;
+    }
+
+    public function getTwitchExpiresIn(): ?int
+    {
+        return $this->twitchExpiresIn;
+    }
+
+    public function setTwitchExpiresIn(?int $twitchExpiresIn): self
+    {
+        $this->twitchExpiresIn = $twitchExpiresIn;
+
+        return $this;
+    }
+
+    public function getTwitchStatus(): ?string
+    {
+        return $this->twitchStatus;
+    }
+
+    public function setTwitchStatus(?string $twitchStatus): self
+    {
+        $this->twitchStatus = $twitchStatus;
 
         return $this;
     }

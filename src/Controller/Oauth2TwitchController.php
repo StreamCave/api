@@ -28,14 +28,14 @@ class Oauth2TwitchController extends AbstractController {
     #[Route('oauth2/twitch/connect', name: 'app_oauth2_connect_twitch')]
     public function connect(Request $request): Response
     {
-        $authorizationUri = $this->twitchApiService->getAuthorizationUri(['user:read:email', 'channel:manage:polls', 'moderation:read']);
+        $authorizationUri = $this->twitchApiService->getAuthorizationUri(['user:read:email', 'channel:manage:polls', 'moderation:read', 'channel:manage:predictions']);
         return $this->redirect($authorizationUri.'&state=sso_request');
     }
 
     #[Route('oauth2/twitch/connect/website', name: 'app_oauth2_connect_twitch_website')]
     public function connectWebsite(Request $request): Response
     {
-        $authorizationUri = $this->twitchApiService->getAuthorizationUri(['user:read:email', 'channel:manage:polls', 'moderation:read']);
+        $authorizationUri = $this->twitchApiService->getAuthorizationUri(['user:read:email', 'channel:manage:polls', 'moderation:read', 'channel:manage:predictions']);
         return $this->redirect($authorizationUri.'&state=front_request');
     }
 
@@ -64,11 +64,16 @@ class Oauth2TwitchController extends AbstractController {
                 $userDB->setAvatar($twitchUser['profile_image_url']);
                 $userDB->setPseudo($twitchUser['display_name']);
                 $userDB->setRoles(['ROLE_USER']);
+                $userDB->setTwitchStatus($twitchUser['broadcaster_type']);
             }
 
             // On set le refreshToken de l'utilisateur
             $userDB->setToken(Uuid::v4());
             $userDB->setSsoLogin("twitch");
+            // AccessToken, RefreshToken et expiresIn de Twitch
+            $userDB->setTwitchAccessToken($accessToken);
+            $userDB->setTwitchRefreshToken($refreshTokenTwitch);
+            $userDB->setTwitchExpiresIn(time() + $dataToken['expires_in']);
             $em->persist($userDB);
             $em->flush();
 
@@ -79,21 +84,33 @@ class Oauth2TwitchController extends AbstractController {
 
             // On génère un cookie avec le token JWT
             $response = new RedirectResponse($_ENV['TWITCH_SUCCESS_REDIRECT_URI']);
-        if($request->get('state') == "sso_request") {
-        $response->headers->setCookie(
-            new Cookie(
-                'refresh_token',
-                $refreshToken,
-                new \DateTime('+1 day'),
-                '/',
-                $_ENV['COOKIE_DOMAIN'],
-                true,
-                true,
-                false,
-                'none'
-            )
-            );
-        }
+            if($request->get('state') == "sso_request") {
+                $response->headers->setCookie(
+                    new Cookie(
+                        'refresh_token',
+                        $refreshToken,
+                        new \DateTime('+1 day'),
+                        '/',
+                        $_ENV['COOKIE_DOMAIN'],
+                        true,
+                        true,
+                        false,
+                        'none'
+                    )
+                );
+            }
+            $response->headers->setCookie(
+                new Cookie(
+                    'broadcaster_id',
+                    $twitchUser['id'],
+                    new \DateTime('+1 day'),
+                    '/',
+                    $_ENV['COOKIE_DOMAIN'],
+                    true,
+                    true,
+                    false,
+                    'none'
+                ));
             $response->headers->setCookie(
                 new Cookie(
                     't_access_token_sso',
@@ -102,7 +119,7 @@ class Oauth2TwitchController extends AbstractController {
                     '/',
                     $_ENV['COOKIE_DOMAIN'],
                     true,
-                    false,
+                    true,
                     false,
                     'none'
                 ));
@@ -115,7 +132,7 @@ class Oauth2TwitchController extends AbstractController {
                         '/',
                         $_ENV['COOKIE_DOMAIN'],
                         true,
-                        false,
+                        true,
                         false,
                         'none'
                     ));

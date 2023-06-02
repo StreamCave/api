@@ -135,14 +135,23 @@ class TokenController extends AbstractController
         $data = json_decode($request->getContent(), true);
         if ($data['token_sso']) {
             $response = $this->twitchApiService->revokeToken($data['token_sso']);
+            if ($response->getStatusCode() === 400) {
+                return new JsonResponse([
+                    'statusCode' => 200,
+                    'message' => 'token revoked',
+                ], Response::HTTP_OK);
+            } else {
+                return new JsonResponse([
+                    'statusCode' => 401,
+                    'message' => 'token not revoked',
+                ], Response::HTTP_UNAUTHORIZED);
+            }
         } else {
             return new JsonResponse([
+                'statusCode' => 401,
                 'message' => 'missing token_sso',
             ], Response::HTTP_UNAUTHORIZED);
         }
-        return new JsonResponse([
-            'token' => $response,
-        ], Response::HTTP_OK);
     }
 
     private function generateToken(): string

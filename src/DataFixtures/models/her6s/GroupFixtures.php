@@ -67,6 +67,7 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($group);
         $manager->flush();
     }
+
     public function getDependencies(): array
     {
         return [

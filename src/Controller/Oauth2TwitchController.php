@@ -102,7 +102,7 @@ class Oauth2TwitchController extends AbstractController {
                     '/',
                     $_ENV['COOKIE_DOMAIN'],
                     true,
-                    false,
+                    true,
                     false,
                     'none'
                 ));
@@ -115,7 +115,7 @@ class Oauth2TwitchController extends AbstractController {
                         '/',
                         $_ENV['COOKIE_DOMAIN'],
                         true,
-                        false,
+                        true,
                         false,
                         'none'
                     ));

@@ -56,7 +56,7 @@ class LogoutController extends AbstractController
                     '/',
                     $_ENV['COOKIE_DOMAIN'],
                     true,
-                    false,
+                    true,
                     false,
                     'none'
                 ));
@@ -68,7 +68,7 @@ class LogoutController extends AbstractController
                         '/',
                         $_ENV['COOKIE_DOMAIN'],
                         true,
-                        false,
+                        true,
                         false,
                         'none'
                     ));
@@ -80,7 +80,7 @@ class LogoutController extends AbstractController
                         '/',
                         $_ENV['COOKIE_DOMAIN'],
                         true,
-                        false,
+                        true,
                         false,
                         'none'
                     ));
@@ -92,7 +92,7 @@ class LogoutController extends AbstractController
                             '/',
                             $_ENV['COOKIE_DOMAIN'],
                             true,
-                            false,
+                            true,
                             false,
                             'none'
                         ));

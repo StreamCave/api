@@ -93,7 +93,7 @@ class Oauth2DiscordController extends AbstractController
                     '/',
                     $_ENV['COOKIE_DOMAIN'],
                     true,
-                    false,
+                    true,
                     false,
                     'none'
                 ));
@@ -105,7 +105,7 @@ class Oauth2DiscordController extends AbstractController
                     '/',
                     $_ENV['COOKIE_DOMAIN'],
                     true,
-                    false,
+                    true,
                     false,
                     'none'
                 ));

@@ -36,6 +36,8 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
             $camera->setName("Camera $player");
             $camera->setVisible(false);
             $camera->setSocketId("socket-$player");
+            $camera->setTeam("Alpha");
+            $camera->setMetadata("");
             $this->addReference("camera-group-" . self::MODEL . "-$player", $camera);
 
             $manager->persist($camera);
@@ -48,8 +50,9 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
         $group = new InfoGroup();
         $group->setUuid(Uuid::v5(Uuid::v6(), 'Info FlowUp'));
         $group->setTitre('#SaltyDuels');
-        $group->setLogo('https://cdn.streamcave.tv/her6s/her6s-ehpad.png');
-        $group->setDescription('Groupe info des HER6S');
+        $group->setLogo('https://cdn.streamcave.tv/models/flowup/FlowUpSigneWhite.svg');
+        $group->setDescription('Groupe info des Salty Duels');
+        $group->setTextScroll(['Bienvenue sur les SaltyDuels by FlowUp !', 'Sixquatre assure le Cast de ce tournoi R6 en compagnie de StreamCave et de FlowUp.', 'Bonne chance à tous !']);
 
         $this->addReference('info-group-' . self::MODEL, $group);
 

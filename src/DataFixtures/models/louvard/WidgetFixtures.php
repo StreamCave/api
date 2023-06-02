@@ -16,18 +16,18 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
 
     public function load(ObjectManager $manager): void
     {
-        $this->setTopBar($manager);
-        $this->setBottomBar($manager);
-        $this->setCameras($manager);
-        $this->setMatch($manager);
-        $this->setPoll($manager);
-        $this->setPopup($manager);
-        $this->setTweets($manager);
-        $this->setMaps($manager);
-        $this->setPlanning($manager);
-        $this->setBracket($manager);
-        $this->setTwitchPoll($manager);
-        $this->setTwitchPrediction($manager);
+//        $this->setTopBar($manager);
+//        $this->setBottomBar($manager);
+//        $this->setCameras($manager);
+//        $this->setMatch($manager);
+//        $this->setPoll($manager);
+//        $this->setPopup($manager);
+//        $this->setTweets($manager);
+//        $this->setMaps($manager);
+//        $this->setPlanning($manager);
+//        $this->setBracket($manager);
+//        $this->setTwitchPoll($manager);
+//        $this->setTwitchPrediction($manager);
     }
 
     private function setTopBar(ObjectManager $manager): void

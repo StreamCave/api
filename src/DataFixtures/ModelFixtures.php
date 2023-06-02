@@ -19,8 +19,8 @@ class ModelFixtures extends Fixture
 
     private function modelLouvard(ObjectManager $manager) {
         $model = new Model();
-        $model->setUuid(Uuid::v5(Uuid::v6(), 'Louvard'));
-        $model->setName('Louvard');
+        $model->setUuid('louvard');
+        $model->setName('louvard');
         $model->setDescription('Ceci est le modèle Louvard.');
         $model->setPrice(0);
         $model->setPreview("https://cdn.streamcave.tv/models/louvard/preview.jpg");
@@ -48,8 +48,8 @@ class ModelFixtures extends Fixture
     private function modelFlowUp(ObjectManager $manager): void
     {
         $model = new Model();
-        $model->setUuid(Uuid::v5(Uuid::v6(), 'FlowUp'));
-        $model->setName('FlowUp');
+        $model->setUuid('flowup');
+        $model->setName('flowup');
         $model->setDescription('Ceci est le modèle FlowUp.');
         $model->setPrice(0);
         $model->setPreview("https://cdn.streamcave.tv/models/flowup/preview.jpg");
@@ -77,8 +77,8 @@ class ModelFixtures extends Fixture
     private function modelHER6S(ObjectManager $manager): void
     {
         $model = new Model();
-        $model->setUuid(Uuid::v5(Uuid::v6(), 'HER6S'));
-        $model->setName('HER6S');
+        $model->setUuid('her6s');
+        $model->setName('her6s');
         $model->setDescription('Ceci est le modèle HER6S.');
         $model->setPrice(0);
         $model->setPreview("https://cdn.streamcave.tv/models/her6s/preview.jpg");
@@ -106,11 +106,11 @@ class ModelFixtures extends Fixture
     private function modelRoadToLan(ObjectManager $manager): void
     {
         $model = new Model();
-        $model->setUuid(Uuid::v5(Uuid::v6(), 'RoadToLan'));
-        $model->setName('RoadToLan');
-        $model->setDescription('Ceci est le modèle RoadToLan.');
+        $model->setUuid('yunktis');
+        $model->setName('yunktis');
+        $model->setDescription('Ceci est le modèle Yunktis.');
         $model->setPrice(0);
-        $model->setPreview("https://cdn.streamcave.tv/models/roadtolan/preview.jpg");
+        $model->setPreview("https://cdn.streamcave.tv/models/yunktis/preview.jpg");
         $model->setRules([
             "Maps" => [
                 "min" => 1,
@@ -126,7 +126,7 @@ class ModelFixtures extends Fixture
         ]);
         $model->setTags(["R6"]);
 
-        $this->addReference('model-roadtolan', $model);
+        $this->addReference('model-yunktis', $model);
 
         $manager->persist($model);
         $manager->flush();

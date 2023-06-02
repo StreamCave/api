@@ -90,7 +90,7 @@ class Oauth2TwitchController extends AbstractController {
                         $refreshToken,
                         new \DateTime('+1 day'),
                         '/',
-                        "localhost",
+                        $_ENV['COOKIE_DOMAIN'],
                         true,
                         true,
                         false,
@@ -104,38 +104,36 @@ class Oauth2TwitchController extends AbstractController {
                     $twitchUser['id'],
                     new \DateTime('+1 day'),
                     '/',
-                    "localhost",
+                    $_ENV['COOKIE_DOMAIN'],
                     true,
                     false,
                     false,
                     'none'
                 ));
-
             $response->headers->setCookie(
                 new Cookie(
                     't_access_token_sso',
                     $accessToken,
                     new \DateTime('+1 day'),
                     '/',
-                    "localhost",
+                    $_ENV['COOKIE_DOMAIN'],
                     true,
                     false,
                     false,
                     'none'
                 ));
-
-            $response->headers->setCookie(
-                new Cookie(
-                    't_refresh_token_sso',
-                    $refreshTokenTwitch,
-                    new \DateTime('+1 day'),
-                    '/',
-                    "localhost",
-                    true,
-                    false,
-                    false,
-                    'none'
-                ));
+                $response->headers->setCookie(
+                    new Cookie(
+                        't_refresh_token_sso',
+                        $refreshTokenTwitch,
+                        new \DateTime('+1 day'),
+                        '/',
+                        $_ENV['COOKIE_DOMAIN'],
+                        true,
+                        false,
+                        false,
+                        'none'
+                    ));
             return $response;
         }
         return new Response("Error");

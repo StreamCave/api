@@ -14,6 +14,7 @@ use App\Controller\EditCameraVisibleByTeam;
 use App\Repository\CameraGroupRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Uid\Uuid;
@@ -113,6 +114,10 @@ class CameraGroup
     #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $team = null;
 
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
+    private ?string $metadata = null;
+
     public function __construct()
     {
         $this->widgets = new ArrayCollection();
@@ -207,6 +212,18 @@ class CameraGroup
     public function setTeam(?string $team): self
     {
         $this->team = $team;
+
+        return $this;
+    }
+
+    public function getMetadata(): ?string
+    {
+        return $this->metadata;
+    }
+
+    public function setMetadata(?string $metadata): self
+    {
+        $this->metadata = $metadata;
 
         return $this;
     }

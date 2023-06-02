@@ -51,7 +51,7 @@ class AuthenticationSuccessListener
                 $user->getToken(),
                 new \DateTime('+1 day'),
                 '/',
-                $_ENV["DOMAIN"],
+                $_ENV['COOKIE_DOMAIN'],
                 true,
                 true,
                 false,

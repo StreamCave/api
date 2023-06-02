@@ -32,16 +32,16 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
 
     public function load(ObjectManager $manager): void
     {
-        $this->setCameraGroup($manager);
-        $this->setInfoGroup($manager);
-        $this->setMatchGroup($manager);
-        $this->setPollGroup($manager);
-        $this->setPopupGroup($manager);
-        $this->setTweetGroup($manager);
-        $this->setMapGroupBO3($manager);
-        $this->setPlanningGroup($manager);
-        $this->setTwitchPoll($manager);
-        $this->setTwitchPrediction($manager);
+//        $this->setCameraGroup($manager);
+//        $this->setInfoGroup($manager);
+//        $this->setMatchGroup($manager);
+//        $this->setPollGroup($manager);
+//        $this->setPopupGroup($manager);
+//        $this->setTweetGroup($manager);
+//        $this->setMapGroupBO3($manager);
+//        $this->setPlanningGroup($manager);
+//        $this->setTwitchPoll($manager);
+//        $this->setTwitchPrediction($manager);
     }
 
     private function setCameraGroup(ObjectManager $manager): void

@@ -25,7 +25,7 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $widget->setUuid(Uuid::v5(Uuid::v6(), 'TopBar'));
         $widget->setName('TopBar');
         $widget->setDescription('Barre en haut de page.');
-        $widget->setVisible(false);
+        $widget->setVisible(true);
         $widget->setInfoGroup($this->getReference('info-group-' . self::MODEL));
         $widget->setOverlay($this->getReference('overlay-' . self::MODEL));
 
@@ -40,16 +40,18 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $widget->setUuid(Uuid::v5(Uuid::v6(), 'Cameras'));
         $widget->setName('Cameras');
         $widget->setDescription('Cameras.');
-        $widget->setVisible(false);
+        $widget->setVisible(true);
         $widget->addCameraGroup($this->getReference('camera-group-' . self::MODEL .  '-' . $players[0]));
         $widget->addCameraGroup($this->getReference('camera-group-' . self::MODEL .  '-' . $players[1]));
+        $widget->addCameraGroup($this->getReference('camera-group-' . self::MODEL .  '-' . $players[2]));
+        $widget->addCameraGroup($this->getReference('camera-group-' . self::MODEL .  '-' . $players[3]));
+        $widget->addCameraGroup($this->getReference('camera-group-' . self::MODEL .  '-' . $players[4]));
         $widget->setOverlay($this->getReference('overlay-' . self::MODEL));
 
         $manager->persist($widget);
         $manager->flush();
     }
-
-
+  
     public function getDependencies(): array
     {
         return array(

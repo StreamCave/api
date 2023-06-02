@@ -64,9 +64,9 @@ class TwitchMiddlewareApi extends AbstractController {
         $data = $this->decodeData($request);
         $err = [];
         $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');
-        $accessToken = $data['access_token'] ?? array_push($err, 'access_token');
-        $refreshToken = $data['refresh_token'] ?? array_push($err, 'refresh_token');
-        $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
+        $accessToken = $request->cookies->get('t_access_token_sso') ?? array_push($err, 't_access_token_sso');
+        $refreshToken = $request->cookies->get('t_refresh_token_sso') ?? array_push($err, 't_refresh_token_sso');
+        $channelId = $request->cookies->get('broadcaster_id') ?? array_push($err, 'broadcaster_id');
         if (count($err) === 0) {
             $moderators = $this->twitchApiService->fetchModerators($accessToken, $refreshToken, $channelId);
             if (!$moderators) {
@@ -116,9 +116,9 @@ class TwitchMiddlewareApi extends AbstractController {
         $data = $this->decodeData($request);
         $err = [];
         $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');
-        $accessToken = $data['access_token'] ?? array_push($err, 'access_token');
-        $refreshToken = $data['refresh_token'] ?? array_push($err, 'refresh_token');
-        $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
+        $accessToken = $request->cookies->get('t_access_token_sso') ?? array_push($err, 't_access_token_sso');
+        $refreshToken = $request->cookies->get('t_refresh_token_sso') ?? array_push($err, 't_refresh_token_sso');
+        $channelId = $request->cookies->get('broadcaster_id') ?? array_push($err, 'broadcaster_id');
         if (count($err) === 0) {
             $moderators = $this->twitchApiService->fetchModerators($accessToken, $refreshToken, $channelId);
             if (!$moderators) {
@@ -170,9 +170,9 @@ class TwitchMiddlewareApi extends AbstractController {
         $data = $this->decodeData($request);
         $err = [];
         $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');
-        $accessToken = $data['access_token'] ?? array_push($err, 'access_token');
-        $refreshToken = $data['refresh_token'] ?? array_push($err, 'refresh_token');
-        $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
+        $accessToken = $request->cookies->get('t_access_token_sso') ?? array_push($err, 't_access_token_sso');
+        $refreshToken = $request->cookies->get('t_refresh_token_sso') ?? array_push($err, 't_refresh_token_sso');
+        $channelId = $request->cookies->get('broadcaster_id') ?? array_push($err, 'broadcaster_id');
         $title = $data['title'] ?? array_push($err, 'title');
         $choices = $data['choices'] ?? array_push($err, 'choices');
         $duration = $data['duration'] ?? array_push($err, 'duration');
@@ -280,9 +280,9 @@ class TwitchMiddlewareApi extends AbstractController {
         $data = $this->decodeData($request);
         $err = [];
         $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');
-        $accessToken = $data['access_token'] ?? array_push($err, 'access_token');
-        $refreshToken = $data['refresh_token'] ?? array_push($err, 'refresh_token');
-        $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
+        $accessToken = $request->cookies->get('t_access_token_sso') ?? array_push($err, 't_access_token_sso');
+        $refreshToken = $request->cookies->get('t_refresh_token_sso') ?? array_push($err, 't_refresh_token_sso');
+        $channelId = $request->cookies->get('broadcaster_id') ?? array_push($err, 'broadcaster_id');
         $overlayId = $data['overlay_id'] ?? array_push($err, 'overlay_id');
         if (count($err) == 0) {
             if (!$this->cantCallTwitch($channelId)) {
@@ -363,9 +363,9 @@ class TwitchMiddlewareApi extends AbstractController {
         $data = $this->decodeData($request);
         $err = [];
         $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');
-        $accessToken = $data['access_token'] ?? array_push($err, 'access_token');
-        $refreshToken = $data['refresh_token'] ?? array_push($err, 'refresh_token');
-        $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
+        $accessToken = $request->cookies->get('t_access_token_sso') ?? array_push($err, 't_access_token_sso');
+        $refreshToken = $request->cookies->get('t_refresh_token_sso') ?? array_push($err, 't_refresh_token_sso');
+        $channelId = $request->cookies->get('broadcaster_id') ?? array_push($err, 'broadcaster_id');
         $id = $data['id'] ?? array_push($err, 'id');
         $status = $data['status'] ?? 'TERMINATED';
         $overlayId = $data['overlay_id'] ?? array_push($err, 'overlay_id');
@@ -433,9 +433,9 @@ class TwitchMiddlewareApi extends AbstractController {
         $data = $this->decodeData($request);
         $err = [];
         $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');
-        $accessToken = $data['access_token'] ?? array_push($err, 'access_token');
-        $refreshToken = $data['refresh_token'] ?? array_push($err, 'refresh_token');
-        $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
+        $accessToken = $request->cookies->get('t_access_token_sso') ?? array_push($err, 't_access_token_sso');
+        $refreshToken = $request->cookies->get('t_refresh_token_sso') ?? array_push($err, 't_refresh_token_sso');
+        $channelId = $request->cookies->get('broadcaster_id') ?? array_push($err, 'broadcaster_id');
         if (count($err) == 0) {
             if (!$this->cantCallTwitch($channelId)) {
                 return new JsonResponse([
@@ -500,9 +500,9 @@ class TwitchMiddlewareApi extends AbstractController {
         $data = $this->decodeData($request);
         $err = [];
         $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');
-        $accessToken = $data['access_token'] ?? array_push($err, 'access_token');
-        $refreshToken = $data['refresh_token'] ?? array_push($err, 'refresh_token');
-        $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
+        $accessToken = $request->cookies->get('t_access_token_sso') ?? array_push($err, 't_access_token_sso');
+        $refreshToken = $request->cookies->get('t_refresh_token_sso') ?? array_push($err, 't_refresh_token_sso');
+        $channelId = $request->cookies->get('broadcaster_id') ?? array_push($err, 'broadcaster_id');
         $title = $data['title'] ?? array_push($err, 'title');
         $outcomes = $data['outcomes'] ?? array_push($err, 'outcomes');
         $predictionWindow = $data['predictionWindow'] ?? array_push($err, 'predictionWindow');
@@ -594,9 +594,9 @@ class TwitchMiddlewareApi extends AbstractController {
         $data = $this->decodeData($request);
         $err = [];
         $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');
-        $accessToken = $data['access_token'] ?? array_push($err, 'access_token');
-        $refreshToken = $data['refresh_token'] ?? array_push($err, 'refresh_token');
-        $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
+        $accessToken = $request->cookies->get('t_access_token_sso') ?? array_push($err, 't_access_token_sso');
+        $refreshToken = $request->cookies->get('t_refresh_token_sso') ?? array_push($err, 't_refresh_token_sso');
+        $channelId = $request->cookies->get('broadcaster_id') ?? array_push($err, 'broadcaster_id');
         if (count($err) == 0) {
             if (!$this->cantCallTwitch($channelId)) {
                 return new JsonResponse([
@@ -661,9 +661,9 @@ class TwitchMiddlewareApi extends AbstractController {
         $data = $this->decodeData($request);
         $err = [];
         $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');
-        $accessToken = $data['access_token'] ?? array_push($err, 'access_token');
-        $refreshToken = $data['refresh_token'] ?? array_push($err, 'refresh_token');
-        $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
+        $accessToken = $request->cookies->get('t_access_token_sso') ?? array_push($err, 't_access_token_sso');
+        $refreshToken = $request->cookies->get('t_refresh_token_sso') ?? array_push($err, 't_refresh_token_sso');
+        $channelId = $request->cookies->get('broadcaster_id') ?? array_push($err, 'broadcaster_id');
         $id = $data['id'] ?? array_push($err, 'id');
         $status = $data['status'] ?? array_push($err, 'status');
         $winningOutcomeId = $data['winningOutcomeId'] ?? null;
@@ -731,9 +731,9 @@ class TwitchMiddlewareApi extends AbstractController {
         $data = $this->decodeData($request);
         $err = [];
         $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');
-        $accessToken = $data['access_token'] ?? array_push($err, 'access_token');
-        $refreshToken = $data['refresh_token'] ?? array_push($err, 'refresh_token');
-        $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
+        $accessToken = $request->cookies->get('t_access_token_sso') ?? array_push($err, 't_access_token_sso');
+        $refreshToken = $request->cookies->get('t_refresh_token_sso') ?? array_push($err, 't_refresh_token_sso');
+        $channelId = $request->cookies->get('broadcaster_id') ?? array_push($err, 'broadcaster_id');
         if (count($err) == 0) {
             if (!$this->cantCallTwitch($channelId)) {
                 return new JsonResponse([
@@ -798,33 +798,34 @@ class TwitchMiddlewareApi extends AbstractController {
         $data = $this->decodeData($request);
         $err = [];
         $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');
-        $accessToken = $data['access_token'] ?? array_push($err, 'access_token');
-        $refreshToken = $data['refresh_token'] ?? array_push($err, 'refresh_token');
+        $accessToken = $request->cookies->get('t_access_token_sso') ?? array_push($err, 't_access_token_sso');
+        $refreshToken = $request->cookies->get('t_refresh_token_sso') ?? array_push($err, 't_refresh_token_sso');
+        $channelId = $request->cookies->get('broadcaster_id') ?? array_push($err, 'broadcaster_id');
         $sessionId = $data['session_id'] ?? array_push($err, 'session_id');
-        if($data['type'] === "poll" && $data['broadcaster_user_id']) {
+        if($data['type'] === "poll" && $channelId) {
             $type = [
-                'channel.poll.begin' => ['version' => 1, 'condition' => ['broadcaster_user_id' => $data['broadcaster_user_id']]],
-                'channel.poll.progress' => ['version' => 1, 'condition' => ['broadcaster_user_id' => $data['broadcaster_user_id']]],
-                'channel.poll.end' => ['version' => 1, 'condition' => ['broadcaster_user_id' => $data['broadcaster_user_id']]],
+                'channel.poll.begin' => ['version' => 1, 'condition' => ['broadcaster_user_id' => $channelId]],
+                'channel.poll.progress' => ['version' => 1, 'condition' => ['broadcaster_user_id' => $channelId]],
+                'channel.poll.end' => ['version' => 1, 'condition' => ['broadcaster_user_id' => $channelId]],
             ];
-        } else if($data['type'] === "prediction" && $data['broadcaster_user_id']) {
+        } else if($data['type'] === "prediction" && $channelId) {
             $type = [
-                'channel.prediction.begin' => ['version' => 1, 'condition' => ['broadcaster_user_id' => $data['broadcaster_user_id']]],
-                'channel.prediction.progress' => ['version' => 1, 'condition' => ['broadcaster_user_id' => $data['broadcaster_user_id']]],
-                'channel.prediction.end' => ['version' => 1, 'condition' => ['broadcaster_user_id' => $data['broadcaster_user_id']]],
+                'channel.prediction.begin' => ['version' => 1, 'condition' => ['broadcaster_user_id' => $channelId]],
+                'channel.prediction.progress' => ['version' => 1, 'condition' => ['broadcaster_user_id' => $channelId]],
+                'channel.prediction.end' => ['version' => 1, 'condition' => ['broadcaster_user_id' => $channelId]],
             ];
         } else {
             array_push($err, 'type');
         }
         $transport = $data['transport'] ?? array_push($err, 'transport');
         if (count($err) == 0) {
-            if (!$this->cantCallTwitch($data['broadcaster_user_id'])) {
+            if (!$this->cantCallTwitch($channelId)) {
                 return new JsonResponse([
                     'statusCode' => 403,
                     'message' => 'Your channel do not have the rights'
                 ], 403);
             }
-            $response = $this->twitchApiService->createEventSubSubscription($accessToken, $refreshToken, $sessionId, $data['broadcaster_user_id'], $type, $transport);
+            $response = $this->twitchApiService->createEventSubSubscription($accessToken, $refreshToken, $sessionId, $channelId, $type, $transport);
             if (!$response) {
                 return new JsonResponse([
                     'statusCode' => 404,

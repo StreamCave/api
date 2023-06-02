@@ -90,9 +90,9 @@ class LogoutController extends AbstractController
                             'delete',
                             new \DateTime('now - 1 hour'),
                             '/',
-                            $_ENV["DOMAIN"],
+                            $_ENV["COOKIE_DOMAIN"],
                             true,
-                            false,
+                            true,
                             false,
                             'none'
                         ));

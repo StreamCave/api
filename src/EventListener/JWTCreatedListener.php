@@ -42,6 +42,7 @@ class JWTCreatedListener {
         $payload['uuid'] = $user->getUuid();
         $payload['userId'] = $user->getId();
         $payload['ssoLogin'] = $user->getSsoLogin();
+        $payload['twitchId'] = $user->getTwitchId();
         $payload['avatar'] = $user->getAvatar();
         $payload['uuid'] = $user->getUuid();
         $payload['exp'] = $expiration->getTimestamp();

@@ -16,14 +16,7 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
     public function load(ObjectManager $manager): void
     {
         $this->setTopBar($manager);
-        $this->setBottomBar($manager);
         $this->setCameras($manager);
-        $this->setMatch($manager);
-        $this->setPoll($manager);
-        $this->setPopup($manager);
-        $this->setTweets($manager);
-        $this->setMaps($manager);
-        $this->setPlanning($manager);
     }
 
     private function setTopBar(ObjectManager $manager): void
@@ -34,78 +27,6 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $widget->setDescription('Barre en haut de page.');
         $widget->setVisible(false);
         $widget->setInfoGroup($this->getReference('info-group-' . self::MODEL));
-        $widget->addMatchGroup($this->getReference('match-group-' . self::MODEL));
-        $widget->setOverlay($this->getReference('overlay-' . self::MODEL));
-
-        $manager->persist($widget);
-        $manager->flush();
-    }
-
-    private function setBottomBar(ObjectManager $manager): void
-    {
-        $widget = new Widget();
-        $widget->setUuid(Uuid::v5(Uuid::v6(), 'BottomBar'));
-        $widget->setName('BottomBar');
-        $widget->setDescription('Barre en bas de page.');
-        $widget->setVisible(false);
-        $widget->setInfoGroup($this->getReference('info-group-' . self::MODEL));
-        $widget->addMatchGroup($this->getReference('match-group-' . self::MODEL));
-        $widget->setOverlay($this->getReference('overlay-' . self::MODEL));
-
-        $manager->persist($widget);
-        $manager->flush();
-    }
-
-    private function setMatch(ObjectManager $manager): void
-    {
-        $widget = new Widget();
-        $widget->setUuid(Uuid::v5(Uuid::v6(), 'Match'));
-        $widget->setName('Match');
-        $widget->setDescription('Match.');
-        $widget->setVisible(false);
-        $widget->addMatchGroup($this->getReference('match-group-' . self::MODEL));
-        $widget->setOverlay($this->getReference('overlay-' . self::MODEL));
-
-        $manager->persist($widget);
-        $manager->flush();
-    }
-
-    private function setPoll(ObjectManager $manager): void
-    {
-        $widget = new Widget();
-        $widget->setUuid(Uuid::v5(Uuid::v6(), 'Poll'));
-        $widget->setName('Poll');
-        $widget->setDescription('Sondage.');
-        $widget->setVisible(false);
-        $widget->setPollGroup($this->getReference('poll-group-' . self::MODEL));
-        $widget->setOverlay($this->getReference('overlay-' . self::MODEL));
-
-        $manager->persist($widget);
-        $manager->flush();
-    }
-
-    private function setPopup(ObjectManager $manager): void
-    {
-        $widget = new Widget();
-        $widget->setUuid(Uuid::v5(Uuid::v6(), 'Popup'));
-        $widget->setName('Popup');
-        $widget->setDescription('Popup.');
-        $widget->setVisible(false);
-        $widget->setPopupGroup($this->getReference('popup-group-' . self::MODEL));
-        $widget->setOverlay($this->getReference('overlay-' . self::MODEL));
-
-        $manager->persist($widget);
-        $manager->flush();
-    }
-
-    private function setTweets(ObjectManager $manager): void
-    {
-        $widget = new Widget();
-        $widget->setUuid(Uuid::v5(Uuid::v6(), 'Tweets'));
-        $widget->setName('Tweets');
-        $widget->setDescription('Tweets.');
-        $widget->setVisible(false);
-        $widget->setTweetGroup($this->getReference('tweet-group-' . self::MODEL));
         $widget->setOverlay($this->getReference('overlay-' . self::MODEL));
 
         $manager->persist($widget);

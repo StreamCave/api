@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DataFixtures\models\flowup;
+namespace App\DataFixtures\models\streamcave;
 
 use App\DataFixtures\MapsFixtures;
 use App\DataFixtures\OverlayFixtures;
@@ -22,7 +22,7 @@ use Symfony\Component\Uid\Uuid;
 
 class GroupFixtures extends Fixture implements DependentFixtureInterface
 {
-    private const MODEL = 'flowup';
+    private const MODEL = 'streamcave';
 
     public function __construct(LibMapRepository $libMapRepository)
     {

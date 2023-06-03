@@ -12,22 +12,22 @@ class OverlayFixtures extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
-//        $this->setupSixquatre($manager);
+        $this->setupStreamCave($manager);
         $this->setupFlowUp($manager);
         $this->setupHER6S($manager);
         $this->setupYunktis($manager);
     }
 
-    private function setupSixquatre(ObjectManager $manager): void
+    private function setupStreamCave(ObjectManager $manager): void
     {
         $overlay = new Overlay();
-        $overlay->setUuid("sixquatre");
-        $overlay->setName('Sixquatre');
-        $overlay->setModel($this->getReference('model-her6s'));
+        $overlay->setUuid("streamcave");
+        $overlay->setName('StreamCave');
+        $overlay->setModel($this->getReference('model-streamcave'));
         $overlay->setUserOwner($this->getReference('default-admin-user-2'));
         $overlay->addUserAccess($this->getReference('default-admin-user'));
 
-        $this->addReference('overlay-sixquatre', $overlay);
+        $this->addReference('overlay-streamcave', $overlay);
 
         $manager->persist($overlay);
         $manager->flush();

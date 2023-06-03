@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DataFixtures\models\flowup;
+namespace App\DataFixtures\models\streamcave;
 
 use App\DataFixtures\OverlayFixtures;
 use App\Entity\Widget;
@@ -11,7 +11,7 @@ use Symfony\Component\Uid\Uuid;
 
 class WidgetFixtures extends Fixture implements DependentFixtureInterface
 {
-    private const MODEL = 'flowup';
+    private const MODEL = 'streamcave';
 
     public function load(ObjectManager $manager): void
     {

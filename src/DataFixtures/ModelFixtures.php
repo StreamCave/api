@@ -11,10 +11,39 @@ class ModelFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
+        $this->modelStreamCave($manager);
         $this->modelLouvard($manager);
         $this->modelFlowUp($manager);
         $this->modelHER6S($manager);
         $this->modelRoadToLan($manager);
+    }
+
+    private function modelStreamCave(ObjectManager $manager) {
+        $model = new Model();
+        $model->setUuid("streamcave");
+        $model->setName('streamcave');
+        $model->setDescription('Ceci est le modèle StreamCave.');
+        $model->setPrice(0);
+        $model->setPreview("https://cdn.streamcave.tv/models/streamcave/preview.jpg");
+        $model->setRules([
+            "Maps" => [
+                "min" => 1,
+                "max" => 9,
+                "inTopbar" => true,
+                "inBottombar" => true,
+            ],
+            "Cameras" => [
+                "numberOfGroup" => 2,
+                "maxPerGroup" => 5,
+                "minPerGroup" => 1,
+            ]
+        ]);
+        $model->setTags(["R6", "RocketLeague", "CSGO"]);
+
+        $this->addReference('model-streamcave', $model);
+
+        $manager->persist($model);
+        $manager->flush();
     }
 
     private function modelLouvard(ObjectManager $manager) {

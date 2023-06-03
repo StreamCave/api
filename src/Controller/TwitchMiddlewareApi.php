@@ -217,7 +217,6 @@ class TwitchMiddlewareApi extends AbstractController {
                     $em->flush();
                 } else {
                     // Créer un twitchGroup
-                    $twitchGroup = $twitchGroup[0];
                     $twitchGroup = new TwitchGroup();
                     $twitchGroup->setTwitchId($pollId);
                     $twitchGroup->setVisible(true);
@@ -535,7 +534,6 @@ class TwitchMiddlewareApi extends AbstractController {
                 $em->flush();
             } else {
                 // Créer un twitchGroup
-                $twitchGroup = $twitchGroup[0];
                 $twitchGroup = new TwitchGroup();
                 $twitchGroup->setTwitchId($predictionId);
                 $twitchGroup->setVisible(true);
@@ -590,7 +588,7 @@ class TwitchMiddlewareApi extends AbstractController {
      */
     #[Route('/prediction/get', name: 'twitch_prediction_get', methods: ['POST'])]
     public function getPrediction(Request $request): JsonResponse
-    {
+    {   
         $data = $this->decodeData($request);
         $err = [];
         $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');

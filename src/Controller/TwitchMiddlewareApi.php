@@ -317,7 +317,8 @@ class TwitchMiddlewareApi extends AbstractController {
                         'statusCode' => 200,
                         'access_renew' => $response['refresh'] != null ? true : false,
                         'response' => $response['data'],
-                        'visible' => $visible
+                        'visible' => $visible,
+                        'overlay_id' => $overlayId
                     ],
                     200,
                 );
@@ -327,6 +328,7 @@ class TwitchMiddlewareApi extends AbstractController {
                             'statusCode' => 200,
                             'access_renew' => $response['refresh'] != null ? true : false,
                             'response' => $response['data'],
+                            'overlay_id' => $overlayId
                         ],
                         200,
                     );
@@ -599,6 +601,7 @@ class TwitchMiddlewareApi extends AbstractController {
         $accessToken = $request->cookies->get('t_access_token_sso') ?? array_push($err, 't_access_token_sso');
         $refreshToken = $request->cookies->get('t_refresh_token_sso') ?? array_push($err, 't_refresh_token_sso');
         $channelId = $request->cookies->get('broadcaster_id') ?? array_push($err, 'broadcaster_id');
+        $overlayId = $data['overlay_id'] ?? array_push($err, 'overlay_id');
         if (count($err) == 0) {
             if (!$this->cantCallTwitch($channelId)) {
                 return new JsonResponse([
@@ -625,6 +628,7 @@ class TwitchMiddlewareApi extends AbstractController {
                     'statusCode' => 200,
                     'access_renew' => $response['refresh'] != null ? true : false,
                     'response' => $response['data'],
+                    'overlay_id' => $overlayId
                 ],
                 200,
             );

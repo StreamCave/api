@@ -49,8 +49,12 @@ class TwitchMiddlewareApi extends AbstractController {
     private function cantCallTwitch($channelId): bool
     {
         $userDB = $this->userRepository->findOneBy(['twitchId' => $channelId]);
-        if ($userDB->getTwitchStatus() !== null && $userDB->getTwitchStatus() !== '') {
-            return true;
+        if($userDB !== null) {
+            if ($userDB->getTwitchStatus() !== null && $userDB->getTwitchStatus() !== '') {
+                return true;
+            } else {
+                return false;
+            }
         } else {
             return false;
         }

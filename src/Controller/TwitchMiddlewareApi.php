@@ -186,7 +186,7 @@ class TwitchMiddlewareApi extends AbstractController {
         $channelPointsVotingEnabled = $data['channel_points_voting_enabled'] ?? array_push($err, 'channel_points_voting_enabled');
         $channelPointsVotingEnabled = $channelPointsVotingEnabled === true ? true : false;
         $overlayId = $data['overlay_id'] ?? array_push($err, 'overlay_id');
-        $widgetId = $data['widget_id'] ?? array_push($err, 'widget_id');
+        $widgetUuid = $data['widget_uuid'] ?? array_push($err, 'widget_uuid');
         $channelPointsPerVote = 1;
         $pollId = null;
         if($channelPointsVotingEnabled === true) {
@@ -213,7 +213,7 @@ class TwitchMiddlewareApi extends AbstractController {
                 $pollId = $response['data']['id'];
             }
             // Vérifie si TwitchGroup en fonction de overlayId existe, on édite le twitchId et le visible
-            $widget = $this->widgetRepository->findOneBy(['uuid' => $widgetId]);
+            $widget = $this->widgetRepository->findOneBy(['uuid' => $widgetUuid]);
             if($pollId != null) {
                 if ($widget != null) {
                     $widget = $widget[0];
@@ -504,6 +504,7 @@ class TwitchMiddlewareApi extends AbstractController {
         $outcomes = $data['outcomes'] ?? array_push($err, 'outcomes');
         $predictionWindow = $data['predictionWindow'] ?? array_push($err, 'predictionWindow');
         $overlayId = $data['overlay_id'] ?? array_push($err, 'overlay_id');
+        $widgetUuid = $data['widget_uuid'] ?? array_push($err, 'widget_uuid');
         if (count($err) == 0) {
             if (!$this->cantCallTwitch($channelId)) {
                 return new JsonResponse([
@@ -521,24 +522,12 @@ class TwitchMiddlewareApi extends AbstractController {
             $response = $this->twitchApiService->createPrediction($accessToken, $refreshToken, $channelId, $title, $outcomes, $predictionWindow);
             $predictionId = $response['data'][0]['id'];
             // Vérifie si TwitchGroup en fonction de overlayId existe, on édite le twitchId et le visible
-            $twitchGroup = $this->twitchGroupRepository->findBy(['overlayId' => $overlayId]);
-            if ($twitchGroup != null) {
-                $twitchGroup = $twitchGroup[0];
-                $twitchGroup->setTwitchId($predictionId);
-                $twitchGroup->setVisible(true);
-                $twitchGroup->setType('prediction');
+            $widget = $this->widgetRepository->findOneBy(['uuid' => $widgetUuid]);
+            if ($widget != null) {
+                $widget = $widget[0];
+                $widget->setVisible(true);
                 $em = $this->doctrine->getManager();
-                $em->persist($twitchGroup);
-                $em->flush();
-            } else {
-                // Créer un twitchGroup
-                $twitchGroup = new TwitchGroup();
-                $twitchGroup->setTwitchId($predictionId);
-                $twitchGroup->setVisible(true);
-                $twitchGroup->setOverlayId($overlayId);
-                $twitchGroup->setType('prediction');
-                $em = $this->doctrine->getManager();
-                $em->persist($twitchGroup);
+                $em->persist($widget);
                 $em->flush();
             }
             if (!$response) {

@@ -10,6 +10,7 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Controller\DeleteTwitchGroup;
+use App\Controller\EditTwitchGroup;
 use App\Repository\TwitchGroupRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -47,10 +48,11 @@ use Symfony\Component\Uid\Uuid;
         denormalizationContext: ['groups' => ['twitch_group:write']],
     ),
     new Put(
-        uriTemplate: '/twitch-groups/{uuid}',
-        uriVariables: "uuid",
+        uriTemplate: '/twitch-groups/{twitchId}/{overlayId}',
+        defaults: ['_api_receive' => false],
         status: 200,
         schemes: ['https'],
+        controller: EditTwitchGroup::class,
         openapiContext: ['summary' => 'Modifier un groupe de Twitch'],
         normalizationContext: ['groups' => ['twitch_group:read']],
         denormalizationContext: ['groups' => ['twitch_group:write']],

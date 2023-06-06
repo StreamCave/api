@@ -165,6 +165,7 @@ class Widget
     private ?Brackets $bracket = null;
 
     #[ORM\ManyToOne(inversedBy: 'widgets')]
+    #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
     private ?TwitchGroup $twitchGroup = null;
 
     public function __construct()

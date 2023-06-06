@@ -3,8 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\TwitchGroup;
+use App\Entity\Widget;
 use App\Repository\TwitchGroupRepository;
 use App\Repository\UserRepository;
+use App\Repository\WidgetRepository;
 use App\Service\TwitchApiService;
 use Doctrine\Persistence\ManagerRegistry;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
@@ -18,12 +20,13 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/middleware/twitch', methods: ['POST'])]
 class TwitchMiddlewareApi extends AbstractController {
 
-    public function __construct(TwitchApiService $twitchApiService, JWTEncoderInterface $jwtEncoder, UserRepository $userRepository, TwitchGroupRepository $twitchGroupRepository, ManagerRegistry $doctrine)
+    public function __construct(TwitchApiService $twitchApiService, JWTEncoderInterface $jwtEncoder, UserRepository $userRepository, TwitchGroupRepository $twitchGroupRepository, WidgetRepository $widgetRepository, ManagerRegistry $doctrine)
     {
         $this->twitchApiService = $twitchApiService;
         $this->jwtEncoder = $jwtEncoder;
         $this->userRepository = $userRepository;
         $this->twitchGroupRepository = $twitchGroupRepository;
+        $this->widgetRepository = $widgetRepository;
         $this->doctrine = $doctrine;
     }
 
@@ -183,6 +186,7 @@ class TwitchMiddlewareApi extends AbstractController {
         $channelPointsVotingEnabled = $data['channel_points_voting_enabled'] ?? array_push($err, 'channel_points_voting_enabled');
         $channelPointsVotingEnabled = $channelPointsVotingEnabled === true ? true : false;
         $overlayId = $data['overlay_id'] ?? array_push($err, 'overlay_id');
+        $widgetId = $data['widget_id'] ?? array_push($err, 'widget_id');
         $channelPointsPerVote = 1;
         $pollId = null;
         if($channelPointsVotingEnabled === true) {
@@ -209,25 +213,13 @@ class TwitchMiddlewareApi extends AbstractController {
                 $pollId = $response['data']['id'];
             }
             // Vérifie si TwitchGroup en fonction de overlayId existe, on édite le twitchId et le visible
-            $twitchGroup = $this->twitchGroupRepository->findBy(['overlayId' => $overlayId]);
+            $widget = $this->widgetRepository->findOneBy(['uuid' => $widgetId]);
             if($pollId != null) {
-                if ($twitchGroup != null) {
-                    $twitchGroup = $twitchGroup[0];
-                    $twitchGroup->setTwitchId($pollId);
-                    $twitchGroup->setVisible(true);
-                    $twitchGroup->setType('poll');
+                if ($widget != null) {
+                    $widget = $widget[0];
+                    $widget->setVisible(true);
                     $em = $this->doctrine->getManager();
-                    $em->persist($twitchGroup);
-                    $em->flush();
-                } else {
-                    // Créer un twitchGroup
-                    $twitchGroup = new TwitchGroup();
-                    $twitchGroup->setTwitchId($pollId);
-                    $twitchGroup->setVisible(true);
-                    $twitchGroup->setOverlayId($overlayId);
-                    $twitchGroup->setType('poll');
-                    $em = $this->doctrine->getManager();
-                    $em->persist($twitchGroup);
+                    $em->persist($widget);
                     $em->flush();
                 }
                 $finalResponse = new JsonResponse(

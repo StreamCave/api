@@ -216,7 +216,7 @@ class TwitchMiddlewareApi extends AbstractController {
             $widget = $this->widgetRepository->findOneBy(['uuid' => $widgetUuid]);
             if($pollId != null) {
                 if ($widget != null) {
-                    $widget = $widget[0];
+                    $widget = $widget;
                     $widget->setVisible(true);
                     $em = $this->doctrine->getManager();
                     $em->persist($widget);
@@ -524,7 +524,7 @@ class TwitchMiddlewareApi extends AbstractController {
             // Vérifie si TwitchGroup en fonction de overlayId existe, on édite le twitchId et le visible
             $widget = $this->widgetRepository->findOneBy(['uuid' => $widgetUuid]);
             if ($widget != null) {
-                $widget = $widget[0];
+                $widget = $widget;
                 $widget->setVisible(true);
                 $em = $this->doctrine->getManager();
                 $em->persist($widget);

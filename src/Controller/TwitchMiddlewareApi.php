@@ -304,7 +304,7 @@ class TwitchMiddlewareApi extends AbstractController {
                 $finalResponse = new JsonResponse(
                     [
                         'statusCode' => 200,
-                        'access_renew' => $response['refresh'] != null ? true : false,
+                        'access_renew' => $response['refresh'] != null,
                         'response' => $response['data'],
                         'visible' => $visible,
                         'overlay_id' => $overlayId
@@ -315,7 +315,7 @@ class TwitchMiddlewareApi extends AbstractController {
                     $finalResponse = new JsonResponse(
                         [
                             'statusCode' => 200,
-                            'access_renew' => $response['refresh'] != null ? true : false,
+                            'access_renew' => $response['refresh'] != null,
                             'response' => $response['data'],
                             'overlay_id' => $overlayId
                         ],

@@ -303,7 +303,7 @@ class TwitchMiddlewareApi extends AbstractController {
                     ], 403);
                 }
             }
-            $response = $this->twitchApiService->getPoll($accessToken, $refreshToken, $channelId);
+            $response = $this->twitchApiService->getPoll($accessToken, $channelId);
             if (!$response) {
                 return new JsonResponse([
                     'statusCode' => 404,

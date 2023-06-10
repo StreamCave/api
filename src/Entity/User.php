@@ -150,6 +150,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:read', 'user:write','overlay:read'])]
     private ?int $twitchExpiresIn = null;
 
+    // Affilié ou non
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $twitchStatus = null;
 

@@ -2,8 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\TwitchGroup;
-use App\Entity\Widget;
 use App\Repository\TwitchGroupRepository;
 use App\Repository\UserRepository;
 use App\Repository\WidgetRepository;
@@ -12,7 +10,6 @@ use Doctrine\Persistence\ManagerRegistry;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
@@ -30,25 +27,22 @@ class TwitchMiddlewareApi extends AbstractController {
         $this->doctrine = $doctrine;
     }
 
+    /**
+     * @param Request $request
+     * @return mixed
+     *
+     * Décode les données envoyées par le front
+     */
     private function decodeData(Request $request) {
         return json_decode($request->getContent(), true);
     }
 
-    private function getJwt(Request $request) {
-        return str_replace('Bearer ', '', $request->headers->get('Authorization'));
-    }
-
-    private function translateJwt(Request $request)
-    {
-        try {
-            $decodedToken = $this->jwtEncoder->decode(str_replace('Bearer ', '', $request->headers->get('Authorization')));
-            return $decodedToken;
-            // Faites quelque chose avec le jeton décodé
-        } catch (\Exception $e) {
-            // Gérer les erreurs de décodage, par exemple un jeton invalide
-        }
-    }
-
+    /**
+     * @param $channelId
+     * @return bool
+     *
+     * Vérifie si l'utilisateur a le bon status pour appeler l'API Twitch (affilié minimum)
+     */
     private function cantCallTwitch($channelId): bool
     {
         $userDB = $this->userRepository->findOneBy(['twitchId' => $channelId]);
@@ -60,109 +54,6 @@ class TwitchMiddlewareApi extends AbstractController {
             }
         } else {
             return false;
-        }
-    }
-
-    // INFO: Get channel info si t'es streamer OK
-    // INFO: Get channel info si t'es pas streamer WAIT
-    #[Route('/channel', name: 'twitch_channel', methods: ['POST'])]
-    public function getChannel(Request $request): JsonResponse
-    {
-        $data = $this->decodeData($request);
-        $err = [];
-        $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');
-        $accessToken = $request->cookies->get('t_access_token_sso') ?? array_push($err, 't_access_token_sso');
-        $refreshToken = $request->cookies->get('t_refresh_token_sso') ?? array_push($err, 't_refresh_token_sso');
-        $channelId = $request->cookies->get('broadcaster_id') ?? array_push($err, 'broadcaster_id');
-        if (count($err) === 0) {
-            $moderators = $this->twitchApiService->fetchModerators($accessToken, $refreshToken, $channelId);
-            if (!$moderators) {
-                return new JsonResponse([
-                    'statusCode' => 403,
-                    'message' => 'You are not a moderator of this channel'
-                ], 403);
-            }
-            $channel = $this->twitchApiService->fetchChannel($accessToken, $refreshToken, $channelId);
-            $finalResponse = new JsonResponse(
-                [
-                    'statusCode' => 200,
-                    'access_renew' => $channel['refresh'] != null ? true : false,
-                    'channel' => $channel['data'],
-                ],
-                200,
-            );
-            if ($channel['refresh'] != null) {
-                $finalResponse->headers->setCookie(
-                    new Cookie(
-                        't_access_token_sso',
-                        $channel['refresh'],
-                        new \DateTime('+1 day'),
-                        '/',
-                        $_ENV['COOKIE_DOMAIN'],
-                        true,
-                        true,
-                        false,
-                        'none'
-                    ));
-            }
-            return $finalResponse;
-        } else {
-            return new JsonResponse([
-                'statusCode' => 400,
-                'message' => 'Missing or invalid parameters',
-                'missing_parameters' => $err
-            ], 400);
-        }
-    }
-
-    // INFO: Get channel moderators si t'es streamer OK
-    // INFO: Get channel moderators si t'es pas streamer OK
-    #[Route('/moderators', name: 'twitch_moderators', methods: ['POST'])]
-    public function getModerators(Request $request): JsonResponse
-    {
-        $data = $this->decodeData($request);
-        $err = [];
-        $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');
-        $accessToken = $request->cookies->get('t_access_token_sso') ?? array_push($err, 't_access_token_sso');
-        $refreshToken = $request->cookies->get('t_refresh_token_sso') ?? array_push($err, 't_refresh_token_sso');
-        $channelId = $request->cookies->get('broadcaster_id') ?? array_push($err, 'broadcaster_id');
-        if (count($err) === 0) {
-            $moderators = $this->twitchApiService->fetchModerators($accessToken, $refreshToken, $channelId);
-            if (!$moderators) {
-                return new JsonResponse([
-                    'statusCode' => 403,
-                    'message' => 'You are not a moderator of this channel'
-                ], 403);
-            }
-            $finalResponse = new JsonResponse(
-                [
-                    'statusCode' => 200,
-                    'access_renew' => $moderators['refresh'] != null ? true : false,
-                    'moderators' => $moderators['data'],
-                ],
-                200,
-            );
-            if ($moderators['refresh'] != null) {
-                $finalResponse->headers->setCookie(
-                    new Cookie(
-                        't_access_token_sso',
-                        $moderators['refresh'],
-                        new \DateTime('+1 day'),
-                        '/',
-                        $_ENV['COOKIE_DOMAIN'],
-                        true,
-                        true,
-                        false,
-                        'none'
-                    ));
-            }
-            return $finalResponse;
-        } else {
-            return new JsonResponse([
-                'statusCode' => 400,
-                'message' => 'Missing or invalid parameters',
-                'missing_parameters' => $err
-            ], 400);
         }
     }
 
@@ -179,7 +70,8 @@ class TwitchMiddlewareApi extends AbstractController {
         $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');
         $accessToken = $request->cookies->get('t_access_token_sso') ?? array_push($err, 't_access_token_sso');
         $refreshToken = $request->cookies->get('t_refresh_token_sso') ?? array_push($err, 't_refresh_token_sso');
-        $channelId = $request->cookies->get('broadcaster_id') ?? array_push($err, 'broadcaster_id');
+        $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
+        $broadcastId = $request->cookies->get('broadcaster_id') ?? array_push($err, 'broadcaster_id');
         $title = $data['title'] ?? array_push($err, 'title');
         $choices = $data['choices'] ?? array_push($err, 'choices');
         $duration = $data['duration'] ?? array_push($err, 'duration');
@@ -199,18 +91,30 @@ class TwitchMiddlewareApi extends AbstractController {
                     'message' => 'Your channel do not have the rights'
                 ], 403);
             }
-            $moderators = $this->twitchApiService->fetchModerators($accessToken, $refreshToken, $channelId);
-            if (!$moderators) {
+            // Vérifier la validité du token
+            $dataTokensBroadcast = $this->twitchApiService->validateToken($accessToken, $refreshToken);
+            $accessToken = $dataTokensBroadcast["access_token"];
+            if ($accessToken === null) {
                 return new JsonResponse([
-                    'statusCode' => 403,
-                    'message' => 'You are not a moderator of this channel'
-                ], 403);
+                    'statusCode' => 401,
+                    'message' => 'Invalid token'
+                ], 401);
             }
-            $response = $this->twitchApiService->createPoll($accessToken, $refreshToken, $channelId, $choices, $title, $duration, $channelPointsVotingEnabled, $channelPointsPerVote);
+            // Vérifier si broadcaster_id correspond à channel_id ou si channel_id est modérateur de broadcaster_id
+            if ($channelId != $broadcastId) {
+                $moderators = $this->twitchApiService->fetchModerators($accessToken, $channelId, $broadcastId);
+                if (!$moderators) {
+                    return new JsonResponse([
+                        'statusCode' => 403,
+                        'message' => 'You are not a moderator of this channel'
+                    ], 403);
+                }
+            }
+            $response = $this->twitchApiService->createPoll($accessToken, $channelId, $choices, $title, $duration, $channelPointsVotingEnabled, $channelPointsPerVote);
             if($response == null) {
                 $pollId = null;
             } else {
-                $pollId = $response['data']['id'];
+                $pollId = $response['id'];
             }
             // Vérifie si TwitchGroup en fonction de overlayId existe, on édite le twitchId et le visible
             $widget = $this->widgetRepository->findOneBy(['uuid' => $widgetUuid]);
@@ -225,16 +129,15 @@ class TwitchMiddlewareApi extends AbstractController {
                 $finalResponse = new JsonResponse(
                     [
                         'statusCode' => 200,
-                        'access_renew' => $response['refresh'] != null ? true : false,
-                        'data' => $response['data'],
+                        'data' => $response,
                     ],
                     200,
                 );
-                if ($response['refresh'] != null) {
+                if ($dataTokensBroadcast['access_renew_true'] !== null) {
                     $finalResponse->headers->setCookie(
                         new Cookie(
                             't_access_token_sso',
-                            $response['refresh'],
+                            $dataTokensBroadcast['access_token'],
                             new \DateTime('+1 day'),
                             '/',
                             $_ENV['COOKIE_DOMAIN'],
@@ -277,7 +180,8 @@ class TwitchMiddlewareApi extends AbstractController {
         $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');
         $accessToken = $request->cookies->get('t_access_token_sso') ?? array_push($err, 't_access_token_sso');
         $refreshToken = $request->cookies->get('t_refresh_token_sso') ?? array_push($err, 't_refresh_token_sso');
-        $channelId = $request->cookies->get('broadcaster_id') ?? array_push($err, 'broadcaster_id');
+        $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
+        $broadcastId = $request->cookies->get('broadcaster_id') ?? array_push($err, 'broadcaster_id');
         $overlayId = $data['overlay_id'] ?? array_push($err, 'overlay_id');
         if (count($err) == 0) {
             if (!$this->cantCallTwitch($channelId)) {
@@ -286,14 +190,26 @@ class TwitchMiddlewareApi extends AbstractController {
                     'message' => 'Your channel do not have the rights'
                 ], 403);
             }
-            $moderators = $this->twitchApiService->fetchModerators($accessToken, $refreshToken, $channelId);
-            if (!$moderators) {
+            // Vérifier la validité du token
+            $dataTokensBroadcast = $this->twitchApiService->validateToken($accessToken, $refreshToken);
+            $accessToken = $dataTokensBroadcast["access_token"];
+            if ($accessToken === null) {
                 return new JsonResponse([
-                    'statusCode' => 403,
-                    'message' => 'You are not a moderator of this channel'
-                ], 403);
+                    'statusCode' => 401,
+                    'message' => 'Invalid token'
+                ], 401);
             }
-            $response = $this->twitchApiService->getPoll($accessToken, $refreshToken, $channelId);
+            // Vérifier si broadcaster_id correspond à channel_id ou si channel_id est modérateur de broadcaster_id
+            if ($channelId != $broadcastId) {
+                $moderators = $this->twitchApiService->fetchModerators($accessToken, $channelId, $broadcastId);
+                if (!$moderators) {
+                    return new JsonResponse([
+                        'statusCode' => 403,
+                        'message' => 'You are not a moderator of this channel'
+                    ], 403);
+                }
+            }
+            $response = $this->twitchApiService->getPoll($accessToken, $channelId);
             if (!$response) {
                 return new JsonResponse([
                     'statusCode' => 404,
@@ -307,8 +223,7 @@ class TwitchMiddlewareApi extends AbstractController {
                 $finalResponse = new JsonResponse(
                     [
                         'statusCode' => 200,
-                        'access_renew' => $response['refresh'] != null ? true : false,
-                        'response' => $response['data'],
+                        'response' => $response,
                         'visible' => $visible,
                         'overlay_id' => $overlayId
                     ],
@@ -318,18 +233,17 @@ class TwitchMiddlewareApi extends AbstractController {
                     $finalResponse = new JsonResponse(
                         [
                             'statusCode' => 200,
-                            'access_renew' => $response['refresh'] != null ? true : false,
-                            'response' => $response['data'],
+                            'response' => $response,
                             'overlay_id' => $overlayId
                         ],
                         200,
                     );
                 }
-                if ($response['refresh'] != null) {
+                if ($dataTokensBroadcast['access_renew_true']) {
                     $finalResponse->headers->setCookie(
                         new Cookie(
                             't_access_token_sso',
-                            $response['refresh'],
+                            $dataTokensBroadcast['access_token'],
                             new \DateTime('+1 day'),
                             '/',
                             $_ENV['COOKIE_DOMAIN'],
@@ -362,7 +276,8 @@ class TwitchMiddlewareApi extends AbstractController {
         $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');
         $accessToken = $request->cookies->get('t_access_token_sso') ?? array_push($err, 't_access_token_sso');
         $refreshToken = $request->cookies->get('t_refresh_token_sso') ?? array_push($err, 't_refresh_token_sso');
-        $channelId = $request->cookies->get('broadcaster_id') ?? array_push($err, 'broadcaster_id');
+        $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
+        $broadcastId = $request->cookies->get('broadcaster_id') ?? array_push($err, 'broadcaster_id');
         $id = $data['id'] ?? array_push($err, 'id');
         $status = $data['status'] ?? 'TERMINATED';
         $overlayId = $data['overlay_id'] ?? array_push($err, 'overlay_id');
@@ -373,14 +288,26 @@ class TwitchMiddlewareApi extends AbstractController {
                     'message' => 'Your channel do not have the rights'
                 ], 403);
             }
-            $moderators = $this->twitchApiService->fetchModerators($accessToken, $refreshToken, $channelId);
-            if (!$moderators) {
+            // Vérifier la validité du token
+            $dataTokensBroadcast = $this->twitchApiService->validateToken($accessToken, $refreshToken);
+            $accessToken = $dataTokensBroadcast["access_token"];
+            if ($accessToken === null) {
                 return new JsonResponse([
-                    'statusCode' => 403,
-                    'message' => 'You are not a moderator of this channel'
-                ], 403);
+                    'statusCode' => 401,
+                    'message' => 'Invalid token'
+                ], 401);
             }
-            $response = $this->twitchApiService->endPoll($accessToken, $refreshToken, $channelId, $id, $status);
+            // Vérifier si broadcaster_id correspond à channel_id ou si channel_id est modérateur de broadcaster_id
+            if ($channelId != $broadcastId) {
+                $moderators = $this->twitchApiService->fetchModerators($accessToken, $channelId, $broadcastId);
+                if (!$moderators) {
+                    return new JsonResponse([
+                        'statusCode' => 403,
+                        'message' => 'You are not a moderator of this channel'
+                    ], 403);
+                }
+            }
+            $response = $this->twitchApiService->endPoll($accessToken, $channelId, $id, $status);
             if (!$response) {
                 return new JsonResponse([
                     'statusCode' => 404,
@@ -390,16 +317,15 @@ class TwitchMiddlewareApi extends AbstractController {
             $finalResponse = new JsonResponse(
                 [
                     'statusCode' => 200,
-                    'access_renew' => $response['refresh'] != null ? true : false,
-                    'response' => $response['data'],
+                    'response' => $response,
                 ],
                 200,
             );
-            if ($response['refresh'] != null) {
+            if ($dataTokensBroadcast['access_renew_true'] != null) {
                 $finalResponse->headers->setCookie(
                     new Cookie(
                         't_access_token_sso',
-                        $response['refresh'],
+                        $dataTokensBroadcast['access_token'],
                         new \DateTime('+1 day'),
                         '/',
                         $_ENV['COOKIE_DOMAIN'],
@@ -432,7 +358,8 @@ class TwitchMiddlewareApi extends AbstractController {
         $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');
         $accessToken = $request->cookies->get('t_access_token_sso') ?? array_push($err, 't_access_token_sso');
         $refreshToken = $request->cookies->get('t_refresh_token_sso') ?? array_push($err, 't_refresh_token_sso');
-        $channelId = $request->cookies->get('broadcaster_id') ?? array_push($err, 'broadcaster_id');
+        $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
+        $broadcastId = $request->cookies->get('broadcaster_id') ?? array_push($err, 'broadcaster_id');
         if (count($err) == 0) {
             if (!$this->cantCallTwitch($channelId)) {
                 return new JsonResponse([
@@ -440,14 +367,26 @@ class TwitchMiddlewareApi extends AbstractController {
                     'message' => 'Your channel do not have the rights'
                 ], 403);
             }
-            $moderators = $this->twitchApiService->fetchModerators($accessToken, $refreshToken, $channelId);
-            if (!$moderators) {
+            // Vérifier la validité du token
+            $dataTokensBroadcast = $this->twitchApiService->validateToken($accessToken, $refreshToken);
+            $accessToken = $dataTokensBroadcast["access_token"];
+            if ($accessToken === null) {
                 return new JsonResponse([
-                    'statusCode' => 403,
-                    'message' => 'You are not a moderator of this channel'
-                ], 403);
+                    'statusCode' => 401,
+                    'message' => 'Invalid token'
+                ], 401);
             }
-            $response = $this->twitchApiService->getPolls($accessToken, $refreshToken, $channelId);
+            // Vérifier si broadcaster_id correspond à channel_id ou si channel_id est modérateur de broadcaster_id
+            if ($channelId != $broadcastId) {
+                $moderators = $this->twitchApiService->fetchModerators($accessToken, $channelId, $broadcastId);
+                if (!$moderators) {
+                    return new JsonResponse([
+                        'statusCode' => 403,
+                        'message' => 'You are not a moderator of this channel'
+                    ], 403);
+                }
+            }
+            $response = $this->twitchApiService->getPolls($accessToken, $channelId);
             if (!$response) {
                 return new JsonResponse([
                     'statusCode' => 404,
@@ -457,16 +396,15 @@ class TwitchMiddlewareApi extends AbstractController {
             $finalResponse = new JsonResponse(
                 [
                     'statusCode' => 200,
-                    'access_renew' => $response['refresh'] != null ? true : false,
-                    'response' => $response['data'],
+                    'response' => $response,
                 ],
                 200,
             );
-            if ($response['refresh'] != null) {
+            if ($dataTokensBroadcast['access_renew_true'] != null) {
                 $finalResponse->headers->setCookie(
                     new Cookie(
                         't_access_token_sso',
-                        $response['refresh'],
+                        $dataTokensBroadcast['access_token'],
                         new \DateTime('+1 day'),
                         '/',
                         $_ENV['COOKIE_DOMAIN'],
@@ -499,7 +437,8 @@ class TwitchMiddlewareApi extends AbstractController {
         $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');
         $accessToken = $request->cookies->get('t_access_token_sso') ?? array_push($err, 't_access_token_sso');
         $refreshToken = $request->cookies->get('t_refresh_token_sso') ?? array_push($err, 't_refresh_token_sso');
-        $channelId = $request->cookies->get('broadcaster_id') ?? array_push($err, 'broadcaster_id');
+        $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
+        $broadcastId = $request->cookies->get('broadcaster_id') ?? array_push($err, 'broadcaster_id');
         $title = $data['title'] ?? array_push($err, 'title');
         $outcomes = $data['outcomes'] ?? array_push($err, 'outcomes');
         $predictionWindow = $data['predictionWindow'] ?? array_push($err, 'predictionWindow');
@@ -512,15 +451,27 @@ class TwitchMiddlewareApi extends AbstractController {
                     'message' => 'Your channel do not have the rights'
                 ], 403);
             }
-            $moderators = $this->twitchApiService->fetchModerators($accessToken, $refreshToken, $channelId);
-            if (!$moderators) {
+            // Vérifier la validité du token
+            $dataTokensBroadcast = $this->twitchApiService->validateToken($accessToken, $refreshToken);
+            $accessToken = $dataTokensBroadcast["access_token"];
+            if ($accessToken === null) {
                 return new JsonResponse([
-                    'statusCode' => 403,
-                    'message' => 'You are not a moderator of this channel'
-                ], 403);
+                    'statusCode' => 401,
+                    'message' => 'Invalid token'
+                ], 401);
             }
-            $response = $this->twitchApiService->createPrediction($accessToken, $refreshToken, $channelId, $title, $outcomes, $predictionWindow);
-            $predictionId = $response['data'][0]['id'];
+            // Vérifier si broadcaster_id correspond à channel_id ou si channel_id est modérateur de broadcaster_id
+            if ($channelId != $broadcastId) {
+                $moderators = $this->twitchApiService->fetchModerators($accessToken, $channelId, $broadcastId);
+                if (!$moderators) {
+                    return new JsonResponse([
+                        'statusCode' => 403,
+                        'message' => 'You are not a moderator of this channel'
+                    ], 403);
+                }
+            }
+            $response = $this->twitchApiService->createPrediction($accessToken, $channelId, $title, $outcomes, $predictionWindow);
+            $predictionId = $response['id'];
             // Vérifie si TwitchGroup en fonction de overlayId existe, on édite le twitchId et le visible
             $widget = $this->widgetRepository->findOneBy(['uuid' => $widgetUuid]);
             if ($widget != null) {
@@ -539,16 +490,15 @@ class TwitchMiddlewareApi extends AbstractController {
             $finalResponse = new JsonResponse(
                 [
                     'statusCode' => 200,
-                    'access_renew' => $response['refresh'] != null ? true : false,
-                    'response' => $response['data'],
+                    'response' => $response,
                 ],
                 200,
             );
-            if ($response['refresh'] != null) {
+            if ($dataTokensBroadcast['access_renew_true'] != null) {
                 $finalResponse->headers->setCookie(
                     new Cookie(
                         't_access_token_sso',
-                        $response['refresh'],
+                        $dataTokensBroadcast['access_token'],
                         new \DateTime('+1 day'),
                         '/',
                         $_ENV['COOKIE_DOMAIN'],
@@ -581,7 +531,8 @@ class TwitchMiddlewareApi extends AbstractController {
         $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');
         $accessToken = $request->cookies->get('t_access_token_sso') ?? array_push($err, 't_access_token_sso');
         $refreshToken = $request->cookies->get('t_refresh_token_sso') ?? array_push($err, 't_refresh_token_sso');
-        $channelId = $request->cookies->get('broadcaster_id') ?? array_push($err, 'broadcaster_id');
+        $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
+        $broadcastId = $request->cookies->get('broadcaster_id') ?? array_push($err, 'broadcaster_id');
         $overlayId = $data['overlay_id'] ?? array_push($err, 'overlay_id');
         if (count($err) == 0) {
             if (!$this->cantCallTwitch($channelId)) {
@@ -590,14 +541,26 @@ class TwitchMiddlewareApi extends AbstractController {
                     'message' => 'Your channel do not have the rights'
                 ], 403);
             }
-            $moderators = $this->twitchApiService->fetchModerators($accessToken, $refreshToken, $channelId);
-            if (!$moderators) {
+            // Vérifier la validité du token
+            $dataTokensBroadcast = $this->twitchApiService->validateToken($accessToken, $refreshToken);
+            $accessToken = $dataTokensBroadcast["access_token"];
+            if ($accessToken === null) {
                 return new JsonResponse([
-                    'statusCode' => 403,
-                    'message' => 'You are not a moderator of this channel'
-                ], 403);
+                    'statusCode' => 401,
+                    'message' => 'Invalid token'
+                ], 401);
             }
-            $response = $this->twitchApiService->getPrediction($accessToken, $refreshToken, $channelId);
+            // Vérifier si broadcaster_id correspond à channel_id ou si channel_id est modérateur de broadcaster_id
+            if ($channelId != $broadcastId) {
+                $moderators = $this->twitchApiService->fetchModerators($accessToken, $channelId, $broadcastId);
+                if (!$moderators) {
+                    return new JsonResponse([
+                        'statusCode' => 403,
+                        'message' => 'You are not a moderator of this channel'
+                    ], 403);
+                }
+            }
+            $response = $this->twitchApiService->getPrediction($accessToken, $channelId);
             if (!$response) {
                 return new JsonResponse([
                     'statusCode' => 404,
@@ -607,17 +570,16 @@ class TwitchMiddlewareApi extends AbstractController {
             $finalResponse = new JsonResponse(
                 [
                     'statusCode' => 200,
-                    'access_renew' => $response['refresh'] != null ? true : false,
-                    'response' => $response['data'],
+                    'response' => $response,
                     'overlay_id' => $overlayId
                 ],
                 200,
             );
-            if ($response['refresh'] != null) {
+            if ($dataTokensBroadcast['access_renew_true'] != null) {
                 $finalResponse->headers->setCookie(
                     new Cookie(
                         't_access_token_sso',
-                        $response['refresh'],
+                        $dataTokensBroadcast['access_token'],
                         new \DateTime('+1 day'),
                         '/',
                         $_ENV['COOKIE_DOMAIN'],
@@ -650,7 +612,8 @@ class TwitchMiddlewareApi extends AbstractController {
         $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');
         $accessToken = $request->cookies->get('t_access_token_sso') ?? array_push($err, 't_access_token_sso');
         $refreshToken = $request->cookies->get('t_refresh_token_sso') ?? array_push($err, 't_refresh_token_sso');
-        $channelId = $request->cookies->get('broadcaster_id') ?? array_push($err, 'broadcaster_id');
+        $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
+        $broadcastId = $request->cookies->get('broadcaster_id') ?? array_push($err, 'broadcaster_id');
         $id = $data['id'] ?? array_push($err, 'id');
         $status = $data['status'] ?? array_push($err, 'status');
         $winningOutcomeId = $data['winningOutcomeId'] ?? null;
@@ -661,14 +624,26 @@ class TwitchMiddlewareApi extends AbstractController {
                     'message' => 'Your channel do not have the rights'
                 ], 403);
             }
-            $moderators = $this->twitchApiService->fetchModerators($accessToken, $refreshToken, $channelId);
-            if (!$moderators) {
+            // Vérifier la validité du token
+            $dataTokensBroadcast = $this->twitchApiService->validateToken($accessToken, $refreshToken);
+            $accessToken = $dataTokensBroadcast["access_token"];
+            if ($accessToken === null) {
                 return new JsonResponse([
-                    'statusCode' => 403,
-                    'message' => 'You are not a moderator of this channel'
-                ], 403);
+                    'statusCode' => 401,
+                    'message' => 'Invalid token'
+                ], 401);
             }
-            $response = $this->twitchApiService->endPrediction($accessToken, $refreshToken, $channelId, $id, $status, $winningOutcomeId);
+            // Vérifier si broadcaster_id correspond à channel_id ou si channel_id est modérateur de broadcaster_id
+            if ($channelId != $broadcastId) {
+                $moderators = $this->twitchApiService->fetchModerators($accessToken, $channelId, $broadcastId);
+                if (!$moderators) {
+                    return new JsonResponse([
+                        'statusCode' => 403,
+                        'message' => 'You are not a moderator of this channel'
+                    ], 403);
+                }
+            }
+            $response = $this->twitchApiService->endPrediction($accessToken, $channelId, $id, $status, $winningOutcomeId);
             if (!$response) {
                 return new JsonResponse([
                     'statusCode' => 404,
@@ -678,16 +653,15 @@ class TwitchMiddlewareApi extends AbstractController {
             $finalResponse = new JsonResponse(
                 [
                     'statusCode' => 200,
-                    'access_renew' => $response['refresh'] != null ? true : false,
-                    'response' => $response['data'],
+                    'response' => $response,
                 ],
                 200,
             );
-            if ($response['refresh'] != null) {
+            if ($dataTokensBroadcast['access_renew_true'] != null) {
                 $finalResponse->headers->setCookie(
                     new Cookie(
                         't_access_token_sso',
-                        $response['refresh'],
+                        $dataTokensBroadcast['access_token'],
                         new \DateTime('+1 day'),
                         '/',
                         $_ENV['COOKIE_DOMAIN'],
@@ -720,7 +694,8 @@ class TwitchMiddlewareApi extends AbstractController {
         $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');
         $accessToken = $request->cookies->get('t_access_token_sso') ?? array_push($err, 't_access_token_sso');
         $refreshToken = $request->cookies->get('t_refresh_token_sso') ?? array_push($err, 't_refresh_token_sso');
-        $channelId = $request->cookies->get('broadcaster_id') ?? array_push($err, 'broadcaster_id');
+        $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
+        $broadcastId = $request->cookies->get('broadcaster_id') ?? array_push($err, 'broadcaster_id');
         if (count($err) == 0) {
             if (!$this->cantCallTwitch($channelId)) {
                 return new JsonResponse([
@@ -728,14 +703,26 @@ class TwitchMiddlewareApi extends AbstractController {
                     'message' => 'Your channel do not have the rights'
                 ], 403);
             }
-            $moderators = $this->twitchApiService->fetchModerators($accessToken, $refreshToken, $channelId);
-            if (!$moderators) {
+            // Vérifier la validité du token
+            $dataTokensBroadcast = $this->twitchApiService->validateToken($accessToken, $refreshToken);
+            $accessToken = $dataTokensBroadcast["access_token"];
+            if ($accessToken === null) {
                 return new JsonResponse([
-                    'statusCode' => 403,
-                    'message' => 'You are not a moderator of this channel'
-                ], 403);
+                    'statusCode' => 401,
+                    'message' => 'Invalid token'
+                ], 401);
             }
-            $response = $this->twitchApiService->getAllPrediction($accessToken, $refreshToken, $channelId);
+            // Vérifier si broadcaster_id correspond à channel_id ou si channel_id est modérateur de broadcaster_id
+            if ($channelId != $broadcastId) {
+                $moderators = $this->twitchApiService->fetchModerators($accessToken, $channelId, $broadcastId);
+                if (!$moderators) {
+                    return new JsonResponse([
+                        'statusCode' => 403,
+                        'message' => 'You are not a moderator of this channel'
+                    ], 403);
+                }
+            }
+            $response = $this->twitchApiService->getAllPrediction($accessToken, $channelId);
             if (!$response) {
                 return new JsonResponse([
                     'statusCode' => 404,
@@ -745,16 +732,15 @@ class TwitchMiddlewareApi extends AbstractController {
             $finalResponse = new JsonResponse(
                 [
                     'statusCode' => 200,
-                    'access_renew' => $response['refresh'] != null ? true : false,
-                    'response' => $response['data'],
+                    'response' => $response,
                 ],
                 200,
             );
-            if ($response['refresh'] != null) {
+            if ($dataTokensBroadcast['access_renew_true'] != null) {
                 $finalResponse->headers->setCookie(
                     new Cookie(
                         't_access_token_sso',
-                        $response['refresh'],
+                        $dataTokensBroadcast['access_token'],
                         new \DateTime('+1 day'),
                         '/',
                         $_ENV['COOKIE_DOMAIN'],
@@ -787,7 +773,8 @@ class TwitchMiddlewareApi extends AbstractController {
         $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');
         $accessToken = $request->cookies->get('t_access_token_sso') ?? array_push($err, 't_access_token_sso');
         $refreshToken = $request->cookies->get('t_refresh_token_sso') ?? array_push($err, 't_refresh_token_sso');
-        $channelId = $request->cookies->get('broadcaster_id') ?? array_push($err, 'broadcaster_id');
+        $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
+        $broadcastId = $request->cookies->get('broadcaster_id') ?? array_push($err, 'broadcaster_id');
         $sessionId = $data['session_id'] ?? array_push($err, 'session_id');
         if($data['type'] === "poll" && $channelId) {
             $type = [
@@ -812,7 +799,26 @@ class TwitchMiddlewareApi extends AbstractController {
                     'message' => 'Your channel do not have the rights'
                 ], 403);
             }
-            $response = $this->twitchApiService->createEventSubSubscription($accessToken, $refreshToken, $sessionId, $channelId, $type, $transport);
+            // Vérifier la validité du token
+            $dataTokensBroadcast = $this->twitchApiService->validateToken($accessToken, $refreshToken);
+            $accessToken = $dataTokensBroadcast["access_token"];
+            if ($accessToken === null) {
+                return new JsonResponse([
+                    'statusCode' => 401,
+                    'message' => 'Invalid token'
+                ], 401);
+            }
+            // Vérifier si broadcaster_id correspond à channel_id ou si channel_id est modérateur de broadcaster_id
+            if ($channelId != $broadcastId) {
+                $moderators = $this->twitchApiService->fetchModerators($accessToken, $channelId, $broadcastId);
+                if (!$moderators) {
+                    return new JsonResponse([
+                        'statusCode' => 403,
+                        'message' => 'You are not a moderator of this channel'
+                    ], 403);
+                }
+            }
+            $response = $this->twitchApiService->createEventSubSubscription($accessToken, $sessionId, $channelId, $type, $transport);
             if (!$response) {
                 return new JsonResponse([
                     'statusCode' => 404,
@@ -822,16 +828,15 @@ class TwitchMiddlewareApi extends AbstractController {
             $finalResponse = new JsonResponse(
                 [
                     'statusCode' => 200,
-                    'access_renew' => $response['refresh'] != null ? true : false,
                     'response' => $response['listener_created'],
                 ],
                 200,
             );
-            if ($response != null && $response['refresh'] != null) {
+            if ($response != null && $dataTokensBroadcast['access_renew_true'] != null) {
                 $finalResponse->headers->setCookie(
                     new Cookie(
                         't_access_token_sso',
-                        $response['refresh'],
+                        $dataTokensBroadcast['access_token'],
                         new \DateTime('+1 day'),
                         '/',
                         $_ENV['COOKIE_DOMAIN'],

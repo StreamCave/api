@@ -24,6 +24,8 @@ class OverlayFixtures extends Fixture implements DependentFixtureInterface
         $overlay->setUuid("streamcave");
         $overlay->setName('StreamCave');
         $overlay->setModel($this->getReference('model-streamcave'));
+        $overlay->setTwitchChannelID("109306231");
+        $overlay->setTwitchChannelName("sixquatre");
         $overlay->setUserOwner($this->getReference('default-admin-user-2'));
         $overlay->addUserAccess($this->getReference('default-admin-user'));
 
@@ -39,6 +41,8 @@ class OverlayFixtures extends Fixture implements DependentFixtureInterface
         $overlay->setUuid('flowup');
         $overlay->setName('FlowUp');
         $overlay->setModel($this->getReference('model-flowup'));
+        $overlay->setTwitchChannelID("635730430");
+        $overlay->setTwitchChannelName("sixquatre");
         $overlay->setUserOwner($this->getReference('default-admin-user-2'));
         $overlay->addUserAccess($this->getReference('default-admin-user'));
         $overlay->addUserAccess($this->getReference('default-admin-user-3'));
@@ -55,6 +59,8 @@ class OverlayFixtures extends Fixture implements DependentFixtureInterface
         $overlay->setUuid('sixquatre');
         $overlay->setName('Sixquatre');
         $overlay->setModel($this->getReference('model-her6s'));
+        $overlay->setTwitchChannelID("109306231");
+        $overlay->setTwitchChannelName("sixquatre");
         $overlay->setUserOwner($this->getReference('default-admin-user-2'));
         $overlay->addUserAccess($this->getReference('default-admin-user'));
 
@@ -70,6 +76,8 @@ class OverlayFixtures extends Fixture implements DependentFixtureInterface
         $overlay->setUuid('yunktis');
         $overlay->setName('Yunktis');
         $overlay->setModel($this->getReference('model-yunktis'));
+        $overlay->setTwitchChannelID("109306231");
+        $overlay->setTwitchChannelName("sixquatre");
         $overlay->setUserOwner($this->getReference('default-admin-user-2'));
         $overlay->addUserAccess($this->getReference('default-admin-user'));
 

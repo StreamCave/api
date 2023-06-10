@@ -870,7 +870,7 @@ class TwitchMiddlewareApi extends AbstractController {
         $broadcastUserId = $data['broadcaster_user_id'] ?? array_push($err, 'broadcaster_user_id');
         if (count($err) == 0) {
             // Get EventSub in BDD
-            $eventSub = $this->twitchEventSubRepository->findOneBy(['session_id' => $sessionId, 'broadcaster_user_id' => $broadcastUserId]);
+            $eventSub = $this->twitchEventSubRepository->findOneBy(['sessionId' => $sessionId, 'broadcasterUserId' => $broadcastUserId]);
             if (!$eventSub) {
                 return new JsonResponse([
                     'statusCode' => 404,
@@ -878,7 +878,7 @@ class TwitchMiddlewareApi extends AbstractController {
                 ], 404);
             }
             // Get User in BDD
-            $user = $this->userRepository->findOneBy(['twitch_id' => $broadcastUserId]);
+            $user = $this->userRepository->findOneBy(['twitchId' => $broadcastUserId]);
             // Vérifier la validité du token
             $dataTokensBroadcast = $this->twitchApiService->validateToken($user->getTwitchAccessToken(), $user->getTwitchRefreshToken());
             $accessToken = $dataTokensBroadcast["access_token"];

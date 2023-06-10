@@ -911,7 +911,7 @@ class TwitchApiService {
             $eventSubDb = $this->twitchEventSubRepository->findOneBy(['broadcasterUserId' => $channelId]);
             if (count($err) === 0) {
                 if ($eventSubDb != null) {
-                    $eventSubDb->setEventSubTwitchId($response->getContent()['data'][0]['id']);
+                    $eventSubDb->setEventSubTwitchId(json_decode($response->getContent(), true)['data'][0]['id']);
                     $eventSubDb->setType($topics);
                     $eventSubDb->setSessionId($sessionId);
                     $this->doctrine->getManager()->persist($eventSubDb);
@@ -919,7 +919,7 @@ class TwitchApiService {
                 } else {
                     // Insertion en BDD
                     $eventSub = new TwitchEventSub();
-                    $eventSub->setEventSubTwitchId($response->getContent()['data'][0]['id']);
+                    $eventSub->setEventSubTwitchId(json_decode($response->getContent(), true)['data'][0]['id']);
                     $eventSub->setType($topics);
                     $eventSub->setSessionId($sessionId);
                     $this->doctrine->getManager()->persist($eventSub);

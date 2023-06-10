@@ -327,7 +327,7 @@ class TwitchMiddlewareApi extends AbstractController {
                     $finalResponse = new JsonResponse(
                         [
                             'statusCode' => 200,
-                            'response' => $response['data'],
+                            'response' => $response,
                             'overlay_id' => $overlayId
                         ],
                         200,

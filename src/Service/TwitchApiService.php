@@ -137,6 +137,14 @@ class TwitchApiService {
                 'token_type' => $responseContent['token_type'],
                 'scope' => $responseContent['scope']
             ];
+            $user = $this->userRepository->findOneBy(['twitchRefreshToken' => $refreshToken]);
+            if ($user) {
+                $user->setTwitchAccessToken($data['access_token']);
+                $user->setTwitchRefreshToken($data['refresh_token']);
+                $user->setTwitchExpiresIn($responseContent['expires_in']);
+                $this->doctrine->getManager()->persist();
+                $this->doctrine->getManager()->flush();
+            }
             return $data;
         } else {
             return null;

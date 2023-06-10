@@ -285,7 +285,8 @@ class TwitchMiddlewareApi extends AbstractController {
                 ], 403);
             }
             // Vérifier la validité du token
-            $accessToken = $this->twitchApiService->validateToken($accessToken, $refreshToken);
+            $dataTokensBroadcast = $this->twitchApiService->validateToken($accessToken, $refreshToken);
+            $accessToken = $dataTokensBroadcast["access_token"];
             if ($accessToken === null) {
                 return new JsonResponse([
                     'statusCode' => 401,
@@ -316,8 +317,7 @@ class TwitchMiddlewareApi extends AbstractController {
                 $finalResponse = new JsonResponse(
                     [
                         'statusCode' => 200,
-                        'access_renew' => $response['refresh'] != null,
-                        'response' => $response['data'],
+                        'response' => $response,
                         'visible' => $visible,
                         'overlay_id' => $overlayId
                     ],
@@ -327,18 +327,17 @@ class TwitchMiddlewareApi extends AbstractController {
                     $finalResponse = new JsonResponse(
                         [
                             'statusCode' => 200,
-                            'access_renew' => $response['refresh'] != null,
                             'response' => $response['data'],
                             'overlay_id' => $overlayId
                         ],
                         200,
                     );
                 }
-                if ($response['refresh'] != null) {
+                if ($dataTokensBroadcast['access_renew_true']) {
                     $finalResponse->headers->setCookie(
                         new Cookie(
                             't_access_token_sso',
-                            $response['refresh']['access_token'],
+                            $dataTokensBroadcast['access_token'],
                             new \DateTime('+1 day'),
                             '/',
                             $_ENV['COOKIE_DOMAIN'],

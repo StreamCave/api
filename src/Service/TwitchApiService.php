@@ -914,7 +914,7 @@ class TwitchApiService {
                     $eventSubDb->setEventSubTwitchId(json_decode($response->getContent(), true)['data'][0]['id']);
                     $eventSubDb->setType($topics);
                     $eventSubDb->setSessionId($sessionId);
-                    $eventSubDb->setBroadcasterUserId($channelId)
+                    $eventSubDb->setBroadcasterUserId($channelId);
                     $this->doctrine->getManager()->persist($eventSubDb);
                     $this->doctrine->getManager()->flush();
                 } else {
@@ -923,7 +923,7 @@ class TwitchApiService {
                     $eventSub->setEventSubTwitchId(json_decode($response->getContent(), true)['data'][0]['id']);
                     $eventSub->setType($topics);
                     $eventSub->setSessionId($sessionId);
-                    $eventSub->setBroadcasterUserId($channelId)
+                    $eventSub->setBroadcasterUserId($channelId);
                     $this->doctrine->getManager()->persist($eventSub);
                     $this->doctrine->getManager()->flush();
                 }

@@ -869,7 +869,7 @@ class TwitchMiddlewareApi extends AbstractController {
         $broadcastUserId = $data['broadcaster_user_id'] ?? array_push($err, 'broadcaster_user_id');
         if (count($err) == 0) {
             // Get EventSub in BDD
-            $eventSub = $this->twitchEventSubRepository->findOneBy(['sessionId' => $sessionId, 'broadcasterUserId' => $broadcastUserId]);
+            $eventSub = $this->twitchEventSubRepository->findBy(['sessionId' => $sessionId, 'broadcasterUserId' => $broadcastUserId]);
             if (!$eventSub) {
                 return new JsonResponse([
                     'statusCode' => 404,
@@ -887,14 +887,15 @@ class TwitchMiddlewareApi extends AbstractController {
                     'message' => 'Invalid token'
                 ], 401);
             }
-            // Supprimer le eventSub sur Twitch
-            $response = $this->twitchApiService->deleteEventSubSubscription($accessToken, $eventSub->getEventSubTwitchId());
-            // Supprimer le eventSub en BDD
-            if ($response) {
-                // Doctrine
-                $em = $this->doctrine->getManager();
-                $em->remove($eventSub);
-                $em->flush();
+            foreach ($eventSub as $item) {
+                // Supprimer le eventSub sur Twitch
+                $response = $this->twitchApiService->deleteEventSubSubscription($accessToken, $item->getEventSubTwitchId());
+                // Supprimer le eventSub en BDD
+                if ($response) {
+                    $em = $this->doctrine->getManager();
+                    $em->remove($item);
+                    $em->flush();
+                }
             }
             return new JsonResponse(
                 [

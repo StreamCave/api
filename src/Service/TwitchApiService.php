@@ -566,7 +566,7 @@ class TwitchApiService {
                     if (count($data['data']) > 0) {
                         return [
                             'data' => $data['data'][0],
-//                            'refresh' => $refresh
+                            'refresh' => null
                         ];
                     } else {
                         return false;

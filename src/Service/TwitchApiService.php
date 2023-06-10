@@ -951,7 +951,7 @@ class TwitchApiService {
         string $accessToken,
         string $idEventSub
     ) {
-        $response = $this->twitchApiClient->request(Request::METHOD_POST, self::TWITCH_EVENTSUB_ENDPOINT, [
+        $response = $this->twitchApiClient->request(Request::METHOD_DELETE, self::TWITCH_EVENTSUB_ENDPOINT, [
             'auth_bearer' => $accessToken,
             'headers' => [
                 'Client-Id' => $this->clientId,

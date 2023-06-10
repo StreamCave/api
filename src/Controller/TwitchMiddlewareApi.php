@@ -66,7 +66,6 @@ class TwitchMiddlewareApi extends AbstractController {
     #[Route('/channel', name: 'twitch_channel', methods: ['POST'])]
     public function getChannel(Request $request): JsonResponse
     {
-        $data = $this->decodeData($request);
         $err = [];
         $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');
         $accessToken = $request->cookies->get('t_access_token_sso') ?? array_push($err, 't_access_token_sso');
@@ -84,7 +83,7 @@ class TwitchMiddlewareApi extends AbstractController {
             $finalResponse = new JsonResponse(
                 [
                     'statusCode' => 200,
-                    'access_renew' => $channel['refresh'] != null ? true : false,
+                    'access_renew' => $channel['refresh'] != null,
                     'channel' => $channel['data'],
                 ],
                 200,

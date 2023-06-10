@@ -344,6 +344,10 @@ class TwitchApiService {
             // On refresh le token
             $accessToken = $this->refreshToken($refreshToken);
             $refresh = $accessToken;
+
+        }
+        if ($channelId === $this->userRepository->findOneBy(['twitchAccessToken' => $accessToken])->getTwitchId()) {
+            return true;
         }
         $streamerToken = $this->getStreamerToken($channelId);
         if ($streamerToken !== null && $accessToken !== null) {

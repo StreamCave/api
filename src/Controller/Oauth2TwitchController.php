@@ -55,6 +55,7 @@ class Oauth2TwitchController extends AbstractController {
                 $userDB = $userDBEmailOnly;
                 // Si oui, on set le twitchId de l'utilisateur
                 $userDB->setTwitchId($twitchUser['id']);
+                $userDB->setTwitchStatus($twitchUser['broadcaster_type']);
             } else {
                 // Sinon, on crée un nouvel utilisateur
                 $userDB = new User();

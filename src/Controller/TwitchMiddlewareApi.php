@@ -294,7 +294,7 @@ class TwitchMiddlewareApi extends AbstractController {
             }
             // Vérifier si broadcaster_id correspond à channel_id ou si channel_id est modérateur de broadcaster_id
             if ($channelId != $broadcastId) {
-                $moderators = $this->twitchApiService->fetchModerators($accessToken, $channelId);
+                $moderators = $this->twitchApiService->fetchModerators($accessToken, $channelId, $broadcastId);
                 if (!$moderators) {
                     return new JsonResponse([
                         'statusCode' => 403,

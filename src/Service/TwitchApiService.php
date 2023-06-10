@@ -521,7 +521,7 @@ class TwitchApiService {
                     if (count($data['data']) > 0) {
                         return [
                             'data' => $data['data'][0],
-                            'refresh' => $refresh
+//                            'refresh' => $refresh
                         ];
                     } else {
                         return "You don't have any poll right now.";
@@ -566,7 +566,7 @@ class TwitchApiService {
                     if (count($data['data']) > 0) {
                         return [
                             'data' => $data['data'][0],
-                            'refresh' => $refresh
+//                            'refresh' => $refresh
                         ];
                     } else {
                         return false;

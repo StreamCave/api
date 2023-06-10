@@ -905,24 +905,26 @@ class TwitchApiService {
                     ]
                 ])
             ]);
-            if ($response->getStatusCode() != 200) {
+            if ($response->getStatusCode() != 202) {
                 array_push($err, $topics);
             }
             $eventSubDb = $this->twitchEventSubRepository->findOneBy(['broadcasterUserId' => $channelId]);
-            if ($eventSubDb != null && count($err) == 0) {
-                $eventSubDb->setEventSubTwitchId($response['data'][0]['id']);
-                $eventSubDb->setType($topics);
-                $eventSubDb->setSessionId($sessionId);
-                $this->doctrine->getManager()->persist($eventSubDb);
-                $this->doctrine->getManager()->flush();
-            } else if (count($err) == 0) {
-                // Insertion en BDD
-                $eventSub = new TwitchEventSub();
-                $eventSub->setEventSubTwitchId($response['data'][0]['id']);
-                $eventSub->setType($topics);
-                $eventSub->setSessionId($sessionId);
-                $this->doctrine->getManager()->persist($eventSub);
-                $this->doctrine->getManager()->flush();
+            if (count($err) === 0) {
+                if ($eventSubDb != null) {
+                    $eventSubDb->setEventSubTwitchId($response['data'][0]['id']);
+                    $eventSubDb->setType($topics);
+                    $eventSubDb->setSessionId($sessionId);
+                    $this->doctrine->getManager()->persist($eventSubDb);
+                    $this->doctrine->getManager()->flush();
+                } else {
+                    // Insertion en BDD
+                    $eventSub = new TwitchEventSub();
+                    $eventSub->setEventSubTwitchId($response['data'][0]['id']);
+                    $eventSub->setType($topics);
+                    $eventSub->setSessionId($sessionId);
+                    $this->doctrine->getManager()->persist($eventSub);
+                    $this->doctrine->getManager()->flush();
+                }
             }
             if($response->getStatusCode() != 400) {
                 $resp = json_decode($response->getContent(), true);

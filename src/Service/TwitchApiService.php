@@ -2,6 +2,8 @@
 
 namespace App\Service;
 
+use App\Entity\TwitchEventSub;
+use App\Repository\TwitchEventSubRepository;
 use App\Repository\UserRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
@@ -46,12 +48,14 @@ class TwitchApiService {
         private readonly string $clientSecret,
         private readonly string $redirectUri,
         UserRepository $userRepository,
+        TwitchEventSubRepository $twitchEventSubRepository,
         JWTTokenManagerInterface $jwtManager,
         JWTEncoderInterface $jwtEncoder,
         ManagerRegistry $doctrine
     )
     {
         $this->userRepository = $userRepository;
+        $this->twitchEventSubRepository = $twitchEventSubRepository;
         $this->jwtManager = $jwtManager;
         $this->jwtEncoder = $jwtEncoder;
         $this->doctrine = $doctrine;
@@ -901,6 +905,29 @@ class TwitchApiService {
                     ]
                 ])
             ]);
+            if ($response->getStatusCode() != 202) {
+                array_push($err, $topics);
+            }
+            $eventSubDb = $this->twitchEventSubRepository->findOneBy(['broadcasterUserId' => $channelId]);
+            if (count($err) === 0) {
+                if ($eventSubDb != null) {
+                    $eventSubDb->setEventSubTwitchId(json_decode($response->getContent(), true)['data'][0]['id']);
+                    $eventSubDb->setType($topics);
+                    $eventSubDb->setSessionId($sessionId);
+                    $eventSubDb->setBroadcasterUserId($channelId);
+                    $this->doctrine->getManager()->persist($eventSubDb);
+                    $this->doctrine->getManager()->flush();
+                } else {
+                    // Insertion en BDD
+                    $eventSub = new TwitchEventSub();
+                    $eventSub->setEventSubTwitchId(json_decode($response->getContent(), true)['data'][0]['id']);
+                    $eventSub->setType($topics);
+                    $eventSub->setSessionId($sessionId);
+                    $eventSub->setBroadcasterUserId($channelId);
+                    $this->doctrine->getManager()->persist($eventSub);
+                    $this->doctrine->getManager()->flush();
+                }
+            }
             if($response->getStatusCode() != 400) {
                 $resp = json_decode($response->getContent(), true);
                 if (isset($resp['error'])) {
@@ -919,4 +946,23 @@ class TwitchApiService {
         }
     }
 
+    /**
+     * Delete EventSub Subscription
+     */
+    public function deleteEventSubSubscription(
+        string $accessToken,
+        string $idEventSub
+    ) {
+        $response = $this->twitchApiClient->request(Request::METHOD_DELETE, self::TWITCH_EVENTSUB_ENDPOINT, [
+            'auth_bearer' => $accessToken,
+            'headers' => [
+                'Client-Id' => $this->clientId,
+                'Content-Type' => 'application/json'
+            ],
+            'body' => json_encode([
+                'id' => $idEventSub
+            ])
+        ]);
+        return $response->getStatusCode();
+    }
 }

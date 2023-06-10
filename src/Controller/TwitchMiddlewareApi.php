@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Repository\TwitchEventSubRepository;
 use App\Repository\TwitchGroupRepository;
 use App\Repository\UserRepository;
 use App\Repository\WidgetRepository;
@@ -17,13 +18,14 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/middleware/twitch', methods: ['POST'])]
 class TwitchMiddlewareApi extends AbstractController {
 
-    public function __construct(TwitchApiService $twitchApiService, JWTEncoderInterface $jwtEncoder, UserRepository $userRepository, TwitchGroupRepository $twitchGroupRepository, WidgetRepository $widgetRepository, ManagerRegistry $doctrine)
+    public function __construct(TwitchApiService $twitchApiService, JWTEncoderInterface $jwtEncoder, UserRepository $userRepository, TwitchGroupRepository $twitchGroupRepository, WidgetRepository $widgetRepository, TwitchEventSubRepository $twitchEventSubRepository, ManagerRegistry $doctrine)
     {
         $this->twitchApiService = $twitchApiService;
         $this->jwtEncoder = $jwtEncoder;
         $this->userRepository = $userRepository;
         $this->twitchGroupRepository = $twitchGroupRepository;
         $this->widgetRepository = $widgetRepository;
+        $this->twitchEventSubRepository = $twitchEventSubRepository;
         $this->doctrine = $doctrine;
     }
 
@@ -819,6 +821,8 @@ class TwitchMiddlewareApi extends AbstractController {
                 }
             }
             $response = $this->twitchApiService->createEventSubSubscription($accessToken, $sessionId, $channelId, $type, $transport);
+            // Ajout dans la base de données
+
             if (!$response) {
                 return new JsonResponse([
                     'statusCode' => 404,
@@ -847,6 +851,59 @@ class TwitchMiddlewareApi extends AbstractController {
                     ));
             }
             return $finalResponse;
+        } else {
+            return new JsonResponse([
+                'statusCode' => 400,
+                'message' => 'Missing or invalid parameters',
+                'missing_parameters' => $err
+            ], 400);
+        }
+    }
+
+    #[Route('/eventsub/delete', name: 'twitch_eventsub_delete', methods: ['POST'])]
+    public function deleteEventSub(Request $request): JsonResponse
+    {
+        $data = $this->decodeData($request);
+        $err = [];
+        $sessionId = $data['session_id'] ?? array_push($err, 'session_id');
+        $broadcastUserId = $data['broadcaster_user_id'] ?? array_push($err, 'broadcaster_user_id');
+        if (count($err) == 0) {
+            // Get EventSub in BDD
+            $eventSub = $this->twitchEventSubRepository->findBy(['sessionId' => $sessionId, 'broadcasterUserId' => $broadcastUserId]);
+            if (!$eventSub) {
+                return new JsonResponse([
+                    'statusCode' => 404,
+                    'message' => 'No eventSub found'
+                ], 404);
+            }
+            // Get User in BDD
+            $user = $this->userRepository->findOneBy(['twitchId' => $broadcastUserId]);
+            // Vérifier la validité du token
+            $dataTokensBroadcast = $this->twitchApiService->validateToken($user->getTwitchAccessToken(), $user->getTwitchRefreshToken());
+            $accessToken = $dataTokensBroadcast["access_token"];
+            if ($accessToken === null) {
+                return new JsonResponse([
+                    'statusCode' => 401,
+                    'message' => 'Invalid token'
+                ], 401);
+            }
+            foreach ($eventSub as $item) {
+                // Supprimer le eventSub sur Twitch
+                $response = $this->twitchApiService->deleteEventSubSubscription($accessToken, $item->getEventSubTwitchId());
+                // Supprimer le eventSub en BDD
+                if ($response) {
+                    $em = $this->doctrine->getManager();
+                    $em->remove($item);
+                    $em->flush();
+                }
+            }
+            return new JsonResponse(
+                [
+                    'statusCode' => 200,
+                    'response' => 'deleted',
+                ],
+                200,
+            );
         } else {
             return new JsonResponse([
                 'statusCode' => 400,

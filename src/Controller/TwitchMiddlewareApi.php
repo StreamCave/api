@@ -2,8 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\TwitchGroup;
-use App\Entity\Widget;
 use App\Repository\TwitchGroupRepository;
 use App\Repository\UserRepository;
 use App\Repository\WidgetRepository;
@@ -12,7 +10,6 @@ use Doctrine\Persistence\ManagerRegistry;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
@@ -30,25 +27,22 @@ class TwitchMiddlewareApi extends AbstractController {
         $this->doctrine = $doctrine;
     }
 
+    /**
+     * @param Request $request
+     * @return mixed
+     *
+     * Décode les données envoyées par le front
+     */
     private function decodeData(Request $request) {
         return json_decode($request->getContent(), true);
     }
 
-    private function getJwt(Request $request) {
-        return str_replace('Bearer ', '', $request->headers->get('Authorization'));
-    }
-
-    private function translateJwt(Request $request)
-    {
-        try {
-            $decodedToken = $this->jwtEncoder->decode(str_replace('Bearer ', '', $request->headers->get('Authorization')));
-            return $decodedToken;
-            // Faites quelque chose avec le jeton décodé
-        } catch (\Exception $e) {
-            // Gérer les erreurs de décodage, par exemple un jeton invalide
-        }
-    }
-
+    /**
+     * @param $channelId
+     * @return bool
+     *
+     * Vérifie si l'utilisateur a le bon status pour appeler l'API Twitch (affilié minimum)
+     */
     private function cantCallTwitch($channelId): bool
     {
         $userDB = $this->userRepository->findOneBy(['twitchId' => $channelId]);
@@ -63,8 +57,12 @@ class TwitchMiddlewareApi extends AbstractController {
         }
     }
 
-    // INFO: Get channel info si t'es streamer OK
-    // INFO: Get channel info si t'es pas streamer WAIT
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     *
+     * Récupère les informations de la chaine Twitch ciblée
+     */
     #[Route('/channel', name: 'twitch_channel', methods: ['POST'])]
     public function getChannel(Request $request): JsonResponse
     {

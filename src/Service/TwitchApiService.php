@@ -142,7 +142,7 @@ class TwitchApiService {
                 $user->setTwitchAccessToken($data['access_token']);
                 $user->setTwitchRefreshToken($data['refresh_token']);
                 $user->setTwitchExpiresIn($responseContent['expires_in']);
-                $this->doctrine->getManager()->persist();
+                $this->doctrine->getManager()->persist($user);
                 $this->doctrine->getManager()->flush();
             }
             return $data;

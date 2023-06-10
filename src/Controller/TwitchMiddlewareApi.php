@@ -863,7 +863,6 @@ class TwitchMiddlewareApi extends AbstractController {
     #[Route('/eventsub/delete', name: 'twitch_eventsub_delete', methods: ['POST'])]
     public function deleteEventSub(Request $request): JsonResponse
     {
-        dd($request->headers);
         $data = $this->decodeData($request);
         $err = [];
         $sessionId = $data['session_id'] ?? array_push($err, 'session_id');

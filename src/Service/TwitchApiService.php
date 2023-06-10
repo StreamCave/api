@@ -177,49 +177,41 @@ class TwitchApiService {
     /**
      * Vérifie la validité du token
      */
-    public function validateToken(Request $request, string $accessToken, string $refreshToken, string $channelId): string
+    public function validateToken(string $accessToken, string $refreshToken): string
     {
-        $response = $this->twitchApiClient->request('GET', self::TOKEN_VALIDATE, [
+        // On call Twitch pour vérifier la validité du token
+        $validityUser = $this->twitchApiClient->request('GET', self::TOKEN_VALIDATE, [
             'auth_bearer' => $accessToken,
         ]);
+        if ($validityUser->getStatusCode() != 200) {
+            // On refresh le token
+            $response = $this->twitchApiClient->request('POST', self::TOKEN_URI, [
+                'body' => [
+                    'client_id' => $this->clientId,
+                    'client_secret' => $this->clientSecret,
+                    'grant_type' => 'refresh_token',
+                    'refresh_token' => $refreshToken,
+                    'redirect_uri' => $this->redirectUri,
+                ]
+            ]);
 
-        // Si réponse 200, le token est valide donc on le retourne
-        if ($response->getStatusCode() === 200) {
-            $status = $this->isUserModeratorOrStreamer($accessToken, $channelId);
-            if ($status === "moderator") {
-                // On récupère le accessToken du streamer en BDD
-                $accessToken = $this->getStreamerAccessToken($channelId);
-                $response = $this->twitchApiClient->request('GET', self::TOKEN_VALIDATE, [
-                    'auth_bearer' => $accessToken,
-                ]);
-                // On vérifie si le token du streamer est valide
-                if ($response->getStatusCode() === 200) {
-                    return $accessToken;
-                } else {
-                    // Sinon, on le refresh
-                    $response = $this->refreshToken($refreshToken);
-                    return $response['access_token'];
+            if($response->getStatusCode() != 400) {
+                $responseContent = json_decode($response->getContent(), true);
+                $user = $this->userRepository->findOneBy(['twitchRefreshToken' => $refreshToken]);
+                if ($user) {
+                    $user->setTwitchAccessToken($responseContent['access_token']);
+                    $user->setTwitchRefreshToken($responseContent['refresh_token']);
+                    $user->setTwitchExpiresIn($responseContent['expires_in']);
+                    $this->doctrine->getManager()->persist($user);
+                    $this->doctrine->getManager()->flush();
                 }
-            }
-            return $accessToken;
-        } else {
-            // On vérifie si le accessToken renseigné et le même que celui en BDD
-            // On récupère les données de l'utilisateur en BDD grâce au JWT
-            $user = $this->userRepository->findOneBy(['twitchAccessToken' => $accessToken]);
-            if ($user) {
-                // Si oui, on refresh le token
-                $response = $this->refreshToken($refreshToken);
-                // On met à jour le token en BDD
-                $user->setTwitchAccessToken($response['access_token']);
-                $em = $this->doctrine->getManager();
-                $em->persist($user);
-                $em->flush();
-                return $response['access_token'];
+                $accessToken = $responseContent['access_token'];
             } else {
-                // Sinon, on retourne une exception forçant l'utilisateur à se reconnecter
-                return 'Token invalid, please reconnect';
+                // Invalid refreshToken
+                $accessToken = null;
             }
         }
+        return $accessToken;
     }
 
     /**
@@ -333,100 +325,66 @@ class TwitchApiService {
     /**
      * Renvoie la liste des modérateurs de la chaîne renseignée
      */
-    public function fetchModerators(string $accessToken, string $refreshToken, string $channelId)
+    public function fetchModerators(string $accessToken, string $channelId, string $broadcastId)
     {
-        $refresh = null;
-        // On doit vérifier la validité du token
-        $validityUser = $this->twitchApiClient->request('GET', self::TOKEN_VALIDATE, [
-            'auth_bearer' => $accessToken,
+        // On récupère les données du streamer en BDD
+        $streamer = $this->userRepository->findOneBy(['twitchId' => $channelId]);
+        // On vérifie la validité du token du streamer
+        $validity = $this->twitchApiClient->request('GET', self::TOKEN_VALIDATE, [
+            'auth_bearer' => $streamer->getTwitchAccessToken(),
         ]);
-        if ($validityUser->getStatusCode() != 200) {
+
+        if ($validity->getStatusCode() !== 200) {
             // On refresh le token
-            $accessToken = $this->refreshToken($refreshToken);
-            $refresh = $accessToken;
+            $response = $this->twitchApiClient->request('POST', self::TOKEN_URI, [
+                'body' => [
+                    'client_id' => $this->clientId,
+                    'client_secret' => $this->clientSecret,
+                    'grant_type' => 'refresh_token',
+                    'refresh_token' => $streamer->getTwitchRefreshToken(),
+                    'redirect_uri' => $this->redirectUri,
+                ]
+            ]);
 
-        }
-        if ($channelId === $this->userRepository->findOneBy(['twitchRefreshToken' => $refreshToken])) {
-            return true;
-        }
-        $streamerToken = $this->getStreamerToken($channelId);
-        if ($streamerToken !== null && $accessToken !== null) {
-            if ($streamerToken['access_token'] === $accessToken) {
-                // C'est le streamer qui fait la requête, on renvoie donc la liste de ses modérateurs
-                $response = $this->twitchApiClient->request(Request::METHOD_GET, self::TWITCH_MODERATORS_ENPOINT, [
-                    'auth_bearer' => $accessToken,
-                    'headers' => [
-                        'Client-Id' => $this->clientId,
-                    ],
-                    'query' => [
-                        'broadcaster_id' => $channelId
-                    ]
-                ]);
-
-                $data = json_decode($response->getContent(), true);
-
-                return [
-                    'data' => $data['data'],
-                    'refresh' => $refresh
-                ];
+            if($response->getStatusCode() != 400) {
+                $responseContent = json_decode($response->getContent(), true);
+                $streamer->setTwitchAccessToken($responseContent['access_token']);
+                $streamer->setTwitchRefreshToken($responseContent['refresh_token']);
+                $streamer->setTwitchExpiresIn($responseContent['expires_in']);
+                $this->doctrine->getManager()->persist($streamer);
+                $this->doctrine->getManager()->flush();
+                // On set temporairement le token du streamer pour que le broadcastId puisse faire la requête
+                $accessToken = $responseContent['access_token'];
             } else {
-                // On doit récupérer le accessToken du streamer en BDD
-                $streamerToken = $this->getStreamerToken($channelId);
-                // On vérifie sa validité
-                $validity = $this->twitchApiClient->request('GET', self::TOKEN_VALIDATE, [
-                    'auth_bearer' => $streamerToken['access_token'],
-                ]);
-                if ($validity->getStatusCode() !== 200) {
-                    // On refresh le token
-                    $streamRefresh = $this->refreshToken($streamerToken['refresh_token']);
-                    // On met à jour le token en BDD
-                    $streamerDB = $this->userRepository->findOneBy(['twitchId' => $channelId]);
-                    $streamerDB->setTwitchAccessToken($streamRefresh['access_token']);
-                    $streamerDB->setTwitchRefreshToken($streamRefresh['refresh_token']);
-                    $streamerDB->setTwitchExpiresIn($streamRefresh['expires_in']);
-                    $em = $this->doctrine->getManager();
-                    $em->persist($streamerDB);
-                    $em->flush();
-                    $streamerToken['access_token'] = $streamRefresh['access_token'];
+                // Invalid refreshToken
+                $accessToken = null;
+            }
+        }
 
-                    // On doit vérifier la validité du token de l'utilisateur
-                }
-                // C'est un modérateur qui fait la requête, on vérifie donc qu'il est bien modérateur de la chaîne
-                $response = $this->twitchApiClient->request(Request::METHOD_GET, self::TWITCH_MODERATORS_ENPOINT, [
-                    'auth_bearer' => $streamerToken['access_token'],
-                    'headers' => [
-                        'Client-Id' => $this->clientId,
-                    ],
-                    'query' => [
-                        'broadcaster_id' => $channelId
-                    ]
-                ]);
+        // On call l'api Twitch pour get les modérateurs de la chaîne
+        $response = $this->twitchApiClient->request(Request::METHOD_GET, self::TWITCH_MODERATORS_ENPOINT, [
+            'auth_bearer' => $accessToken,
+            'headers' => [
+                'Client-Id' => $this->clientId,
+            ],
+            'query' => [
+                'broadcaster_id' => $channelId
+            ]
+        ]);
+        $data = json_decode($response->getContent(), true);
 
-                $data = json_decode($response->getContent(), true);
-
-                // Je vérifie si l'utilisateur est bien modérateur de la chaîne
-                $isModerator = false;
-                $userDB = $this->userRepository->findOneBy(['twitchAccessToken' => $accessToken]);
-                if($userDB !== null) {
-                    foreach ($data['data'] as $moderator) {
-                        if ($moderator['user_id'] === $userDB->getTwitchId()) {
-                            $isModerator = true;
-                        }
-                    }
-                }
-
-                if ($isModerator) {
-                    return [
-                        'data' => $data['data'],
-                        'refresh' => $refresh
-                    ];
-                } else {
-                    return false;
+        // Je vérifie si l'utilisateur est bien modérateur de la chaîne
+        $isModerator = false;
+        $broadcastDB = $this->userRepository->findOneBy(['twitchId' => $broadcastId]);
+        if($broadcastDB !== null) {
+            foreach ($data['data'] as $moderator) {
+                if ($moderator['user_id'] === $broadcastDB->getTwitchId()) {
+                    $isModerator = true;
                 }
             }
-        } else {
-            return null;
         }
+
+        return $isModerator;
     }
 
     /**
@@ -536,22 +494,15 @@ class TwitchApiService {
 
     /**
      * Récupération des données du sondage
+     *
+     * On vérifie la validité du accessToken même si c'est un streamer ou un potentiel modérateur
      */
     public function getPoll(
         string $accessToken,
         string $refreshToken,
         string $channelId
     ) {
-        $refresh = null;
-        // On doit vérifier la validité du token
-        $validityUser = $this->twitchApiClient->request('GET', self::TOKEN_VALIDATE, [
-            'auth_bearer' => $accessToken,
-        ]);
-        if ($validityUser->getStatusCode() != 200) {
-            // On refresh le token
-            $accessToken = $this->refreshToken($refreshToken);
-            $refresh = $accessToken;
-        }
+        // Récupérer le token du streamer
         $streamerToken = $this->getStreamerToken($channelId);
         if ($streamerToken !== null && $accessToken !== null) {
             if ($streamerToken['access_token'] === $accessToken) {

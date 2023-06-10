@@ -274,7 +274,8 @@ class TwitchMiddlewareApi extends AbstractController {
         $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');
         $accessToken = $request->cookies->get('t_access_token_sso') ?? array_push($err, 't_access_token_sso');
         $refreshToken = $request->cookies->get('t_refresh_token_sso') ?? array_push($err, 't_refresh_token_sso');
-        $channelId = $request->cookies->get('broadcaster_id') ?? array_push($err, 'broadcaster_id');
+        $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
+        $broadcastId = $request->cookies->get('broadcaster_id') ?? array_push($err, 'broadcaster_id');
         $overlayId = $data['overlay_id'] ?? array_push($err, 'overlay_id');
         if (count($err) == 0) {
             if (!$this->cantCallTwitch($channelId)) {
@@ -283,12 +284,23 @@ class TwitchMiddlewareApi extends AbstractController {
                     'message' => 'Your channel do not have the rights'
                 ], 403);
             }
-            $moderators = $this->twitchApiService->fetchModerators($accessToken, $refreshToken, $channelId);
-            if (!$moderators) {
+            // Vérifier la validité du token
+            $accessToken = $this->twitchApiService->validateToken($accessToken, $refreshToken);
+            if ($accessToken === null) {
                 return new JsonResponse([
-                    'statusCode' => 403,
-                    'message' => 'You are not a moderator of this channel'
-                ], 403);
+                    'statusCode' => 401,
+                    'message' => 'Invalid token'
+                ], 401);
+            }
+            // Vérifier si broadcaster_id correspond à channel_id ou si channel_id est modérateur de broadcaster_id
+            if ($channelId != $broadcastId) {
+                $moderators = $this->twitchApiService->fetchModerators($accessToken, $channelId);
+                if (!$moderators) {
+                    return new JsonResponse([
+                        'statusCode' => 403,
+                        'message' => 'You are not a moderator of this channel'
+                    ], 403);
+                }
             }
             $response = $this->twitchApiService->getPoll($accessToken, $refreshToken, $channelId);
             if (!$response) {

@@ -10,6 +10,7 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Controller\DeleteTweetGroup;
+use App\Controller\EditTweetGroup;
 use App\Repository\TweetGroupRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -68,10 +69,11 @@ use Symfony\Component\Uid\Uuid;
         denormalizationContext: ['groups' => ['tweet_group:write']],
     ),
     new Put(
-        uriTemplate: '/tweet-groups/{uuid}',
-        uriVariables: "uuid",
+        uriTemplate: '/tweet-groups/{uuid}/{overlayUuid}',
+        defaults: ['_api_receive' => false],
         status: 200,
         schemes: ['https'],
+        controller: EditTweetGroup::class,
         openapiContext: ['summary' => 'Modifier un groupe de tweets'],
         normalizationContext: ['groups' => ['tweet_group:read']],
         denormalizationContext: ['groups' => ['tweet_group:write']],

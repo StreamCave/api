@@ -329,7 +329,7 @@ class TwitchMiddlewareApi extends AbstractController {
                     $finalResponse->headers->setCookie(
                         new Cookie(
                             't_access_token_sso',
-                            $response['refresh'],
+                            $response['refresh']['access_token'],
                             new \DateTime('+1 day'),
                             '/',
                             $_ENV['COOKIE_DOMAIN'],

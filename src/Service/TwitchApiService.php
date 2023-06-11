@@ -244,7 +244,7 @@ class TwitchApiService {
         $streamer = $this->userRepository->findOneBy(['twitchId' => $channelId]);
         // On vérifie la validité du token du streamer
         $validity = $this->twitchApiClient->request('GET', self::TOKEN_VALIDATE, [
-            'auth_bearer' => $accessToken != null ? $accessToken : $streamer->getTwitchAccessToken(),
+            'auth_bearer' => $streamer->getTwitchAccessToken(),
         ]);
 
         if ($validity->getStatusCode() !== 200) {
@@ -273,7 +273,7 @@ class TwitchApiService {
 
         // On call l'api Twitch pour get les modérateurs de la chaîne
         $response = $this->twitchApiClient->request(Request::METHOD_GET, self::TWITCH_MODERATORS_ENPOINT, [
-            'auth_bearer' => $accessToken != null ? $accessToken : $streamer->getTwitchAccessToken(),
+            'auth_bearer' => $streamer->getTwitchAccessToken(),
             'headers' => [
                 'Client-Id' => $this->clientId,
             ],

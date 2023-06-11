@@ -211,7 +211,7 @@ class TwitchMiddlewareApi extends AbstractController {
                         'message' => 'You are not a moderator of this channel'
                     ], 403);
                 }
-                $accessToken = null;
+                $accessToken = '';
             }
             $response = $this->twitchApiService->getPoll($accessToken, $channelId);
             if (!$response) {

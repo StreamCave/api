@@ -369,7 +369,7 @@ class TwitchApiService {
     ) {
         // On récupère les données du streamer en BDD
         $streamer = $this->userRepository->findOneBy(['twitchId' => $channelId]);
-        if ($accessToken == null) {
+        if ($accessToken == '') {
             $accessToken = $streamer->getTwitchAccessToken();
         }
         // On vérifie la validité du token du streamer

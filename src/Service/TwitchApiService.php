@@ -312,9 +312,12 @@ class TwitchApiService {
     ) {
         // On récupère les données du streamer en BDD
         $streamer = $this->userRepository->findOneBy(['twitchId' => $channelId]);
+        if ($accessToken == '') {
+            $accessToken = $streamer->getTwitchAccessToken();
+        }
         // On vérifie la validité du token du streamer
         $validity = $this->twitchApiClient->request('GET', self::TOKEN_VALIDATE, [
-            'auth_bearer' => $accessToken != null ? $accessToken : $streamer->getTwitchAccessToken(),
+            'auth_bearer' => $accessToken,
         ]);
 
         if ($validity->getStatusCode() !== 200) {
@@ -336,13 +339,13 @@ class TwitchApiService {
                 $streamer->setTwitchExpiresIn($responseContent['expires_in']);
                 $this->doctrine->getManager()->persist($streamer);
                 $this->doctrine->getManager()->flush();
+                $accessToken = $responseContent['access_token'];
             } else {
                 return "Invalid refreshToken";
             }
         }
-
         $response = $this->twitchApiClient->request(Request::METHOD_POST, self::TWITCH_CREATE_POLL_ENDPOINT, [
-            'auth_bearer' => $accessToken != null ? $accessToken : $streamer->getTwitchAccessToken(),
+            'auth_bearer' => $accessToken,
             'headers' => [
                 'Client-Id' => $this->clientId,
             ],
@@ -425,9 +428,12 @@ class TwitchApiService {
     ) {
         // On récupère les données du streamer en BDD
         $streamer = $this->userRepository->findOneBy(['twitchId' => $channelId]);
+        if ($accessToken == '') {
+            $accessToken = $streamer->getTwitchAccessToken();
+        }
         // On vérifie la validité du token du streamer
         $validity = $this->twitchApiClient->request('GET', self::TOKEN_VALIDATE, [
-            'auth_bearer' => $accessToken != null ? $accessToken : $streamer->getTwitchAccessToken(),
+            'auth_bearer' => $accessToken,
         ]);
 
         if ($validity->getStatusCode() !== 200) {
@@ -449,12 +455,13 @@ class TwitchApiService {
                 $streamer->setTwitchExpiresIn($responseContent['expires_in']);
                 $this->doctrine->getManager()->persist($streamer);
                 $this->doctrine->getManager()->flush();
+                $accessToken = $responseContent['access_token'];
             } else {
                 return "Invalid refreshToken";
             }
         }
         $response = $this->twitchApiClient->request(Request::METHOD_PATCH, self::TWITCH_POLLS_ENDPOINT, [
-            'auth_bearer' => $accessToken != null ? $accessToken : $streamer->getTwitchAccessToken(),
+            'auth_bearer' => $accessToken,
             'headers' => [
                 'Client-Id' => $this->clientId,
             ],
@@ -476,9 +483,12 @@ class TwitchApiService {
     ) {
         // On récupère les données du streamer en BDD
         $streamer = $this->userRepository->findOneBy(['twitchId' => $channelId]);
+        if ($accessToken == '') {
+            $accessToken = $streamer->getTwitchAccessToken();
+        }
         // On vérifie la validité du token du streamer
         $validity = $this->twitchApiClient->request('GET', self::TOKEN_VALIDATE, [
-            'auth_bearer' => $accessToken != null ? $accessToken : $streamer->getTwitchAccessToken(),
+            'auth_bearer' => $accessToken,
         ]);
 
         if ($validity->getStatusCode() !== 200) {
@@ -500,12 +510,13 @@ class TwitchApiService {
                 $streamer->setTwitchExpiresIn($responseContent['expires_in']);
                 $this->doctrine->getManager()->persist($streamer);
                 $this->doctrine->getManager()->flush();
+                $accessToken = $responseContent['access_token'];
             } else {
                 return "Invalid refreshToken";
             }
         }
         $response = $this->twitchApiClient->request(Request::METHOD_GET, self::TWITCH_POLLS_ENDPOINT, [
-            'auth_bearer' => $accessToken != null ? $accessToken : $streamer->getTwitchAccessToken(),
+            'auth_bearer' => $accessToken,
             'headers' => [
                 'Client-Id' => $this->clientId,
             ],
@@ -528,9 +539,12 @@ class TwitchApiService {
     ) {
         // On récupère les données du streamer en BDD
         $streamer = $this->userRepository->findOneBy(['twitchId' => $channelId]);
+        if ($accessToken == '') {
+            $accessToken = $streamer->getTwitchAccessToken();
+        }
         // On vérifie la validité du token du streamer
         $validity = $this->twitchApiClient->request('GET', self::TOKEN_VALIDATE, [
-            'auth_bearer' => $accessToken != null ? $accessToken : $streamer->getTwitchAccessToken(),
+            'auth_bearer' => $accessToken,
         ]);
 
         if ($validity->getStatusCode() !== 200) {
@@ -552,12 +566,13 @@ class TwitchApiService {
                 $streamer->setTwitchExpiresIn($responseContent['expires_in']);
                 $this->doctrine->getManager()->persist($streamer);
                 $this->doctrine->getManager()->flush();
+                $accessToken = $responseContent['access_token'];
             } else {
                 return "Invalid refreshToken";
             }
         }
         $response = $this->twitchApiClient->request(Request::METHOD_POST, self::TWITCH_PREDICTIONS_ENDPOINT, [
-            'auth_bearer' => $accessToken != null ? $accessToken : $streamer->getTwitchAccessToken(),
+            'auth_bearer' => $accessToken,
             'headers' => [
                 'Client-Id' => $this->clientId,
             ],
@@ -580,9 +595,12 @@ class TwitchApiService {
     ) {
         // On récupère les données du streamer en BDD
         $streamer = $this->userRepository->findOneBy(['twitchId' => $channelId]);
+        if ($accessToken == '') {
+            $accessToken = $streamer->getTwitchAccessToken();
+        }
         // On vérifie la validité du token du streamer
         $validity = $this->twitchApiClient->request('GET', self::TOKEN_VALIDATE, [
-            'auth_bearer' => $accessToken != null ? $accessToken : $streamer->getTwitchAccessToken(),
+            'auth_bearer' => $accessToken,
         ]);
 
         if ($validity->getStatusCode() !== 200) {
@@ -604,12 +622,13 @@ class TwitchApiService {
                 $streamer->setTwitchExpiresIn($responseContent['expires_in']);
                 $this->doctrine->getManager()->persist($streamer);
                 $this->doctrine->getManager()->flush();
+                $accessToken = $responseContent['access_token'];
             } else {
                 return "Invalid refreshToken";
             }
         }
         $response = $this->twitchApiClient->request(Request::METHOD_GET, self::TWITCH_PREDICTIONS_ENDPOINT, [
-            'auth_bearer' => $accessToken != null ? $accessToken : $streamer->getTwitchAccessToken(),
+            'auth_bearer' => $accessToken,
             'headers' => [
                 'Client-Id' => $this->clientId,
             ],
@@ -632,9 +651,12 @@ class TwitchApiService {
     ) {
         // On récupère les données du streamer en BDD
         $streamer = $this->userRepository->findOneBy(['twitchId' => $channelId]);
+        if ($accessToken == '') {
+            $accessToken = $streamer->getTwitchAccessToken();
+        }
         // On vérifie la validité du token du streamer
         $validity = $this->twitchApiClient->request('GET', self::TOKEN_VALIDATE, [
-            'auth_bearer' => $accessToken != null ? $accessToken : $streamer->getTwitchAccessToken(),
+            'auth_bearer' => $accessToken,
         ]);
 
         if ($validity->getStatusCode() !== 200) {
@@ -656,12 +678,13 @@ class TwitchApiService {
                 $streamer->setTwitchExpiresIn($responseContent['expires_in']);
                 $this->doctrine->getManager()->persist($streamer);
                 $this->doctrine->getManager()->flush();
+                $accessToken = $responseContent['access_token'];
             } else {
                 return "Invalid refreshToken";
             }
         }
         $response = $this->twitchApiClient->request(Request::METHOD_PATCH, self::TWITCH_PREDICTIONS_ENDPOINT, [
-            'auth_bearer' => $accessToken != null ? $accessToken : $streamer->getTwitchAccessToken(),
+            'auth_bearer' => $accessToken,
             'headers' => [
                 'Client-Id' => $this->clientId,
             ],
@@ -684,9 +707,12 @@ class TwitchApiService {
     ) {
         // On récupère les données du streamer en BDD
         $streamer = $this->userRepository->findOneBy(['twitchId' => $channelId]);
+        if ($accessToken == '') {
+            $accessToken = $streamer->getTwitchAccessToken();
+        }
         // On vérifie la validité du token du streamer
         $validity = $this->twitchApiClient->request('GET', self::TOKEN_VALIDATE, [
-            'auth_bearer' => $accessToken != null ? $accessToken : $streamer->getTwitchAccessToken(),
+            'auth_bearer' => $accessToken,
         ]);
 
         if ($validity->getStatusCode() !== 200) {
@@ -708,12 +734,13 @@ class TwitchApiService {
                 $streamer->setTwitchExpiresIn($responseContent['expires_in']);
                 $this->doctrine->getManager()->persist($streamer);
                 $this->doctrine->getManager()->flush();
+                $accessToken = $responseContent['access_token'];
             } else {
                 return "Invalid refreshToken";
             }
         }
         $response = $this->twitchApiClient->request(Request::METHOD_GET, self::TWITCH_PREDICTIONS_ENDPOINT, [
-            'auth_bearer' => $accessToken != null ? $accessToken : $streamer->getTwitchAccessToken(),
+            'auth_bearer' => $accessToken,
             'headers' => [
                 'Client-Id' => $this->clientId,
             ],
@@ -773,7 +800,7 @@ class TwitchApiService {
             $version = $params['version'];
             $condition = $params['condition'];
             $response = $this->twitchApiClient->request(Request::METHOD_POST, self::TWITCH_EVENTSUB_ENDPOINT, [
-                'auth_bearer' => $accessToken != null ? $accessToken : $streamer->getTwitchAccessToken(),
+                'auth_bearer' => $accessToken,
                 'headers' => [
                     'Client-Id' => $this->clientId,
                     'Content-Type' => 'application/json'

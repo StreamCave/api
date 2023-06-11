@@ -827,7 +827,7 @@ class TwitchMiddlewareApi extends AbstractController {
                         'message' => 'You are not a moderator of this channel'
                     ], 403);
                 }
-                $accessToken = null;
+                $accessToken = '';
             }
             $response = $this->twitchApiService->createEventSubSubscription($accessToken, $sessionId, $channelId, $type, $transport);
             // Ajout dans la base de données

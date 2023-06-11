@@ -111,6 +111,8 @@ class TwitchMiddlewareApi extends AbstractController {
                         'message' => 'You are not a moderator of this channel'
                     ], 403);
                 }
+            } else {
+                $accessToken = null;
             }
             $response = $this->twitchApiService->createPoll($accessToken, $channelId, $choices, $title, $duration, $channelPointsVotingEnabled, $channelPointsPerVote);
             if($response == null) {
@@ -180,6 +182,7 @@ class TwitchMiddlewareApi extends AbstractController {
         $data = $this->decodeData($request);
         $err = [];
         $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');
+        $accessToken = $request->cookies->get('t_access_token_sso') ?? array_push($err, 't_access_token_sso');
         $refreshToken = $request->cookies->get('t_refresh_token_sso') ?? array_push($err, 't_refresh_token_sso');
         $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
         $broadcastId = $request->cookies->get('broadcaster_id') ?? array_push($err, 'broadcaster_id');
@@ -209,9 +212,8 @@ class TwitchMiddlewareApi extends AbstractController {
                         'message' => 'You are not a moderator of this channel'
                     ], 403);
                 }
-                $accessToken = null;
             } else {
-                $accessToken = $request->cookies->get('t_access_token_sso');
+                $accessToken = null;
             }
             $response = $this->twitchApiService->getPoll($accessToken, $channelId);
             if (!$response) {
@@ -310,6 +312,8 @@ class TwitchMiddlewareApi extends AbstractController {
                         'message' => 'You are not a moderator of this channel'
                     ], 403);
                 }
+            } else {
+                $accessToken = null;
             }
             $response = $this->twitchApiService->endPoll($accessToken, $channelId, $id, $status);
             if (!$response) {
@@ -389,6 +393,8 @@ class TwitchMiddlewareApi extends AbstractController {
                         'message' => 'You are not a moderator of this channel'
                     ], 403);
                 }
+            } else {
+                $accessToken = null;
             }
             $response = $this->twitchApiService->getPolls($accessToken, $channelId);
             if (!$response) {
@@ -473,6 +479,8 @@ class TwitchMiddlewareApi extends AbstractController {
                         'message' => 'You are not a moderator of this channel'
                     ], 403);
                 }
+            } else {
+                $accessToken = null;
             }
             $response = $this->twitchApiService->createPrediction($accessToken, $channelId, $title, $outcomes, $predictionWindow);
             $predictionId = $response['id'];
@@ -563,6 +571,8 @@ class TwitchMiddlewareApi extends AbstractController {
                         'message' => 'You are not a moderator of this channel'
                     ], 403);
                 }
+            } else {
+                $accessToken = null;
             }
             $response = $this->twitchApiService->getPrediction($accessToken, $channelId);
             if (!$response) {
@@ -646,6 +656,8 @@ class TwitchMiddlewareApi extends AbstractController {
                         'message' => 'You are not a moderator of this channel'
                     ], 403);
                 }
+            } else {
+                $accessToken = null;
             }
             $response = $this->twitchApiService->endPrediction($accessToken, $channelId, $id, $status, $winningOutcomeId);
             if (!$response) {
@@ -725,6 +737,8 @@ class TwitchMiddlewareApi extends AbstractController {
                         'message' => 'You are not a moderator of this channel'
                     ], 403);
                 }
+            } else {
+                $accessToken = null;
             }
             $response = $this->twitchApiService->getAllPrediction($accessToken, $channelId);
             if (!$response) {
@@ -821,6 +835,8 @@ class TwitchMiddlewareApi extends AbstractController {
                         'message' => 'You are not a moderator of this channel'
                     ], 403);
                 }
+            } else {
+                $accessToken = null;
             }
             $response = $this->twitchApiService->createEventSubSubscription($accessToken, $sessionId, $channelId, $type, $transport);
             // Ajout dans la base de données

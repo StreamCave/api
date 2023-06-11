@@ -37,7 +37,6 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
         $this->setPopupGroup($manager);
         $this->setTweetGroup($manager);
         $this->setMapGroupBO3($manager);
-        $this->setPlanningGroup($manager);
         $this->setTwitchPoll($manager);
         $this->setTwitchPrediction($manager);
     }

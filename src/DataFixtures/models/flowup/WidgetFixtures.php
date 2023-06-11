@@ -22,7 +22,6 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $this->setPopup($manager);
         $this->setTweets($manager);
         $this->setMaps($manager);
-        $this->setPlanning($manager);
         $this->setTwitchPoll($manager);
         $this->setTwitchPrediction($manager);
     }

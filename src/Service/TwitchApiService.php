@@ -371,7 +371,7 @@ class TwitchApiService {
         $streamer = $this->userRepository->findOneBy(['twitchId' => $channelId]);
         // On vérifie la validité du token du streamer
         $validity = $this->twitchApiClient->request('GET', self::TOKEN_VALIDATE, [
-            'auth_bearer' => $accessToken != null ? $accessToken : $streamer->getTwitchAccessToken(),
+            'auth_bearer' => $streamer->getTwitchAccessToken(),
         ]);
 
         if ($validity->getStatusCode() !== 200) {
@@ -399,7 +399,7 @@ class TwitchApiService {
         }
 
         $response = $this->twitchApiClient->request(Request::METHOD_GET, self::TWITCH_POLLS_ENDPOINT, [
-            'auth_bearer' => $accessToken != null ? $accessToken : $streamer->getTwitchAccessToken(),
+            'auth_bearer' => $streamer->getTwitchAccessToken(),
             'headers' => [
                 'Client-Id' => $this->clientId,
             ],

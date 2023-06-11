@@ -180,7 +180,6 @@ class TwitchMiddlewareApi extends AbstractController {
         $data = $this->decodeData($request);
         $err = [];
         $jwt = $request->headers->get('Authorization') ?? array_push($err, 'jwt');
-        $accessToken = $request->cookies->get('t_access_token_sso') ?? array_push($err, 't_access_token_sso');
         $refreshToken = $request->cookies->get('t_refresh_token_sso') ?? array_push($err, 't_refresh_token_sso');
         $channelId = $data['channel_id'] ?? array_push($err, 'channel_id');
         $broadcastId = $request->cookies->get('broadcaster_id') ?? array_push($err, 'broadcaster_id');
@@ -210,6 +209,9 @@ class TwitchMiddlewareApi extends AbstractController {
                         'message' => 'You are not a moderator of this channel'
                     ], 403);
                 }
+                $accessToken = null;
+            } else {
+                $accessToken = $request->cookies->get('t_access_token_sso');
             }
             $response = $this->twitchApiService->getPoll($accessToken, $channelId);
             if (!$response) {

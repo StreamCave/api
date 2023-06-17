@@ -118,6 +118,10 @@ class CameraGroup
     #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $metadata = null;
 
+    #[ORM\Column(nullable: true)]
+    #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
+    private array $styles = [];
+
     public function __construct()
     {
         $this->widgets = new ArrayCollection();
@@ -224,6 +228,18 @@ class CameraGroup
     public function setMetadata(?string $metadata): self
     {
         $this->metadata = $metadata;
+
+        return $this;
+    }
+
+    public function getStyles(): array
+    {
+        return $this->styles;
+    }
+
+    public function setStyles(?array $styles): self
+    {
+        $this->styles = $styles;
 
         return $this;
     }

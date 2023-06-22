@@ -11,6 +11,7 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Controller\DeleteWidgetController;
+use App\Controller\EditComponent;
 use App\Repository\WidgetRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -47,6 +48,16 @@ use Symfony\Component\Uid\Uuid;
         openapiContext: ['summary' => 'Ajouter un widget'],
         normalizationContext: ['groups' => ['widget:read']],
         denormalizationContext: ['groups' => ['widget:write']],
+    ),
+    new Post(
+        uriTemplate: '/widgets/components',
+        status: 200,
+        schemes: ['https'],
+        controller: EditComponent::class,
+        normalizationContext: ['groups' => ['widget:read']],
+        denormalizationContext: ['groups' => ['widget:write']],
+        security: 'is_granted("ROLE_ADMIN") or object.getModel().getOverlay().getUserOwner() == user or object.getModel().getOverlay().getUserAccess() == user',
+        securityMessage: 'Vous n\'avez pas accès à ce widget',
     ),
     new Put(
         uriTemplate: '/widgets/{uuid}',
@@ -167,6 +178,10 @@ class Widget
     #[ORM\ManyToOne(inversedBy: 'widgets')]
     #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
     private ?TwitchGroup $twitchGroup = null;
+
+    #[ORM\Column(nullable: true)]
+    #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
+    private array $styles = [];
 
     public function __construct()
     {
@@ -444,6 +459,18 @@ class Widget
     public function setTwitchGroup(?TwitchGroup $twitchGroup): self
     {
         $this->twitchGroup = $twitchGroup;
+
+        return $this;
+    }
+
+    public function getStyles(): array
+    {
+        return $this->styles;
+    }
+
+    public function setStyles(?array $styles): self
+    {
+        $this->styles = $styles;
 
         return $this;
     }

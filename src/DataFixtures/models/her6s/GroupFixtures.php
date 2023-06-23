@@ -36,7 +36,7 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
 
     private function setCameraGroup(ObjectManager $manager): void
     {
-        $players = ['Alpha', 'Bravo', 'Charlie', 'Delta', 'Echo', 'Foxtrot', 'Golf', 'Hotel', 'India', 'Juliett'];
+        $players = ['Alpha', 'Bravo', 'Charlie', 'Delta', 'Echo'];
 
         foreach ($players as $key => $player) {
             $camera = new CameraGroup();

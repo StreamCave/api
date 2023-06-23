@@ -34,7 +34,7 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
     }
     private function setCameras(ObjectManager $manager): void
     {
-        $players = ['Alpha', 'Bravo', 'Charlie', 'Delta', 'Echo', 'Foxtrot', 'Golf', 'Hotel', 'India', 'Juliett'];
+        $players = ['Alpha', 'Bravo', 'Charlie', 'Delta', 'Echo'];
         $widget = new Widget();
         $widget->setUuid(Uuid::v5(Uuid::v6(), 'Cameras'));
         $widget->setName('Cameras');

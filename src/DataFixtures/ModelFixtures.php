@@ -24,8 +24,8 @@ class ModelFixtures extends Fixture
         $model->setName('streamcave');
         $model->setDescription('Ceci est le modèle StreamCave.');
         $model->setPrice(0);
-        $model->setPreview("models/streamcave/preview.jpg");
-        $model->setImage("streamcave/logo_blue.svg");
+        $model->setPreview("https://cdn.streamcave.tv/models/streamcave/preview.jpg");
+        $model->setImage("https://cdn.streamcave.tv/streamcave/logo_blue.svg");
         $model->setRules([
             "Maps" => [
                 "min" => 1,
@@ -53,8 +53,8 @@ class ModelFixtures extends Fixture
         $model->setName('louvard');
         $model->setDescription('Ceci est le modèle Louvard.');
         $model->setPrice(0);
-        $model->setPreview("models/louvard/preview.jpg");
-        $model->setImage("models/louvard/logo-louvard.png");
+        $model->setPreview("https://cdn.streamcave.tv/models/louvard/preview.jpg");
+        $model->setImage("https://cdn.streamcave.tv/models/louvard/logo-louvard.png");
         $model->setRules([
             "Maps" => [
                 "min" => 1,
@@ -83,8 +83,8 @@ class ModelFixtures extends Fixture
         $model->setName('flowup');
         $model->setDescription('Ceci est le modèle FlowUp.');
         $model->setPrice(0);
-        $model->setPreview("models/flowup/preview.jpg");
-        $model->setImage("models/flowup/Logosigne_Black.png");
+        $model->setPreview("https://cdn.streamcave.tv/models/flowup/preview.jpg");
+        $model->setImage("https://cdn.streamcave.tv/models/flowup/Logosigne_Black.png");
         $model->setRules([
             "Maps" => [
                 "min" => 1,
@@ -113,8 +113,8 @@ class ModelFixtures extends Fixture
         $model->setName('her6s');
         $model->setDescription('Ceci est le modèle HER6S.');
         $model->setPrice(0);
-        $model->setPreview("models/her6s/preview.jpg");
-        $model->setImage("streamcave/logo_blue.svg");
+        $model->setPreview("https://cdn.streamcave.tv/models/her6s/preview.jpg");
+        $model->setImage("https://cdn.streamcave.tv/streamcave/logo_blue.svg");
 
         $model->setRules([
             "Maps" => [
@@ -144,8 +144,8 @@ class ModelFixtures extends Fixture
         $model->setName('yunktis');
         $model->setDescription('Ceci est le modèle Yunktis.');
         $model->setPrice(0);
-        $model->setPreview("models/yunktis/preview.jpg");
-        $model->setImage("streamcave/logo_blue.svg");
+        $model->setPreview("https://cdn.streamcave.tv/models/yunktis/preview.jpg");
+        $model->setImage("https://cdn.streamcave.tv/streamcave/logo_blue.svg");
         $model->setRules([
             "Maps" => [
                 "min" => 1,

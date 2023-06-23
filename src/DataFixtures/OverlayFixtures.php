@@ -24,6 +24,7 @@ class OverlayFixtures extends Fixture implements DependentFixtureInterface
         $overlay->setUuid("streamcave");
         $overlay->setName('StreamCave');
         $overlay->setModel($this->getReference('model-streamcave'));
+        $overlay->setImage("https://cdn.streamcave.tv/streamcave/logo_blue.svg");
         $overlay->setTwitchChannelID("109306231");
         $overlay->setTwitchChannelName("sixquatre");
         $overlay->setUserOwner($this->getReference('default-admin-user-2'));
@@ -41,6 +42,7 @@ class OverlayFixtures extends Fixture implements DependentFixtureInterface
         $overlay->setUuid('flowup');
         $overlay->setName('FlowUp');
         $overlay->setModel($this->getReference('model-flowup'));
+        $overlay->setImage("https://cdn.streamcave.tv/models/flowup/Logosigne_Black.png");
         $overlay->setTwitchChannelID("635730430");
         $overlay->setTwitchChannelName("sixquatre");
         $overlay->setUserOwner($this->getReference('default-admin-user-2'));
@@ -59,6 +61,7 @@ class OverlayFixtures extends Fixture implements DependentFixtureInterface
         $overlay->setUuid('sixquatre');
         $overlay->setName('Sixquatre');
         $overlay->setModel($this->getReference('model-her6s'));
+        $overlay->setImage("https://cdn.streamcave.tv/streamcave/logo_blue.svg");
         $overlay->setTwitchChannelID("109306231");
         $overlay->setTwitchChannelName("sixquatre");
         $overlay->setUserOwner($this->getReference('default-admin-user-2'));
@@ -76,6 +79,7 @@ class OverlayFixtures extends Fixture implements DependentFixtureInterface
         $overlay->setUuid('yunktis');
         $overlay->setName('Yunktis');
         $overlay->setModel($this->getReference('model-yunktis'));
+        $overlay->setImage("https://cdn.streamcave.tv/Yunktis.png");
         $overlay->setTwitchChannelID("109306231");
         $overlay->setTwitchChannelName("sixquatre");
         $overlay->setUserOwner($this->getReference('default-admin-user-2'));

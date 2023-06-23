@@ -25,6 +25,7 @@ class ModelFixtures extends Fixture
         $model->setDescription('Ceci est le modèle StreamCave.');
         $model->setPrice(0);
         $model->setPreview("https://cdn.streamcave.tv/models/streamcave/preview.jpg");
+        $model->setImage("https://cdn.streamcave.tv/streamcave/logo_blue.svg");
         $model->setRules([
             "Maps" => [
                 "min" => 1,
@@ -53,6 +54,7 @@ class ModelFixtures extends Fixture
         $model->setDescription('Ceci est le modèle Louvard.');
         $model->setPrice(0);
         $model->setPreview("https://cdn.streamcave.tv/models/louvard/preview.jpg");
+        $model->setImage("https://cdn.streamcave.tv/models/louvard/logo-louvard.png");
         $model->setRules([
             "Maps" => [
                 "min" => 1,
@@ -82,6 +84,7 @@ class ModelFixtures extends Fixture
         $model->setDescription('Ceci est le modèle FlowUp.');
         $model->setPrice(0);
         $model->setPreview("https://cdn.streamcave.tv/models/flowup/preview.jpg");
+        $model->setImage("https://cdn.streamcave.tv/models/flowup/Logosigne_Black.png");
         $model->setRules([
             "Maps" => [
                 "min" => 1,
@@ -111,6 +114,8 @@ class ModelFixtures extends Fixture
         $model->setDescription('Ceci est le modèle HER6S.');
         $model->setPrice(0);
         $model->setPreview("https://cdn.streamcave.tv/models/her6s/preview.jpg");
+        $model->setImage("https://cdn.streamcave.tv/streamcave/logo_blue.svg");
+
         $model->setRules([
             "Maps" => [
                 "min" => 1,
@@ -140,6 +145,7 @@ class ModelFixtures extends Fixture
         $model->setDescription('Ceci est le modèle Yunktis.');
         $model->setPrice(0);
         $model->setPreview("https://cdn.streamcave.tv/models/yunktis/preview.jpg");
+        $model->setImage("https://cdn.streamcave.tv/streamcave/logo_blue.svg");
         $model->setRules([
             "Maps" => [
                 "min" => 1,

@@ -38,7 +38,6 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
         $this->setPopupGroup($manager);
         $this->setTweetGroup($manager);
         $this->setMapGroupBO3($manager);
-        $this->setPlanningGroup($manager);
         $this->setTwitchPoll($manager);
         $this->setTwitchPrediction($manager);
     }
@@ -192,29 +191,6 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
             $group->setPickTeam("Alpha");
             $group->setWinTeam($winTeam[$key]);
             $this->addReference('map-group-' . self::MODEL . '-bo3-' . $map, $group);
-
-            $manager->persist($group);
-            $manager->flush();
-        }
-    }
-
-    private function setPlanningGroup(ObjectManager $manager): void
-    {
-        $dates = [new \DateTimeImmutable("2023-03-31 12:00:00"), new \DateTimeImmutable("2023-03-31 14:00:00"), new \DateTimeImmutable("2023-03-31 16:00:00")];
-        $teamA = ['Alpha', 'Beta', 'Charlie'];
-        $logoA = ['https://cdn.streamcave.tv/teams/alpha.png', 'https://cdn.streamcave.tv/teams/beta.png', 'https://cdn.streamcave.tv/teams/alpha.png'];
-        $teamB = ['Delta', 'Echo', 'Foxtrot'];
-        $logoB = ['https://cdn.streamcave.tv/teams/beta.png', 'https://cdn.streamcave.tv/teams/alpha.png', 'https://cdn.streamcave.tv/teams/beta.png'];
-
-        foreach ($dates as $key => $date) {
-            $group = new PlanningGroup();
-            $group->setUuid(Uuid::v5(Uuid::v6(), 'Planning RoadToLan ' . $teamA[$key] . ' vs ' . $teamB[$key]));
-            $group->setTeamA($teamA[$key]);
-            $group->setLogoA($logoA[$key]);
-            $group->setTeamB($teamB[$key]);
-            $group->setLogoB($logoB[$key]);
-            $group->setStartDate($date);
-            $this->addReference('planning-group-' . self::MODEL . '-' . $teamA[$key] . '-vs-' . $teamB[$key], $group);
 
             $manager->persist($group);
             $manager->flush();

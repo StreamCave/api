@@ -23,7 +23,6 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $this->setPopup($manager);
         $this->setTweets($manager);
         $this->setMaps($manager);
-        $this->setPlanning($manager);
         $this->setTwitchPoll($manager);
         $this->setTwitchPrediction($manager);
     }
@@ -147,22 +146,6 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $widget->addMapGroup($this->getReference('map-group-' . self::MODEL .  '-bo3-border'));
         $widget->addMapGroup($this->getReference('map-group-' . self::MODEL .  '-bo3-oregon'));
         $widget->addMapGroup($this->getReference('map-group-' . self::MODEL .  '-bo3-kafe'));
-        $widget->setOverlay($this->getReference('overlay-' . self::MODEL));
-
-        $manager->persist($widget);
-        $manager->flush();
-    }
-
-    private function setPlanning(ObjectManager $manager): void
-    {
-        $widget = new Widget();
-        $widget->setUuid(Uuid::v5(Uuid::v6(), 'Planning'));
-        $widget->setName('Planning');
-        $widget->setDescription('Planning.');
-        $widget->setVisible(false);
-        $widget->addPlanningGroup($this->getReference('planning-group-' . self::MODEL .  '-Alpha-vs-Delta'));
-        $widget->addPlanningGroup($this->getReference('planning-group-' . self::MODEL .  '-Beta-vs-Echo'));
-        $widget->addPlanningGroup($this->getReference('planning-group-' . self::MODEL .  '-Charlie-vs-Foxtrot'));
         $widget->setOverlay($this->getReference('overlay-' . self::MODEL));
 
         $manager->persist($widget);

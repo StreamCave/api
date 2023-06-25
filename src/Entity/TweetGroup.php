@@ -119,16 +119,6 @@ class TweetGroup
     #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
     private ?string $avatar = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['tweet_group:read', 'tweet_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
-    #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
-    private ?string $mediaType = null;
-
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups(['tweet_group:read', 'tweet_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
-    #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
-    private ?string $mediaUrl = null;
-
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Groups(['tweet_group:read', 'tweet_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     #[ApiProperty(securityPostDenormalize: 'is_granted("ROLE_ADMIN")')]
@@ -156,6 +146,10 @@ class TweetGroup
     #[ORM\Column(length: 255)]
     #[Groups(['tweet_group:read', 'tweet_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private ?string $hashtag = null;
+
+    #[ORM\Column(type: Types::ARRAY, nullable: true)]
+    #[Groups(['tweet_group:read', 'tweet_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
+    private array $medias = [];
 
     public function __construct()
     {
@@ -214,30 +208,6 @@ class TweetGroup
     public function setAvatar(?string $avatar): self
     {
         $this->avatar = $avatar;
-
-        return $this;
-    }
-
-    public function getMediaType(): ?string
-    {
-        return $this->mediaType;
-    }
-
-    public function setMediaType(?string $mediaType): self
-    {
-        $this->mediaType = $mediaType;
-
-        return $this;
-    }
-
-    public function getMediaUrl(): ?string
-    {
-        return $this->mediaUrl;
-    }
-
-    public function setMediaUrl(?string $mediaUrl): self
-    {
-        $this->mediaUrl = $mediaUrl;
 
         return $this;
     }
@@ -340,6 +310,18 @@ class TweetGroup
     public function setHashtag(string $hashtag): self
     {
         $this->hashtag = $hashtag;
+
+        return $this;
+    }
+
+    public function getMedias(): array
+    {
+        return $this->medias;
+    }
+
+    public function setMedias(?array $medias): self
+    {
+        $this->medias = $medias;
 
         return $this;
     }

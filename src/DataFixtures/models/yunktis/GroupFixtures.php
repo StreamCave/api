@@ -165,8 +165,6 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
         $group = new TweetGroup();
         $group->setPseudo('BRIETGAME');
         $group->setAt('brietgame');
-        $group->setMediaType('image');
-        $group->setMediaUrl('https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png');
         $group->setContent('Bienvenue sur la roadtolan !');
         $group->setVisible(false);
         $group->setOverlayId($this->getReference('overlay-' . self::MODEL)->getUuid());

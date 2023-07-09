@@ -56,6 +56,54 @@ class GetAllOverlaysController extends AbstractController
         $user = $this->userRepository->findOneBy(['uuid' => $decodedJwtToken['uuid']]);
         $overlaysAccess = $this->overlayRepository->findAllAccess($user->getUuid());
         $overlayOwner = $this->overlayRepository->findOneById($user->getId());
+
+        // Afficher que les id et nom des overlays qui ont été partagés avec l'utilisateur
+        $overlaysAccess = array_map(function($overlay) {
+            $userAccess = $overlay->getUserAccess()->getValues();
+            $userAccess = array_map(function($user) {
+                return [
+                    'uuid' => $user->getUuid(),
+                ];
+            }, $userAccess);
+            $model = array($overlay->getModel());
+            $model = array_map(function($model) {
+                return [
+                    'uuid' => $model->getUuid(),
+                    'tags' => $model->getTags(),
+                ];
+            }, $model);
+            return [
+                'uuid' => $overlay->getUuid(),
+                'name' => $overlay->getName(),
+                'image' => $overlay->getImage(),
+                'Model' => $model,
+                'userAccess' => $userAccess,
+            ];
+        }, $overlaysAccess);
+
+        $overlayOwner = array_map(function($overlay) {
+            // Object to array
+            $userAccess = $overlay->getUserAccess()->getValues();
+            $userAccess = array_map(function($user) {
+                return [
+                    'uuid' => $user->getUuid(),
+                ];
+            }, $userAccess);
+            $model = array($overlay->getModel());
+            $model = array_map(function($model) {
+                return [
+                    'uuid' => $model->getUuid(),
+                    'tags' => $model->getTags(),
+                ];
+            }, $model);
+            return [
+                'uuid' => $overlay->getUuid(),
+                'name' => $overlay->getName(),
+                'image' => $overlay->getImage(),
+                'Model' => $model,
+                'userAccess' => $userAccess,
+            ];
+        }, $overlayOwner);
         $overlays = array(
             'overlays' => $overlayOwner,
             'overlaysAccess' => $overlaysAccess

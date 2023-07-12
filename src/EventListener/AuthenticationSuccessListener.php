@@ -28,18 +28,19 @@ class AuthenticationSuccessListener
 
         if (!$user instanceof UserInterface) {
             return;
-        } else {
-            $this->userRepository->find($user->getId())->setToken(Uuid::v4());
-        }
-
-        // Vérifie si le token existe déjà et si oui le regénère
-        if ($this->userRepository->findOneBy(['token' => $this->token])) {
-            $this->token = Uuid::v4();
         }
 
         // Remplace le token existant par le nouveau à l'user
         $em = $this->doctrine->getManager();
-        $user->setToken($this->token);
+        if (count($user->getToken()) != 2) {
+            // Ajouter le token dans le tableau à la fin
+            $user->setToken(array_merge($user->getToken(), [Uuid::v4()]));
+        } else {
+            // On supprime l'index 0 du tableau
+            $token = $user->getToken();
+            array_shift($token);
+            $user->setToken(array_merge($token, [Uuid::v4()]));
+        }
         $user->setSsoLogin("normal");
         $em->persist($user);
         $em->flush();
@@ -48,7 +49,7 @@ class AuthenticationSuccessListener
         $response->headers->setCookie(
             new Cookie(
                 'refresh_token',
-                $user->getToken(),
+                $user->getToken()[count($user->getToken()) - 1],
                 new \DateTime('+1 day'),
                 '/',
                 $_ENV['COOKIE_DOMAIN'],

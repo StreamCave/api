@@ -38,13 +38,36 @@ class TokenController extends AbstractController
     {
         $this->token = $tokenService->translateTokenFromCookie($request->cookies->get('refresh_token'));
 
-        $user = $userRepository->findOneBy(['token' => $this->token]);
+        // Récupérer l'utilisateur en fonction du token
+        $users = $userRepository->findAll();
+        $userdb = null;
+        foreach ($users as $user) {
+            // Si le token est dans le tableau
+            foreach ($user->getToken() as $token) {
+                if ($token == $this->token) {
+                    $userdb = $user;
+                }
+            }
+        }
         // Régénérer le refresh_token
-        if (!$user) {
+        if (!$userdb) {
             return $this->json([
-                'message' => 'missing credentials',
+                'message' => 'bad refresh_token',
             ], Response::HTTP_UNAUTHORIZED);
         }
+        // Regénérer le refresh_token
+        if (count($user->getToken()) != 2) {
+            // Ajouter le token dans le tableau à la fin
+            $user->setToken(array_merge($user->getToken(), [Uuid::v4()]));
+        } else {
+            // On supprime l'index 0 du tableau
+            $token = $user->getToken();
+            array_shift($token);
+            $user->setToken(array_merge($token, [Uuid::v4()]));
+        }
+        $em = $doctrine->getManager();
+        $em->persist($user);
+        $em->flush();
 
         // Régénérer le token JWT
         $JWTtoken = $this->jwtManager->create($user);

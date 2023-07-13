@@ -145,6 +145,10 @@ class Overlay
     #[Groups(['overlay:read','overlay:write'])]
     private ?string $twitchChannelName = null;
 
+    #[ORM\Column(nullable: true)]
+    #[Groups(['overlay:read','overlay:write'])]
+    private ?bool $listened = null;
+
     public function __construct()
     {
         $this->userAccess = new ArrayCollection();
@@ -314,6 +318,18 @@ class Overlay
     public function setTwitchChannelName(?string $twitchChannelName): self
     {
         $this->twitchChannelName = $twitchChannelName;
+
+        return $this;
+    }
+
+    public function isListened(): ?bool
+    {
+        return $this->listened;
+    }
+
+    public function setListened(?bool $listened): static
+    {
+        $this->listened = $listened;
 
         return $this;
     }

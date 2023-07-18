@@ -45,11 +45,10 @@ class AuthenticationSuccessListener
         $em->persist($user);
         $em->flush();
         $event->setData($data);
-
         $response->headers->setCookie(
             new Cookie(
                 'refresh_token',
-                $user->getToken()[count($user->getToken()) - 1],
+                count($user->getToken()) == 2 ? $user->getToken()[1] : $user->getToken()[0],
                 new \DateTime('+1 day'),
                 '/',
                 $_ENV['COOKIE_DOMAIN'],

@@ -24,16 +24,30 @@ class LogoutController extends AbstractController
     {
 
         $this->token = $tokenService->translateTokenFromCookie($request->cookies->get('refresh_token'));
-        $user = $userRepository->findOneBy(['token' => $this->token]);
-        if (!$user) {
+        // Récupérer l'utilisateur en fonction du token
+        $users = $userRepository->findAll();
+        $userdb = null;
+        foreach ($users as $user) {
+            // Si le token est dans le tableau
+            foreach ($user->getToken() as $token) {
+                if ($token == $this->token) {
+                    $userdb = $user;
+                }
+            }
+        }
+        if (!$userdb) {
             return $this->json([
                 'message' => 'missing credentials',
             ], 401);
         }
-        // Supprimer le dernier token
-        $user->setToken($user->getToken()[0]);
+        // Supprimer le token du cookie dans getToken
+        foreach ($userdb->getToken() as $token) {
+            if ($token != $this->token) {
+                $userdb->setToken(array($token));
+            }
+        }
         $em = $doctrine->getManager();
-        $em->persist($user);
+        $em->persist($userdb);
         $em->flush();
 
         $response = new JsonResponse([ 'message' => 'Logged Out' ], 200);

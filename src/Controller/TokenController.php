@@ -55,37 +55,12 @@ class TokenController extends AbstractController
                 'message' => 'bad refresh_token',
             ], Response::HTTP_UNAUTHORIZED);
         }
-        // Regénérer le refresh_token
-        if (count($userdb->getToken()) != 2) {
-            // Ajouter le token dans le tableau à la fin
-            $userdb->setToken(array_merge($user->getToken(), [Uuid::v4()]));
-        } else {
-            // On supprime l'index 0 du tableau
-            $token = $userdb->getToken();
-            array_shift($token);
-            $userdb->setToken(array_merge($token, [Uuid::v4()]));
-        }
-        $em = $doctrine->getManager();
-        $em->persist($userdb);
-        $em->flush();
 
         // Régénérer le token JWT
         $JWTtoken = $this->jwtManager->create($userdb);
         $response = new JsonResponse([
             'token' => $JWTtoken,
         ], 200);
-        $response->headers->setCookie(
-            new Cookie(
-                'refresh_token',
-                $user->getToken()[count($user->getToken()) - 1],
-                new \DateTime('+1 day'),
-                '/',
-                $_ENV['COOKIE_DOMAIN'],
-                true,
-                true,
-                false,
-                'none'
-            ));
         return $response;
     }
 

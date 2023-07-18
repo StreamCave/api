@@ -9,6 +9,7 @@ use App\Service\TwitchApiService;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -49,7 +50,6 @@ class TokenController extends AbstractController
                 }
             }
         }
-        // Régénérer le refresh_token
         if (!$userdb) {
             return $this->json([
                 'message' => 'bad refresh_token',
@@ -74,6 +74,18 @@ class TokenController extends AbstractController
         $response = new JsonResponse([
             'token' => $JWTtoken,
         ], 200);
+        $response->headers->setCookie(
+            new Cookie(
+                'refresh_token',
+                $user->getToken()[count($user->getToken()) - 1],
+                new \DateTime('+1 day'),
+                '/',
+                $_ENV['COOKIE_DOMAIN'],
+                true,
+                true,
+                false,
+                'none'
+            ));
         return $response;
     }
 

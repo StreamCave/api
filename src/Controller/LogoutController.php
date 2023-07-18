@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Uid\Uuid;
 
 class LogoutController extends AbstractController
 {
@@ -29,8 +30,8 @@ class LogoutController extends AbstractController
                 'message' => 'missing credentials',
             ], 401);
         }
-
-        $user->setToken(null);
+        // Supprimer le dernier token
+        $user->setToken($user->getToken()[0]);
         $em = $doctrine->getManager();
         $em->persist($user);
         $em->flush();

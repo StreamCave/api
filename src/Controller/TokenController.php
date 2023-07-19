@@ -9,6 +9,7 @@ use App\Service\TwitchApiService;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -49,25 +50,11 @@ class TokenController extends AbstractController
                 }
             }
         }
-        // Régénérer le refresh_token
         if (!$userdb) {
             return $this->json([
                 'message' => 'bad refresh_token',
             ], Response::HTTP_UNAUTHORIZED);
         }
-        // Regénérer le refresh_token
-        if (count($userdb->getToken()) != 2) {
-            // Ajouter le token dans le tableau à la fin
-            $userdb->setToken(array_merge($user->getToken(), [Uuid::v4()]));
-        } else {
-            // On supprime l'index 0 du tableau
-            $token = $userdb->getToken();
-            array_shift($token);
-            $userdb->setToken(array_merge($token, [Uuid::v4()]));
-        }
-        $em = $doctrine->getManager();
-        $em->persist($userdb);
-        $em->flush();
 
         // Régénérer le token JWT
         $JWTtoken = $this->jwtManager->create($userdb);

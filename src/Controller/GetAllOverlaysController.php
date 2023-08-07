@@ -76,6 +76,7 @@ class GetAllOverlaysController extends AbstractController
                 'uuid' => $overlay->getUuid(),
                 'name' => $overlay->getName(),
                 'image' => $overlay->getImage(),
+                'listened' => $overlay->isListened(),
                 'Model' => $model,
                 'userAccess' => $userAccess,
             ];
@@ -100,6 +101,7 @@ class GetAllOverlaysController extends AbstractController
                 'uuid' => $overlay->getUuid(),
                 'name' => $overlay->getName(),
                 'image' => $overlay->getImage(),
+                'listened' => $overlay->isListened(),
                 'Model' => $model,
                 'userAccess' => $userAccess,
             ];

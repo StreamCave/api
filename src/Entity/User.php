@@ -109,9 +109,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:read', 'overlay:read'])]
     private Collection $overlaysAccess;
 
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
-    private ?string $token = null;
-
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
     private ?\DateTimeInterface $createdDate;
 
@@ -153,6 +150,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     // Affilié ou non
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $twitchStatus = null;
+
+    #[ORM\Column(nullable: true)]
+    private array $token = [];
 
     public function __construct()
     {
@@ -307,18 +307,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getToken(): ?string
-    {
-        return $this->token;
-    }
-
-    public function setToken(?string $token): self
-    {
-        $this->token = $token;
-
-        return $this;
-    }
-
     public function getCreatedDate(): ?\DateTimeInterface
     {
         return $this->createdDate;
@@ -447,6 +435,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setTwitchStatus(?string $twitchStatus): self
     {
         $this->twitchStatus = $twitchStatus;
+
+        return $this;
+    }
+
+    public function getToken(): array
+    {
+        return $this->token;
+    }
+
+    public function setToken(?array $token): static
+    {
+        $this->token = $token;
 
         return $this;
     }

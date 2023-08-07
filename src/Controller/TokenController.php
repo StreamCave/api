@@ -9,6 +9,7 @@ use App\Service\TwitchApiService;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -38,16 +39,25 @@ class TokenController extends AbstractController
     {
         $this->token = $tokenService->translateTokenFromCookie($request->cookies->get('refresh_token'));
 
-        $user = $userRepository->findOneBy(['token' => $this->token]);
-        // Régénérer le refresh_token
-        if (!$user) {
+        // Récupérer l'utilisateur en fonction du token
+        $users = $userRepository->findAll();
+        $userdb = null;
+        foreach ($users as $user) {
+            // Si le token est dans le tableau
+            foreach ($user->getToken() as $token) {
+                if ($token == $this->token) {
+                    $userdb = $user;
+                }
+            }
+        }
+        if (!$userdb) {
             return $this->json([
-                'message' => 'missing credentials',
+                'message' => 'bad refresh_token',
             ], Response::HTTP_UNAUTHORIZED);
         }
 
         // Régénérer le token JWT
-        $JWTtoken = $this->jwtManager->create($user);
+        $JWTtoken = $this->jwtManager->create($userdb);
         $response = new JsonResponse([
             'token' => $JWTtoken,
         ], 200);

@@ -232,7 +232,6 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
     private function setStatGroup(ObjectManager $manager): void
     {
         $group = new StatGroup();
-        $group->setUuid(Uuid::v5(Uuid::v6(), 'Stat Group'));
         $group->setMatchId('matchId');
         $group->setOverlayId('overlayId');
         $group->setStatus('new');

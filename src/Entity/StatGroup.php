@@ -43,10 +43,6 @@ class StatGroup
     #[Groups(['stat_group:read','widget:read','overlay:read','model:read'])]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    #[Groups(['stat_group:read','stat_group:write','widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
-    private ?string $uuid = null;
-
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['stat_group:read','stat_group:write','widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
     private ?string $matchId = null;
@@ -71,18 +67,6 @@ class StatGroup
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getUuid(): ?string
-    {
-        return $this->uuid;
-    }
-
-    public function setUuid(string $uuid): static
-    {
-        $this->uuid = $uuid;
-
-        return $this;
     }
 
     public function getMatchId(): ?string

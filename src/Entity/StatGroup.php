@@ -59,6 +59,10 @@ class StatGroup
     #[Groups(['stat_group:read','stat_group:write','widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
     private ?string $status = null;
 
+    #[ORM\Column(nullable: true)]
+    #[Groups(['stat_group:read','stat_group:write','widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
+    private array $score = [];
+
     public function __construct()
     {
         $this->widgets = new ArrayCollection();
@@ -128,6 +132,18 @@ class StatGroup
     public function setStatus(?string $status): static
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    public function getScore(): array
+    {
+        return $this->score;
+    }
+
+    public function setScore(?array $score): static
+    {
+        $this->score = $score;
 
         return $this;
     }

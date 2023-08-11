@@ -180,7 +180,7 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $widget->setDescription('Stats.');
         $widget->setVisible(false);
         $widget->setOverlay($this->getReference('overlay-' . self::MODEL));
-        $widget->addStatGroup($this->getReference('stat-group-' . self::MODEL));
+//        $widget->addStatGroup($this->getReference('stat-group-' . self::MODEL));
         $manager->persist($widget);
         $manager->flush();
     }

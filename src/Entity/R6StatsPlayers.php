@@ -3,11 +3,8 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Post;
-use ApiPlatform\Metadata\Put;
 use App\Repository\R6StatsPlayersRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -35,15 +32,16 @@ use Symfony\Component\Serializer\Annotation\Groups;
 class R6StatsPlayers
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
     #[ORM\Column]
     #[Groups(['r6_stats_players:read'])]
     private ?string $id = null;
 
+    #[ORM\Id]
     #[ORM\Column(length: 255)]
     #[Groups(['r6_stats_players:read', 'r6_stats_players:write'])]
     private ?string $matchId = null;
 
+    #[ORM\Id]
     #[ORM\Column(nullable: true)]
     #[Groups(['r6_stats_players:read', 'r6_stats_players:write'])]
     private ?int $round = null;

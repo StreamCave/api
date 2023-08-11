@@ -3,14 +3,8 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Patch;
-use ApiPlatform\Metadata\Post;
-use ApiPlatform\Metadata\Put;
-use App\Controller\DeleteWidgetController;
-use App\Controller\EditComponent;
 use App\Repository\StatGroupRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -38,15 +32,16 @@ use Symfony\Component\Serializer\Annotation\Groups;
 class StatGroup
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
     #[ORM\Column]
     #[Groups(['stat_group:read','widget:read','overlay:read','model:read'])]
-    private ?int $id = null;
+    private ?string $id = null;
 
+    #[ORM\Id]
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['stat_group:read','stat_group:write','widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
     private ?string $matchId = null;
 
+    #[ORM\Id]
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['stat_group:read','stat_group:write','widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
     private ?string $overlayId = null;
@@ -68,9 +63,16 @@ class StatGroup
         $this->widgets = new ArrayCollection();
     }
 
-    public function getId(): ?int
+    public function getId(): ?string
     {
         return $this->id;
+    }
+
+    public function setId(string $id): static
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     public function getMatchId(): ?string

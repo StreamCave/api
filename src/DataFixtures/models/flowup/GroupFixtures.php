@@ -12,6 +12,7 @@ use App\Entity\MatchGroup;
 use App\Entity\PlanningGroup;
 use App\Entity\PollGroup;
 use App\Entity\PopupGroup;
+use App\Entity\R6StatsPlayers;
 use App\Entity\StatGroup;
 use App\Entity\TweetGroup;
 use App\Entity\TwitchGroup;
@@ -231,7 +232,17 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
 
     private function setStatGroup(ObjectManager $manager): void
     {
+        $R6StatsPlayers = new R6StatsPlayers();
+        $R6StatsPlayers->setPseudo('BRIETGAME');
+        $R6StatsPlayers->setId('id');
+        $R6StatsPlayers->setMatchId('matchId');
+        $R6StatsPlayers->setRound(1);
+
+        $manager->persist($R6StatsPlayers);
+        $manager->flush();
+
         $group = new StatGroup();
+        $group->setId('id');
         $group->setMatchId('matchId');
         $group->setOverlayId('overlayId');
         $group->setStatus('new');

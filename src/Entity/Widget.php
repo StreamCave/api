@@ -179,7 +179,7 @@ class Widget
     #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
     private ?TwitchGroup $twitchGroup = null;
 
-    #[ORM\ManyToMany(targetEntity: StatGroup::class, inversedBy: 'widgets')]
+    #[ORM\ManyToMany(targetEntity: StatGroup::class, inversedBy: 'widgets', cascade: ['persist'])]
     #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
     private Collection $StatGroup;
 

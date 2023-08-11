@@ -179,9 +179,14 @@ class Widget
     #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
     private ?TwitchGroup $twitchGroup = null;
 
+    #[ORM\ManyToMany(targetEntity: StatGroup::class, inversedBy: 'widgets')]
+    #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
+    private Collection $StatGroup;
+
     #[ORM\Column(nullable: true)]
     #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
     private array $styles = [];
+
 
     public function __construct()
     {
@@ -192,6 +197,7 @@ class Widget
         $this->mapGroup = new ArrayCollection();
         $this->planningGroup = new ArrayCollection();
         $this->matchGroup = new ArrayCollection();
+        $this->StatGroup = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -471,6 +477,30 @@ class Widget
     public function setStyles(?array $styles): self
     {
         $this->styles = $styles;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, StatGroup>
+     */
+    public function getStatGroup(): Collection
+    {
+        return $this->StatGroup;
+    }
+
+    public function addStatGroup(StatGroup $statGroup): static
+    {
+        if (!$this->StatGroup->contains($statGroup)) {
+            $this->StatGroup->add($statGroup);
+        }
+
+        return $this;
+    }
+
+    public function removeStatGroup(StatGroup $statGroup): static
+    {
+        $this->StatGroup->removeElement($statGroup);
 
         return $this;
     }

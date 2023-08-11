@@ -24,6 +24,7 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $this->setMaps($manager);
         $this->setTwitchPoll($manager);
         $this->setTwitchPrediction($manager);
+        $this->setStats($manager);
     }
 
     private function setTopBar(ObjectManager $manager): void
@@ -167,6 +168,19 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
         $widget->setVisible(false);
         $widget->setOverlay($this->getReference('overlay-' . self::MODEL));
         $widget->setTwitchGroup($this->getReference('twitch-prediction-' . self::MODEL));
+        $manager->persist($widget);
+        $manager->flush();
+    }
+
+    private function setStats(ObjectManager $manager): void
+    {
+        $widget = new Widget();
+        $widget->setUuid(Uuid::v5(Uuid::v6(), 'Stats'));
+        $widget->setName('Stats');
+        $widget->setDescription('Stats.');
+        $widget->setVisible(false);
+        $widget->setOverlay($this->getReference('overlay-' . self::MODEL));
+        $widget->addStatGroup($this->getReference('stat-group-' . self::MODEL));
         $manager->persist($widget);
         $manager->flush();
     }

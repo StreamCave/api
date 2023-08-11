@@ -69,7 +69,7 @@ class Oauth2TwitchController extends AbstractController {
             }
 
             // On set le refreshToken de l'utilisateur
-            $userDB->setToken(Uuid::v4());
+            $userDB->setToken(array_merge($userDB->getToken(), [Uuid::v4()]));
             $userDB->setSsoLogin("twitch");
             // AccessToken, RefreshToken et expiresIn de Twitch
             $userDB->setTwitchAccessToken($accessToken);
@@ -78,7 +78,7 @@ class Oauth2TwitchController extends AbstractController {
             $em->persist($userDB);
             $em->flush();
 
-            $refreshToken = $userDB->getToken();
+            $refreshToken = $userDB->getToken()[count($userDB->getToken()) - 1];
 
             // On génère un token JWT
             $token = $this->jwtManager->create($userDB);

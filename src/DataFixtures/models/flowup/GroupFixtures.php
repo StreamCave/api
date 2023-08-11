@@ -230,28 +230,29 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
         $manager->flush();
     }
 
-    private function setStatGroup(ObjectManager $manager): void
-    {
-        $R6StatsPlayers = new R6StatsPlayers();
-        $R6StatsPlayers->setPseudo('BRIETGAME');
-        $R6StatsPlayers->setId('id');
-        $R6StatsPlayers->setMatchId('matchId');
-        $R6StatsPlayers->setRound(1);
+        private function setStatGroup(ObjectManager $manager): void
+        {
+            $group = new StatGroup();
+            $group->setId('id');
+            $group->setMatchId('matchId');
+            $group->setOverlayId('overlayId');
+            $group->setStatus('new');
 
-        $manager->persist($R6StatsPlayers);
-        $manager->flush();
+            $this->addReference('stat-group-' . self::MODEL, $group);
 
-        $group = new StatGroup();
-        $group->setId('id');
-        $group->setMatchId('matchId');
-        $group->setOverlayId('overlayId');
-        $group->setStatus('new');
+            $manager->persist($group);
+            $manager->flush();
 
-        $this->addReference('stat-group-' . self::MODEL, $group);
+            $R6StatsPlayers = new R6StatsPlayers();
+            $R6StatsPlayers->setPseudo('BRIETGAME');
+            $R6StatsPlayers->setId('id');
+            $R6StatsPlayers->setMatchId('matchId');
+            $R6StatsPlayers->setRound(1);
 
-        $manager->persist($group);
-        $manager->flush();
-    }
+
+            $manager->persist($R6StatsPlayers);
+            $manager->flush();
+        }
 
     public function getDependencies(): array
     {

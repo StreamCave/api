@@ -12,6 +12,7 @@ use App\Entity\MatchGroup;
 use App\Entity\PlanningGroup;
 use App\Entity\PollGroup;
 use App\Entity\PopupGroup;
+use App\Entity\StatGroup;
 use App\Entity\TweetGroup;
 use App\Entity\TwitchGroup;
 use App\Repository\LibMapRepository;
@@ -39,6 +40,7 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
         $this->setMapGroupBO3($manager);
         $this->setTwitchPoll($manager);
         $this->setTwitchPrediction($manager);
+        $this->setStatGroup($manager);
     }
 
     private function setCameraGroup(ObjectManager $manager): void
@@ -222,6 +224,19 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
         $group->setUuid(Uuid::v5(Uuid::v6(), 'Twitch Prediction'));
 
         $this->addReference('twitch-prediction-' . self::MODEL, $group);
+
+        $manager->persist($group);
+        $manager->flush();
+    }
+
+    private function setStatGroup(ObjectManager $manager): void
+    {
+        $group = new StatGroup();
+        $group->setUuid(Uuid::v5(Uuid::v6(), 'Stat Group'));
+        $group->setMatchId('matchId');
+        $group->setOverlayId('overlayId');
+
+        $this->addReference('stat-group-' . self::MODEL, $group);
 
         $manager->persist($group);
         $manager->flush();

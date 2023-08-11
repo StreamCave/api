@@ -2,6 +2,15 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
+use App\Controller\DeleteWidgetController;
+use App\Controller\EditComponent;
 use App\Repository\StatGroupRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -9,28 +18,45 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: StatGroupRepository::class)]
+#[ApiResource(operations: [
+    new Get(
+        uriTemplate: '/stat-group/{uuid}',
+        uriVariables: "uuid",
+        status: 200,
+        schemes: ['https'],
+        openapiContext: ['summary' => 'Récupérer les données du StatGroup'],
+        normalizationContext: ['groups' => ['stat_group:read']]
+    ),
+    new GetCollection(
+        uriTemplate: '/stat-group',
+        status: 200,
+        schemes: ['https'],
+        openapiContext: ['summary' => 'Récupérer les données de tous les StatGroup'],
+        normalizationContext: ['groups' => ['stat_group:read']]
+    )
+], schemes: ['https'], normalizationContext: ['groups' => ['stat_group:read']], denormalizationContext: ['groups' => ['stat_group:write']], openapiContext: ['summary' => 'StatGroup'])]
 class StatGroup
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['widget:read','overlay:read','model:read'])]
+    #[Groups(['stat_group:read','widget:read','overlay:read','model:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
+    #[Groups(['stat_group:read','stat_group:write','widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
     private ?string $uuid = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
+    #[Groups(['stat_group:read','stat_group:write','widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
     private ?string $matchId = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
+    #[Groups(['stat_group:read','stat_group:write','widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
     private ?string $overlayId = null;
 
     #[ORM\ManyToMany(targetEntity: Widget::class, mappedBy: 'StatGroup')]
-    #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
+    #[Groups(['stat_group:read','stat_group:write','widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
     private Collection $widgets;
 
     public function __construct()

@@ -235,6 +235,7 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
         $group->setUuid(Uuid::v5(Uuid::v6(), 'Stat Group'));
         $group->setMatchId('matchId');
         $group->setOverlayId('overlayId');
+        $group->setStatus('new');
 
         $this->addReference('stat-group-' . self::MODEL, $group);
 

@@ -59,6 +59,10 @@ class StatGroup
     #[Groups(['stat_group:read','stat_group:write','widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
     private Collection $widgets;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['stat_group:read','stat_group:write','widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
+    private ?string $status = null;
+
     public function __construct()
     {
         $this->widgets = new ArrayCollection();
@@ -128,6 +132,18 @@ class StatGroup
         if ($this->widgets->removeElement($widget)) {
             $widget->removeStatGroup($this);
         }
+
+        return $this;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(?string $status): static
+    {
+        $this->status = $status;
 
         return $this;
     }

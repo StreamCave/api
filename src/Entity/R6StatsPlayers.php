@@ -34,7 +34,7 @@ class R6StatsPlayers
     #[ORM\Id]
     #[ORM\Column]
     #[Groups(['r6_stats_players:read'])]
-    private ?string $id = null;
+    private ?int $id = null;
 
     #[ORM\Id]
     #[ORM\Column(length: 255)]
@@ -78,12 +78,12 @@ class R6StatsPlayers
     #[Groups(['r6_stats_players:read', 'r6_stats_players:write'])]
     private ?string $team = null;
 
-    public function getId(): ?string
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setId(string $id): static
+    public function setId(int $id): static
     {
         $this->id = $id;
 

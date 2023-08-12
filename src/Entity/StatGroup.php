@@ -34,7 +34,7 @@ class StatGroup
     #[ORM\Id]
     #[ORM\Column]
     #[Groups(['stat_group:read','widget:read','overlay:read','model:read'])]
-    private ?string $id = null;
+    private ?int $id = null;
 
     #[ORM\Id]
     #[ORM\Column(length: 255, nullable: true)]
@@ -63,12 +63,12 @@ class StatGroup
         $this->widgets = new ArrayCollection();
     }
 
-    public function getId(): ?string
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setId(string $id): static
+    public function setId(int $id): static
     {
         $this->id = $id;
 

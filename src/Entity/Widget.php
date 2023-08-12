@@ -167,7 +167,7 @@ class Widget
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $modifiedDate;
 
-    #[ORM\ManyToOne(inversedBy: 'widgets', cascade: ['persist'])]
+    #[ORM\ManyToOne(cascade: ['persist'], inversedBy: 'widgets')]
     #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
     private ?Overlay $overlay = null;
 
@@ -179,7 +179,7 @@ class Widget
     #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
     private ?TwitchGroup $twitchGroup = null;
 
-    #[ORM\ManyToMany(targetEntity: StatGroup::class, inversedBy: 'widgets')]
+    #[ORM\ManyToMany(targetEntity: StatGroup::class, inversedBy: 'widgets', cascade: ['persist'])]
     #[ORM\JoinColumn(nullable: true)]
     #[Groups(['widget:read','widget:write','overlay:read','model:read', 'overlay:write'])]
     private Collection $StatGroup;

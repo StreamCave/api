@@ -12,6 +12,8 @@ use App\Entity\MatchGroup;
 use App\Entity\PlanningGroup;
 use App\Entity\PollGroup;
 use App\Entity\PopupGroup;
+use App\Entity\R6StatsPlayers;
+use App\Entity\StatGroup;
 use App\Entity\TweetGroup;
 use App\Entity\TwitchGroup;
 use App\Repository\LibMapRepository;
@@ -40,6 +42,7 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
         $this->setPlanningGroup($manager);
         $this->setTwitchPoll($manager);
         $this->setTwitchPrediction($manager);
+        $this->setStatGroup($manager);
     }
 
     private function setCameraGroup(ObjectManager $manager): void
@@ -225,6 +228,30 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
         $this->addReference('twitch-prediction-' . self::MODEL, $group);
 
         $manager->persist($group);
+        $manager->flush();
+    }
+
+    private function setStatGroup(ObjectManager $manager): void
+    {
+        $group = new StatGroup();
+        $group->setId(2);
+        $group->setMatchId('matchId3');
+        $group->setOverlayId('overlayId3');
+        $group->setStatus('new');
+
+        $this->addReference('stat-group-' . self::MODEL, $group);
+
+        $manager->persist($group);
+        $manager->flush();
+
+        $R6StatsPlayers = new R6StatsPlayers();
+        $R6StatsPlayers->setPseudo('BRIETGAME');
+        $R6StatsPlayers->setId(2);
+        $R6StatsPlayers->setMatchId('matchId4');
+        $R6StatsPlayers->setRound(1);
+
+
+        $manager->persist($R6StatsPlayers);
         $manager->flush();
     }
 

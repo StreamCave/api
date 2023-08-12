@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
@@ -14,8 +15,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: StatGroupRepository::class)]
 #[ApiResource(operations: [
     new Get(
-        uriTemplate: '/stat-group/{uuid}',
-        uriVariables: "uuid",
+        uriTemplate: '/stat-group/{id}',
+        uriVariables: "id",
         status: 200,
         schemes: ['https'],
         openapiContext: ['summary' => 'Récupérer les données du StatGroup'],

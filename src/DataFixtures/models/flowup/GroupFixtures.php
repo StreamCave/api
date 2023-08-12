@@ -233,7 +233,7 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
         private function setStatGroup(ObjectManager $manager): void
         {
             $group = new StatGroup();
-            $group->setId('id1');
+            $group->setId(1);
             $group->setMatchId('matchId1');
             $group->setOverlayId('overlayId1');
             $group->setStatus('new');
@@ -245,7 +245,7 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
 
             $R6StatsPlayers = new R6StatsPlayers();
             $R6StatsPlayers->setPseudo('BRIETGAME');
-            $R6StatsPlayers->setId('id2');
+            $R6StatsPlayers->setId(1);
             $R6StatsPlayers->setMatchId('matchId2');
             $R6StatsPlayers->setRound(1);
 

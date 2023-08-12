@@ -32,7 +32,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 class StatGroup
 {
     #[ORM\Id]
-    #[ORM\Column]
+    #[ORM\Column(type: "integer", name: "id", columnDefinition: "INT AUTO_INCREMENT")]
     #[Groups(['stat_group:read','widget:read','overlay:read','model:read'])]
     private ?int $id = null;
 

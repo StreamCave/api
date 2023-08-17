@@ -34,7 +34,7 @@ class R6StatsPlayers
     #[ORM\Id]
     #[ORM\Column]
     #[Groups(['r6_stats_players:read'])]
-    private ?int $id = null;
+    private ?string $id = null;
 
     #[ORM\Id]
     #[ORM\Column(length: 255)]

@@ -2,10 +2,10 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use App\Controller\GetStatGroupByOverlay;
 use App\Repository\StatGroupRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -14,9 +14,10 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: StatGroupRepository::class)]
 #[ApiResource(operations: [
-    new Get(
-        uriTemplate: '/stat-group/{id}',
-        uriVariables: "id",
+    new GetCollection(
+        uriTemplate: '/stat-group/o/{overlayId}',
+        uriVariables: "overlayId",
+        controller: GetStatGroupByOverlay::class,
         status: 200,
         schemes: ['https'],
         openapiContext: ['summary' => 'Récupérer les données du StatGroup'],

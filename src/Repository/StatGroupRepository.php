@@ -38,7 +38,17 @@ class StatGroupRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
-
+    // public function findAllMatchs($uuid): array
+    // {
+    //     return $this->createQueryBuilder('s')
+    //         ->select('s.match_id', 's.overlay_id', 's.status', 's.score', 'rsp.id AS player_id', 'rsp.round', 'rsp.pseudo', 'rsp.kills', 'rsp.deaths', 'rsp.hp', 'rsp.score AS player_score', 'rsp.operator', 'rsp.team')
+    //         ->Join('r6_stats_players', 'rsp', 'ON', 's.match_id = rsp.match_id')
+    //         ->where('s.overlay_id = :overlayId')
+    //         ->setParameter('overlayId', $uuid)
+    //         ->getQuery()
+    //         ->getArrayResult()
+    //     ;
+    // }
 //    /**
 //     * @return StatGroup[] Returns an array of StatGroup objects
 //     */

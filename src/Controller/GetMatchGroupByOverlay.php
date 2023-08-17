@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Repository\CameraGroupRepository;
 use App\Repository\MatchGroupRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

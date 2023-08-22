@@ -102,30 +102,15 @@ class CameraGroup
     #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
     private Collection $widgets;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\ManyToMany(targetEntity: Camera::class, inversedBy: 'cameraGroups')]
     #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
-    private ?string $name = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
-    private ?string $socketId = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
-    private ?string $team = null;
-
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
-    private ?string $metadata = null;
-
-    #[ORM\Column(nullable: true)]
-    #[Groups(['camera_group:read', 'camera_group:write','widget:read','model:read','overlay:read', 'overlay:write'])]
-    private array $styles = [];
+    private Collection $cameras;
 
     public function __construct()
     {
         $this->widgets = new ArrayCollection();
         $this->uuid = Uuid::v4();
+        $this->cameras = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -184,62 +169,26 @@ class CameraGroup
         return $this;
     }
 
-    public function getName(): ?string
+    /**
+     * @return Collection<int, Camera>
+     */
+    public function getCameras(): Collection
     {
-        return $this->name;
+        return $this->cameras;
     }
 
-    public function setName(?string $name): self
+    public function addCamera(Camera $camera): self
     {
-        $this->name = $name;
+        if (!$this->cameras->contains($camera)) {
+            $this->cameras->add($camera);
+        }
 
         return $this;
     }
 
-    public function getSocketId(): ?string
+    public function removeCamera(Camera $camera): self
     {
-        return $this->socketId;
-    }
-
-    public function setSocketId(?string $socketId): self
-    {
-        $this->socketId = $socketId;
-
-        return $this;
-    }
-
-    public function getTeam(): ?string
-    {
-        return $this->team;
-    }
-
-    public function setTeam(?string $team): self
-    {
-        $this->team = $team;
-
-        return $this;
-    }
-
-    public function getMetadata(): ?string
-    {
-        return $this->metadata;
-    }
-
-    public function setMetadata(?string $metadata): self
-    {
-        $this->metadata = $metadata;
-
-        return $this;
-    }
-
-    public function getStyles(): array
-    {
-        return $this->styles;
-    }
-
-    public function setStyles(?array $styles): self
-    {
-        $this->styles = $styles;
+        $this->cameras->removeElement($camera);
 
         return $this;
     }

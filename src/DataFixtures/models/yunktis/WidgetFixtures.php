@@ -114,22 +114,13 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
     }
     private function setCameras(ObjectManager $manager): void
     {
-        $players = ['Alpha', 'Bravo', 'Charlie', 'Delta', 'Echo', 'Foxtrot', 'Golf', 'Hotel', 'India', 'Juliett'];
         $widget = new Widget();
         $widget->setUuid(Uuid::v5(Uuid::v6(), 'Cameras'));
         $widget->setName('Cameras');
         $widget->setDescription('Cameras.');
         $widget->setVisible(false);
-        $widget->addCameraGroup($this->getReference('camera-group-' . self::MODEL .  '-' . $players[0]));
-        $widget->addCameraGroup($this->getReference('camera-group-' . self::MODEL .  '-' . $players[1]));
-        $widget->addCameraGroup($this->getReference('camera-group-' . self::MODEL .  '-' . $players[2]));
-        $widget->addCameraGroup($this->getReference('camera-group-' . self::MODEL .  '-' . $players[3]));
-        $widget->addCameraGroup($this->getReference('camera-group-' . self::MODEL .  '-' . $players[4]));
-        $widget->addCameraGroup($this->getReference('camera-group-' . self::MODEL .  '-' . $players[5]));
-        $widget->addCameraGroup($this->getReference('camera-group-' . self::MODEL .  '-' . $players[6]));
-        $widget->addCameraGroup($this->getReference('camera-group-' . self::MODEL .  '-' . $players[7]));
-        $widget->addCameraGroup($this->getReference('camera-group-' . self::MODEL .  '-' . $players[8]));
-        $widget->addCameraGroup($this->getReference('camera-group-' . self::MODEL .  '-' . $players[9]));
+        $widget->addCameraGroup($this->getReference('camera-group-1' . self::MODEL));
+        $widget->addCameraGroup($this->getReference('camera-group-2' . self::MODEL));
         $widget->setOverlay($this->getReference('overlay-' . self::MODEL));
 
         $manager->persist($widget);

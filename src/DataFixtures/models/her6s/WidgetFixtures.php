@@ -34,17 +34,13 @@ class WidgetFixtures extends Fixture implements DependentFixtureInterface
     }
     private function setCameras(ObjectManager $manager): void
     {
-        $players = ['Alpha', 'Bravo', 'Charlie', 'Delta', 'Echo'];
         $widget = new Widget();
         $widget->setUuid(Uuid::v5(Uuid::v6(), 'Cameras'));
         $widget->setName('Cameras');
         $widget->setDescription('Cameras.');
-        $widget->setVisible(true);
-        $widget->addCameraGroup($this->getReference('camera-group-' . self::MODEL .  '-' . $players[0]));
-        $widget->addCameraGroup($this->getReference('camera-group-' . self::MODEL .  '-' . $players[1]));
-        $widget->addCameraGroup($this->getReference('camera-group-' . self::MODEL .  '-' . $players[2]));
-        $widget->addCameraGroup($this->getReference('camera-group-' . self::MODEL .  '-' . $players[3]));
-        $widget->addCameraGroup($this->getReference('camera-group-' . self::MODEL .  '-' . $players[4]));
+        $widget->setVisible(false);
+        $widget->addCameraGroup($this->getReference('camera-group-1' . self::MODEL));
+        $widget->addCameraGroup($this->getReference('camera-group-2' . self::MODEL));
         $widget->setOverlay($this->getReference('overlay-' . self::MODEL));
 
         $manager->persist($widget);

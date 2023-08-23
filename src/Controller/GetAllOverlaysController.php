@@ -53,7 +53,13 @@ class GetAllOverlaysController extends AbstractController
     public function __invoke(Request $request, $uuid): Response
     {
         $decodedJwtToken = $this->jwtManager->decode($this->tokenStorageInterface->getToken());
-        $user = $this->userRepository->findOneBy(['uuid' => $decodedJwtToken['uuid']]);
+        $user = $this->userRepository->findOneBy(['uuid' => $uuid]);
+        if (!$user) {
+            return $this->json([
+                "statusCode" => 404,
+                'message' => 'User not found',
+            ], 404);
+        }
         $overlaysAccess = $this->overlayRepository->findAllAccess($user->getUuid());
         $overlayOwner = $this->overlayRepository->findOneById($user->getId());
 
@@ -76,7 +82,7 @@ class GetAllOverlaysController extends AbstractController
                 'uuid' => $overlay->getUuid(),
                 'name' => $overlay->getName(),
                 'image' => $overlay->getImage(),
-                'listened' => $overlay->isListened(),
+                'listened' => $overlay->getListened(),
                 'Model' => $model,
                 'userAccess' => $userAccess,
             ];

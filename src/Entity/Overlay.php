@@ -106,7 +106,7 @@ class Overlay
     #[Groups(['overlay:read','overlay:write'])]
     private ?string $uuid;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['overlay:read','overlay:write'])]
     private ?string $name = null;
 

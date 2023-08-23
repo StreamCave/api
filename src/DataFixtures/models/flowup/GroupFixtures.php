@@ -60,6 +60,8 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
             $manager->flush();
         }
         $this->addReference("camera-group-1" . self::MODEL, $cameraGroup1);
+        $manager->persist($cameraGroup1);
+        $manager->flush();
 
         $cameraGroup2 = new CameraGroup();
         $cameraGroup2->setUuid(Uuid::v5(Uuid::v6(), "Camera Groupe"));
@@ -74,7 +76,9 @@ class GroupFixtures extends Fixture implements DependentFixtureInterface
             $manager->persist($camera);
             $manager->flush();
         }
-        $this->addReference("camera-group-2" . self::MODEL, $cameraGroup1);
+        $this->addReference("camera-group-2" . self::MODEL, $cameraGroup2);
+        $manager->persist($cameraGroup2);
+        $manager->flush();
     }
 
     private function setInfoGroup(ObjectManager $manager): void
